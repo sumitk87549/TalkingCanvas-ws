@@ -177,7 +177,7 @@ spring.mail.password=your-app-password
 # Admin Default
 admin.default.email=admin@talkingcanvas.com
 admin.default.password=Admin@123
-admin.default.uncle.name=Rajesh Kumar
+admin.default.uncle.name=Praveen Kumar
 
 # File Upload
 file.upload-dir=uploads
