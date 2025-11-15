@@ -1,1 +1,109 @@
-/* You can add global styles to this file, and also import other style files */
+/* Global Styles */
+:root {
+  --primary-color: #2c1810;
+  --secondary-color: #8b6f47;
+  --accent-color: #d4a574;
+  --text-dark: #1a1a1a;
+  --text-light: #f5f5f5;
+  --background-light: #faf8f5;
+  --background-dark: #1a1a1a;
+}
+
+/* Reset and Base Styles */
+html, body {
+  margin: 0 !important;
+  padding: 0 !important;
+  width: 100% !important;
+  min-height: 100vh !important;
+  overflow-x: hidden !important;
+  box-sizing: border-box !important;
+}
+
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: inherit;
+}
+
+body {
+  font-family: 'Georgia', serif;
+  line-height: 1.6;
+  background-color: var(--background-dark);
+  color: var(--text-light);
+}
+
+/* Ensure all elements inherit the box-sizing */
+*, *::before, *::after {
+  box-sizing: inherit;
+}
+
+/* Remove default list styles */
+ul, ol {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* Reset links */
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Make images easier to work with */
+img, picture {
+  max-width: 100%;
+  display: block;
+}
+
+/* Remove default button styles */
+button {
+  border: none;
+  background: none;
+  font: inherit;
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+}
+
+/* Remove default input styles */
+input, textarea, select, button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  outline: none;
+}
+
+/* Remove default table spacing */
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+/* Remove default fieldset styles */
+fieldset {
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* Remove default details marker */
+summary {
+  list-style: none;
+}
+
+/* Remove default dialog padding */
+dialog {
+  padding: 0;
+}
+
+/* Remove default hr styles */
+hr {
+  border: none;
+  height: 1px;
+  background-color: currentColor;
+  margin: 1rem 0;
+}
