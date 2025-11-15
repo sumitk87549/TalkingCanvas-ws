@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
@@ -28,10 +29,12 @@ public class OrderItem {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id", nullable = false)
+    @EqualsAndHashCode.Exclude
     private Order order;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "painting_id", nullable = false)
+    @EqualsAndHashCode.Exclude
     private Painting painting;
 
     @NotNull(message = "Quantity is required")

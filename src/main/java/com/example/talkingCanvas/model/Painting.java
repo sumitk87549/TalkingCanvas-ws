@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -90,10 +91,12 @@ public class Painting {
     @OneToMany(mappedBy = "painting", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("displayOrder ASC")
     @Builder.Default
+    @EqualsAndHashCode.Exclude
     private List<PaintingImage> images = new ArrayList<>();
 
     @OneToMany(mappedBy = "painting", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
+    @EqualsAndHashCode.Exclude
     private List<PaintingCertificate> certificates = new ArrayList<>();
 
     @ManyToMany
@@ -103,6 +106,7 @@ public class Painting {
         inverseJoinColumns = @JoinColumn(name = "category_id")
     )
     @Builder.Default
+    @EqualsAndHashCode.Exclude
     private Set<PaintingCategory> categories = new HashSet<>();
 
     @Column(name = "seo_title")

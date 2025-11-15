@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 /**
@@ -24,6 +25,7 @@ public class PaintingImage {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "painting_id", nullable = false)
+    @EqualsAndHashCode.Exclude
     private Painting painting;
 
     @NotBlank(message = "Image URL is required")

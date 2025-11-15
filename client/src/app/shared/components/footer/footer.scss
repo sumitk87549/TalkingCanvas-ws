@@ -1,0 +1,21 @@
+// Variables
+$primary-color: #2c1810;
+$secondary-color: #8b6f47;
+$accent-color: #d4a574;
+$text-dark: #1a1a1a;
+$text-light: #f5f5f5;
+$background-light: #faf8f5;
+$background-dark: #1a1a1a;
+
+// Footer
+.footer {
+  padding: 40px 20px;
+  background: $background-dark;
+  color: rgba(255, 255, 255, 0.6);
+  text-align: center;
+
+  p {
+    font-size: 14px;
+    letter-spacing: 1px;
+  }
+}

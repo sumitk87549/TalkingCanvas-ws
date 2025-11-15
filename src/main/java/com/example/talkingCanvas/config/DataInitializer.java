@@ -120,7 +120,7 @@ public class DataInitializer implements CommandLineRunner {
         }
 
         // Get categories
-        PaintingCategory abstract = categoryRepository.findByName("Abstract").orElse(null);
+        PaintingCategory abstractCategory = categoryRepository.findByName("Abstract").orElse(null);
         PaintingCategory landscape = categoryRepository.findByName("Landscape").orElse(null);
         PaintingCategory modern = categoryRepository.findByName("Modern").orElse(null);
 
@@ -172,7 +172,7 @@ public class DataInitializer implements CommandLineRunner {
                 .seoKeywords("abstract art, contemporary painting, modern decor, oil painting India")
                 .build();
 
-        if (abstract != null) painting2.getCategories().add(abstract);
+        if (abstractCategory != null) painting2.getCategories().add(abstractCategory);
         if (modern != null) painting2.getCategories().add(modern);
         paintingRepository.save(painting2);
         logger.info("Sample painting 2 created");

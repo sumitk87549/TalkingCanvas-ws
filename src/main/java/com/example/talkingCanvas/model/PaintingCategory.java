@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.util.HashSet;
@@ -34,5 +35,6 @@ public class PaintingCategory {
 
     @ManyToMany(mappedBy = "categories")
     @Builder.Default
+    @EqualsAndHashCode.Exclude
     private Set<Painting> paintings = new HashSet<>();
 }

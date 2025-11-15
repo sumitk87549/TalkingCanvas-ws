@@ -1,0 +1,19 @@
+<div class="paintings-container">
+  <h1>Oil Paintings Collection</h1>
+  <div class="paintings-grid">
+    <div *ngIf="paintings.length === 0" class="no-paintings">
+      <p>No paintings available</p>
+    </div>
+    <div *ngFor="let painting of paintings" class="painting-card">
+      <div class="painting-image">
+        <img [src]="painting.imageUrl" [alt]="painting.title" />
+      </div>
+      <div class="painting-info">
+        <h3>{{ painting.title }}</h3>
+        <p class="artist">by {{ painting.artistName }}</p>
+        <p class="price">₹{{ painting.price }}</p>
+        <a [routerLink]="['/paintings', painting.id]" class="btn btn-sm">View Details</a>
+      </div>
+    </div>
+  </div>
+</div>

@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 /**
@@ -24,10 +25,12 @@ public class CartItem {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cart_id", nullable = false)
+    @EqualsAndHashCode.Exclude
     private Cart cart;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "painting_id", nullable = false)
+    @EqualsAndHashCode.Exclude
     private Painting painting;
 
     @Min(value = 1, message = "Quantity must be at least 1")
