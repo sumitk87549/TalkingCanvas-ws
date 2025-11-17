@@ -1,96 +1,167 @@
 .register-container {
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background-color: #1A1A1A;
   padding: 20px;
+  box-sizing: border-box;
+  width: 100%;
+  margin: 0 auto;
 }
 
 .register-card {
-  background: white;
-  padding: 40px;
-  border-radius: 8px;
+  background: #342D2D;
+  padding: 2.5rem;
+  border-radius: 12px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
   width: 100%;
-  max-width: 450px;
+  max-width: 1000px;
+  margin-top: 4rem;
+  box-sizing: border-box;
 }
 
 h2 {
   text-align: center;
-  margin-bottom: 30px;
-  color: #333;
+  margin-bottom: 2rem;
+  color: white;
+  font-size: 1.8rem;
 }
 
-.form-group {
-  margin-bottom: 20px;
+// Form layout
+.form-layout {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 2rem;
+  margin-bottom: 2rem;
+  width: 100%;
+  box-sizing: border-box;
+  
+  @media (max-width: 900px) {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
 }
 
-label {
-  display: block;
-  margin-bottom: 8px;
-  font-weight: 600;
-  color: #333;
+.form-section {
+  flex: 1;
+  min-width: 300px;
+  background: rgba(47, 42, 42, 0.8);
+  padding: 1.8rem;
+  border-radius: 8px;
+  box-sizing: border-box;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  
+  h3 {
+    color: #F3E9E5;
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.8rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+  
+  .form-group {
+    margin-bottom: 1.25rem;
+    
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
 }
 
+// Form controls required
+.form-control-req {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  border: 1px solid #555;
+  border-radius: 6px;
+  font-size: 1rem;
+  background-color: #e9e8e8;
+  color: #000;
+  transition: border-color 0.3s ease;
+  
+  &:focus {
+    border-color: #6c63ff;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(108, 99, 255, 0.2);
+  }
+}
+
+// Form controls
 .form-control {
   width: 100%;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  padding: 0.8rem 1rem;
+  border: 1px solid #555;
+  border-radius: 6px;
   font-size: 1rem;
-  box-sizing: border-box;
+  background-color: #2F2A2A;
+  color: #F3E9E5;
+  transition: border-color 0.3s ease;
+  
+  &:focus {
+    border-color: #6c63ff;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(108, 99, 255, 0.2);
+  }
 }
 
-.form-control:focus {
-  outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+// Form actions
+.form-actions {
+  text-align: center;
+  margin-top: 1.5rem;
+  
+  .btn {
+    min-width: 200px;
+    padding: 0.9rem 2rem;
+    font-size: 1rem;
+    font-weight: 600;
+    background-color: #6c63ff;
+    border: none;
+    border-radius: 6px;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    
+    &:hover {
+      background-color: #5a52d4;
+    }
+    
+    &:disabled {
+      background-color: #7a73e0;
+      cursor: not-allowed;
+    }
+  }
 }
 
+// Error messages
 .error {
-  color: #dc3545;
+  color: #ff6b6b;
   font-size: 0.875rem;
-  margin-top: 5px;
+  margin-top: 0.5rem;
+  display: block;
 }
 
-.btn {
-  width: 100%;
-  padding: 12px;
-  border: none;
-  border-radius: 4px;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
+// Required field indicator
+.required {
+  color: #ff6b6b;
+  margin-left: 4px;
 }
 
-.btn-primary {
-  background-color: #667eea;
-  color: white;
-}
-
-.btn-primary:hover:not(:disabled) {
-  background-color: #5568d3;
-}
-
-.btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
+// Login link
 .login-link {
   text-align: center;
-  margin-top: 20px;
-  color: #666;
-}
-
-.login-link a {
-  color: #667eea;
-  text-decoration: none;
-  font-weight: 600;
-}
-
-.login-link a:hover {
-  text-decoration: underline;
+  margin-top: 1.5rem;
+  color: #F3E9E5;
+  
+  a {
+    color: #6c63ff;
+    text-decoration: none;
+    font-weight: 600;
+    
+    &:hover {
+      text-decoration: underline;
+    }
+  }
 }

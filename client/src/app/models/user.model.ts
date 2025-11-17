@@ -25,9 +25,9 @@ export interface RegisterRequest {
   email: string;
   password: string;
   contactNumber: string;
+  street: string;
   city: string;
   country: string;
-  street?: string;
   state?: string;
   pincode?: string;
 }

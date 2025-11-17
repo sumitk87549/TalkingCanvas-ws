@@ -3,12 +3,15 @@
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background-color: #1A1A1A; // Rangoon Green
   padding: 20px;
+  margin: 0;
+  position: relative;
+  z-index: 1;
 }
 
 .login-card {
-  background: white;
+  background: #342D2D;
   padding: 40px;
   border-radius: 8px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
@@ -19,7 +22,7 @@
 h2 {
   text-align: center;
   margin-bottom: 30px;
-  color: #333;
+  color: white;
 }
 
 .form-group {
@@ -30,7 +33,7 @@ label {
   display: block;
   margin-bottom: 8px;
   font-weight: 600;
-  color: #333;
+  color: #F3E9E5;
 }
 
 .form-control {
