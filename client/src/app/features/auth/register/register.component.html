@@ -50,40 +50,40 @@
           <div class="form-group">
             <label>street</label>
             <input type="text" formControlName="street" class="form-control" />
-            <div *ngIf="submitted && f['street'].errors" class="error">
-              <!-- <span *ngIf="f['street'].errors['required']">Street address is required</span> -->
-            </div>
+            <!-- <div *ngIf="submitted && f['street'].errors" class="error">
+              <span *ngIf="f['street'].errors['required']">Street address is required</span>
+            </div> -->
           </div>
           
           <div class="form-group">
             <label>city</label>
             <input type="text" formControlName="city" class="form-control" required />
-            <div *ngIf="submitted && f['city'].errors" class="error">
-              <!-- <span *ngIf="f['city'].errors['required']">City is required</span> -->
-            </div>
+            <!-- <div *ngIf="submitted && f['city'].errors" class="error">
+              <span *ngIf="f['city'].errors['required']">City is required</span>
+            </div> -->
           </div>
           
           <div class="form-group">
             <label>state</label>
             <input type="text" formControlName="state" class="form-control" required />
-            <div *ngIf="submitted && f['state'].errors" class="error">
-              <!-- <span *ngIf="f['state'].errors['required']">State is required</span> -->
-            </div>
+            <!-- <div *ngIf="submitted && f['state'].errors" class="error">
+              <span *ngIf="f['state'].errors['required']">State is required</span>
+            </div> -->
           </div>
 
           <div class="form-group">
             <label>country</label>
             <input type="text" formControlName="country" class="form-control" required />
-            <div *ngIf="submitted && f['country'].errors" class="error">
-            </div>
+            <!-- <div *ngIf="submitted && f['country'].errors" class="error">
+            </div> -->
           </div>
           
           <div class="form-group">
             <label>pincode</label>
             <input type="text" formControlName="pincode" class="form-control" pattern="[0-9]*" />
-            <div *ngIf="submitted && f['pincode'].errors" class="error">
+            <!-- <div *ngIf="submitted && f['pincode'].errors" class="error">
               <span *ngIf="f['pincode'].errors['pattern']">Please enter a valid pincode (numbers only)</span>
-            </div>
+            </div> -->
           </div>
         </div>
       </div>

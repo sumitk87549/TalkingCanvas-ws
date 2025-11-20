@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { RegisterRequest } from '../../../models/user.model';
@@ -30,36 +30,39 @@ export class RegisterComponent {
       confirmPassword: ['', Validators.required],
       contactNumber: ['', Validators.required],
       street: [''],
-      city: ['', Validators.required],
+      city: [''],
       state: [''],
       country: [''],
-      pincode: ['', [Validators.pattern('^[0-9]{5,10}$')]]
-    }, { validators: this.passwordMatchValidator });
+      pincode: ['', [pincodeValidator]]
+    }, { validators: passwordMatchValidator });
   }
-
-  passwordMatchValidator(form: FormGroup) {
-    const password = form.get('password');
-    const confirmPassword = form.get('confirmPassword');
-    if (password && confirmPassword && password.value !== confirmPassword.value) {
-      confirmPassword.setErrors({ 'passwordMismatch': true });
-      return { 'passwordMismatch': true };
-    }
-    return null;
-  }
-
+  
   get f() {
     return this.registerForm.controls;
   }
 
   onSubmit() {
     console.log("Registration Form Submit Button Clicked!!")
-    console.log(this.registerForm);
     this.submitted = true;
     this.errorMessage = '';
+    console.log("registerForm.value: " + JSON.stringify(this.registerForm.value));
 
     if (this.registerForm.invalid) {
-      return;
+      Object.keys(this.registerForm.controls).forEach(key => {
+        const controlErrors = this.registerForm.get(key)?.errors;
+        if(key === 'confirmPassword' || key === 'password' || key === 'name' || key === 'email' || key === 'contactNumber' ){
+          if (controlErrors != null) {
+            console.log("Registration form is invalid.");
+            console.log('Control: ' + key + ', Errors: ' + JSON.stringify(controlErrors));
+          }
+          return;
+        }
+      });
+
     }
+
+    console.log("Registration form has passed validation.");
+    console.log("registerForm.value: " + JSON.stringify(this.registerForm.value));
 
     this.loading = true;
     const registerData: RegisterRequest = {
@@ -67,14 +70,14 @@ export class RegisterComponent {
       email: this.registerForm.value.email,
       password: this.registerForm.value.password,
       contactNumber: this.registerForm.value.contactNumber,
-      street: this.registerForm.value.street,
-      city: this.registerForm.value.city,
-      state: this.registerForm.value.state,
-      country: this.registerForm.value.country,
-      pincode: this.registerForm.value.pincode
+      street: this.registerForm.value.street ? this.registerForm.value.street.name : '',
+      city: this.registerForm.value.city ? this.registerForm.value.city.name : '',
+      state: this.registerForm.value.state ? this.registerForm.value.state.name : '',
+      country: this.registerForm.value.country ? this.registerForm.value.country.name : '',
+      pincode: this.registerForm.value.pincode ? this.registerForm.value.pincode : "000000" 
     };
-    
-    console.log(registerData);
+    console.log("registerData.value: " + JSON.stringify(registerData));
+
     this.authService.register(registerData).subscribe({
       next: (response) => {
         this.loading = false;
@@ -95,4 +98,24 @@ export class RegisterComponent {
   }
 }
 
+export function passwordMatchValidator(control: AbstractControl): ValidationErrors | null {
+  const password = control.get('password');
+  const confirmPassword = control.get('confirmPassword');
 
+  if (password && confirmPassword && password.value !== confirmPassword.value) {
+    confirmPassword.setErrors({ passwordMismatch: true });
+    return { passwordMismatch: true };
+  }
+  // Important: clear the error if they match and the error was previously set.
+  if (confirmPassword?.hasError('passwordMismatch')) {
+    confirmPassword.setErrors(null);
+  }
+  return null;
+}
+
+export function pincodeValidator(control: AbstractControl): ValidationErrors | null {
+  if (control.value && !/^[0-9]{5,10}$/.test(control.value)) {
+    return { pattern: true };
+  }
+  return null;
+}

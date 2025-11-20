@@ -26,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -128,6 +129,128 @@ public class PaintingService {
         Painting savedPainting = paintingRepository.save(painting);
         logger.info("Painting created successfully: {}", savedPainting.getId());
         return mapperUtil.toPaintingResponse(savedPainting);
+    }
+
+    @Transactional
+    public PaintingResponse createPaintingWithImages(CreatePaintingRequest request, List<String> imageUrls) {
+        logger.info("Creating new painting with images: {}", request.getTitle());
+
+        // Build images from URLs
+        List<PaintingImage> images = new ArrayList<>();
+        if (imageUrls != null && !imageUrls.isEmpty()) {
+            for (int i = 0; i < imageUrls.size(); i++) {
+                PaintingImage image = PaintingImage.builder()
+                        .imageUrl(imageUrls.get(i))
+                        .displayOrder(i)
+                        .isPrimary(i == 0) // First image is primary
+                        .build();
+                images.add(image);
+            }
+        }
+
+        Painting painting = Painting.builder()
+                .title(request.getTitle())
+                .description(request.getDescription())
+                .artistName(request.getArtistName() != null ? request.getArtistName() : defaultArtistName)
+                .price(request.getPrice())
+                .currency(request.getCurrency())
+                .height(request.getHeight())
+                .width(request.getWidth())
+                .depth(request.getDepth())
+                .medium(request.getMedium())
+                .yearCreated(request.getYearCreated())
+                .isAvailable(request.getIsAvailable())
+                .stockQuantity(request.getStockQuantity())
+                .adminRecommendation(request.getAdminRecommendation())
+                .recommendationText(request.getRecommendationText())
+                .seoTitle(request.getSeoTitle())
+                .seoDescription(request.getSeoDescription())
+                .seoKeywords(request.getSeoKeywords())
+                .images(images)
+                .build();
+
+        // Add categories
+        if (request.getCategoryIds() != null && !request.getCategoryIds().isEmpty()) {
+            for (Long categoryId : request.getCategoryIds()) {
+                PaintingCategory category = categoryRepository.findById(categoryId)
+                        .orElseThrow(() -> new ResourceNotFoundException("Category", "id", categoryId));
+                painting.getCategories().add(category);
+            }
+        }
+
+        // Save painting with images using the repository method
+        Painting savedPainting = paintingRepository.saveWithImages(painting);
+        logger.info("Painting created with {} images successfully: {}", images.size(), savedPainting.getId());
+        return mapperUtil.toPaintingResponse(savedPainting);
+    }
+
+    @Transactional
+    public List<PaintingResponse> createPaintingsWithImages(List<CreatePaintingRequest> requests, List<List<String>> imageUrlLists) {
+        logger.info("Creating {} paintings with images", requests.size());
+
+        if (requests.size() != imageUrlLists.size()) {
+            throw new IllegalArgumentException("Number of painting requests must match number of image URL lists");
+        }
+
+        List<Painting> paintings = new ArrayList<>();
+
+        for (int i = 0; i < requests.size(); i++) {
+            CreatePaintingRequest request = requests.get(i);
+            List<String> imageUrls = imageUrlLists.get(i);
+
+            // Build images
+            List<PaintingImage> images = new ArrayList<>();
+            if (imageUrls != null && !imageUrls.isEmpty()) {
+                for (int j = 0; j < imageUrls.size(); j++) {
+                    PaintingImage image = PaintingImage.builder()
+                            .imageUrl(imageUrls.get(j))
+                            .displayOrder(j)
+                            .isPrimary(j == 0) // First image is primary
+                            .build();
+                    images.add(image);
+                }
+            }
+
+            Painting painting = Painting.builder()
+                    .title(request.getTitle())
+                    .description(request.getDescription())
+                    .artistName(request.getArtistName() != null ? request.getArtistName() : defaultArtistName)
+                    .price(request.getPrice())
+                    .currency(request.getCurrency())
+                    .height(request.getHeight())
+                    .width(request.getWidth())
+                    .depth(request.getDepth())
+                    .medium(request.getMedium())
+                    .yearCreated(request.getYearCreated())
+                    .isAvailable(request.getIsAvailable())
+                    .stockQuantity(request.getStockQuantity())
+                    .adminRecommendation(request.getAdminRecommendation())
+                    .recommendationText(request.getRecommendationText())
+                    .seoTitle(request.getSeoTitle())
+                    .seoDescription(request.getSeoDescription())
+                    .seoKeywords(request.getSeoKeywords())
+                    .images(images)
+                    .build();
+
+            // Add categories
+            if (request.getCategoryIds() != null && !request.getCategoryIds().isEmpty()) {
+                for (Long categoryId : request.getCategoryIds()) {
+                    PaintingCategory category = categoryRepository.findById(categoryId)
+                            .orElseThrow(() -> new ResourceNotFoundException("Category", "id", categoryId));
+                    painting.getCategories().add(category);
+                }
+            }
+
+            paintings.add(painting);
+        }
+
+        // Save all paintings with images
+        List<Painting> savedPaintings = paintingRepository.saveAllWithImages(paintings);
+        logger.info("Successfully created {} paintings with images", savedPaintings.size());
+
+        return savedPaintings.stream()
+                .map(mapperUtil::toPaintingResponse)
+                .collect(Collectors.toList());
     }
 
     @Transactional
@@ -240,6 +363,73 @@ public class PaintingService {
                 .build();
         PaintingCategory savedCategory = categoryRepository.save(category);
         return mapperUtil.toCategoryDTO(savedCategory);
+    }
+
+    // Additional utility methods for painting and image operations
+    public PaintingResponse getPaintingWithImages(Long id) {
+        logger.info("Fetching painting with images: {}", id);
+        Painting painting = paintingRepository.findByIdWithImages(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Painting", "id", id));
+
+        // Increment view count
+        painting.incrementViewCount();
+        paintingRepository.save(painting);
+
+        return mapperUtil.toPaintingResponse(painting);
+    }
+
+    @Transactional
+    public PaintingResponse updatePaintingWithImages(Long id, CreatePaintingRequest request, List<String> imageUrls) {
+        logger.info("Updating painting with images: {}", id);
+        Painting painting = paintingRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Painting", "id", id));
+
+        // Update painting details
+        painting.setTitle(request.getTitle());
+        painting.setDescription(request.getDescription());
+        painting.setArtistName(request.getArtistName() != null ? request.getArtistName() : defaultArtistName);
+        painting.setPrice(request.getPrice());
+        painting.setCurrency(request.getCurrency());
+        painting.setHeight(request.getHeight());
+        painting.setWidth(request.getWidth());
+        painting.setDepth(request.getDepth());
+        painting.setMedium(request.getMedium());
+        painting.setYearCreated(request.getYearCreated());
+        painting.setIsAvailable(request.getIsAvailable());
+        painting.setStockQuantity(request.getStockQuantity());
+        painting.setAdminRecommendation(request.getAdminRecommendation());
+        painting.setRecommendationText(request.getRecommendationText());
+        painting.setSeoTitle(request.getSeoTitle());
+        painting.setSeoDescription(request.getSeoDescription());
+        painting.setSeoKeywords(request.getSeoKeywords());
+
+        // Update categories
+        if (request.getCategoryIds() != null) {
+            painting.getCategories().clear();
+            for (Long categoryId : request.getCategoryIds()) {
+                PaintingCategory category = categoryRepository.findById(categoryId)
+                        .orElseThrow(() -> new ResourceNotFoundException("Category", "id", categoryId));
+                painting.getCategories().add(category);
+            }
+        }
+
+        // Update images if provided
+        if (imageUrls != null && !imageUrls.isEmpty()) {
+            painting.getImages().clear(); // Clear existing images
+            for (int i = 0; i < imageUrls.size(); i++) {
+                PaintingImage image = PaintingImage.builder()
+                        .imageUrl(imageUrls.get(i))
+                        .displayOrder(i)
+                        .isPrimary(i == 0) // First image is primary
+                        .build();
+                painting.getImages().add(image);
+            }
+        }
+
+        // Save with images using the repository method
+        Painting updatedPainting = paintingRepository.saveWithImages(painting);
+        logger.info("Painting updated with images successfully: {}", id);
+        return mapperUtil.toPaintingResponse(updatedPainting);
     }
 
     private PageResponse<PaintingResponse> mapToPageResponse(Page<Painting> paintingPage) {

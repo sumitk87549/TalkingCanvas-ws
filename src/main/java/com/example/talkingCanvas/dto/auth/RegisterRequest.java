@@ -27,10 +27,10 @@ public class RegisterRequest {
     private String email;
 
     @NotBlank(message = "Password is required")
-    @Pattern(
-        regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$",
-        message = "Password must be at least 8 characters with uppercase, lowercase, number, and special character"
-    )
+    // @Pattern(
+    //     regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$",
+    //     message = "Password must be at least 8 characters with uppercase, lowercase, number, and special character"
+    // )
     private String password;
 
     @NotBlank(message = "Contact number is required")
@@ -40,7 +40,7 @@ public class RegisterRequest {
     // @NotBlank(message = "City is required")
     private String city;
 
-    @NotBlank(message = "Country is required")
+    // @NotBlank(message = "Country is required")
     private String country;
 
     private String street;

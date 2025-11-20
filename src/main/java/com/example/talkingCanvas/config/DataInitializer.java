@@ -11,6 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -26,6 +27,7 @@ public class DataInitializer implements CommandLineRunner {
     private final UserRepository userRepository;
     private final PaintingCategoryRepository categoryRepository;
     private final PaintingRepository paintingRepository;
+    private final PaintingImageRepository paintingImageRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Value("${admin.default.email}")
@@ -37,7 +39,7 @@ public class DataInitializer implements CommandLineRunner {
     @Value("${admin.default.name}")
     private String adminName;
 
-    @Value("${admin.default.uncle.name}")
+    @Value("${admin.default.admin.name}")
     private String defaultArtistName;
 
     @Override
@@ -50,7 +52,7 @@ public class DataInitializer implements CommandLineRunner {
                     .name(adminName)
                     .email(adminEmail)
                     .password(passwordEncoder.encode(adminPassword))
-                    .contactNumber("+911234567890")
+                    .contactNumber("+919414061556")
                     .role(User.Role.ADMIN)
                     .isActive(true)
                     .build();
@@ -74,8 +76,70 @@ public class DataInitializer implements CommandLineRunner {
 
             userRepository.save(admin);
             logger.info("Default admin user created: {}", adminEmail);
-        } else {
-            logger.info("Admin user already exists");
+        }
+
+        // Create default admin2 user if not exists
+        if (!userRepository.existsByEmail("sumitk87549@gmail.com")) {
+            User adminS = User.builder()
+                    .name("Sumit")
+                    .email("sumitk87549@gmail.com")
+                    .password(passwordEncoder.encode("sumitk87549"))
+                    .contactNumber("+917976611437")
+                    .role(User.Role.ADMIN)
+                    .isActive(true)
+                    .build();
+
+            Address adminSAddress = Address.builder()
+                    .user(adminS)
+                    .street("Pratap Nagar, Mayo Link Road")
+                    .city("Ajmer")
+                    .state("Rajasthan")
+                    .country("India")
+                    .pincode("305001")
+                    .isDefault(true)
+                    .build();
+
+            adminS.getAddresses().add(adminSAddress);
+
+            Cart adminSCart = Cart.builder()
+                    .user(adminS)
+                    .build();
+            adminS.setCart(adminSCart);
+
+            userRepository.save(adminS);
+            logger.info("Default admin user created: {}", "sumitk87549@gmail.com");
+        }
+
+        // Create default admin user3 if not exists
+        if (!userRepository.existsByEmail("praveen_kumar@gmail.com")) {
+            User adminP = User.builder()
+                    .name("Praveen Kumar")
+                    .email("praveen_kumar@gmail.com")
+                    .password(passwordEncoder.encode("artiskPK"))
+                    .contactNumber("+919999265918")
+                    .role(User.Role.ADMIN)
+                    .isActive(true)
+                    .build();
+
+            Address adminPAddress = Address.builder()
+                    .user(adminP)
+                    .street("C/O Parwati Devi, Gali no. 15, Tanajinagar, Bhajanganj")
+                    .city("Ajmer")
+                    .state("Rajasthan")
+                    .country("India")
+                    .pincode("305001")
+                    .isDefault(true)
+                    .build();
+
+            adminP.getAddresses().add(adminPAddress);
+
+                    Cart adminPCart = Cart.builder()
+                            .user(adminP)
+                            .build();
+                    adminP.setCart(adminPCart);
+
+                    userRepository.save(adminP);
+            logger.info("Default admin user created: {}", "praveen_kumar@gmail.com");
         }
 
         // Create default categories
@@ -124,7 +188,29 @@ public class DataInitializer implements CommandLineRunner {
         PaintingCategory landscape = categoryRepository.findByName("Landscape").orElse(null);
         PaintingCategory modern = categoryRepository.findByName("Modern").orElse(null);
 
-        // Sample Painting 1
+        // Build images first
+        PaintingImage image1 = PaintingImage.builder()
+                .imageUrl("sunset-mountains.jpg")
+                .displayOrder(0)
+                .isPrimary(true)
+                .build();
+
+        PaintingImage image2 = PaintingImage.builder()
+                .imageUrl("abstract-emotions.jpg")
+                .displayOrder(0)
+                .isPrimary(true)
+                .build();
+
+        PaintingImage image3 = PaintingImage.builder()
+                .imageUrl("lake-reflection.jpg")
+                .displayOrder(0)
+                .isPrimary(true)
+                .build();
+
+        // Sample Painting 1 with images - uses saveWithImages method
+        List<PaintingImage> painting1Images = new ArrayList<>();
+        painting1Images.add(image1);
+
         Painting painting1 = Painting.builder()
                 .title("Sunset Over Mountains")
                 .description("A breathtaking oil painting capturing the golden hues of sunset cascading over majestic mountain peaks. " +
@@ -144,14 +230,20 @@ public class DataInitializer implements CommandLineRunner {
                 .seoTitle("Sunset Over Mountains - Original Oil Painting by " + defaultArtistName)
                 .seoDescription("Buy authentic oil painting depicting stunning sunset over mountains. Hand-painted by renowned artist " + defaultArtistName + ". Free shipping across India.")
                 .seoKeywords("sunset painting, mountain landscape, oil on canvas, Indian artist, contemporary art")
+                .images(painting1Images)
                 .build();
 
         if (landscape != null) painting1.getCategories().add(landscape);
         if (modern != null) painting1.getCategories().add(modern);
-        paintingRepository.save(painting1);
-        logger.info("Sample painting 1 created");
+
+        // Save painting with images using the new method - automatically handles image relationships
+        paintingRepository.saveWithImages(painting1);
+        logger.info("Sample painting 1 created with image using saveWithImages method");
 
         // Sample Painting 2
+        List<PaintingImage> painting2Images = new ArrayList<>();
+        painting2Images.add(image2);
+
         Painting painting2 = Painting.builder()
                 .title("Abstract Emotions")
                 .description("An expressive abstract composition featuring bold brushstrokes and vibrant colors that evoke deep emotional responses. " +
@@ -170,14 +262,19 @@ public class DataInitializer implements CommandLineRunner {
                 .seoTitle("Abstract Emotions - Modern Oil Painting")
                 .seoDescription("Contemporary abstract oil painting with vibrant colors and expressive brushwork. Perfect for modern homes and offices.")
                 .seoKeywords("abstract art, contemporary painting, modern decor, oil painting India")
+                .images(painting2Images)
                 .build();
 
         if (abstractCategory != null) painting2.getCategories().add(abstractCategory);
         if (modern != null) painting2.getCategories().add(modern);
-        paintingRepository.save(painting2);
-        logger.info("Sample painting 2 created");
+
+        paintingRepository.saveWithImages(painting2);
+        logger.info("Sample painting 2 created with image using saveWithImages method");
 
         // Sample Painting 3
+        List<PaintingImage> painting3Images = new ArrayList<>();
+        painting3Images.add(image3);
+
         Painting painting3 = Painting.builder()
                 .title("Serene Lake Reflection")
                 .description("A peaceful landscape depicting a crystal-clear lake reflecting surrounding trees and sky. " +
@@ -197,10 +294,12 @@ public class DataInitializer implements CommandLineRunner {
                 .seoTitle("Serene Lake Reflection - Landscape Oil Painting")
                 .seoDescription("Beautiful lake landscape oil painting with stunning reflections. Original artwork by master artist. Ships nationwide.")
                 .seoKeywords("lake painting, landscape art, nature painting, oil on canvas, home decor")
+                .images(painting3Images)
                 .build();
 
         if (landscape != null) painting3.getCategories().add(landscape);
-        paintingRepository.save(painting3);
-        logger.info("Sample painting 3 created");
+
+        paintingRepository.saveWithImages(painting3);
+        logger.info("Sample painting 3 created with image using saveWithImages method");
     }
 }

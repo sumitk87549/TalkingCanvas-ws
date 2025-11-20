@@ -13,4 +13,31 @@ import java.util.List;
 public interface PaintingImageRepository extends JpaRepository<PaintingImage, Long> {
 
     List<PaintingImage> findByPaintingIdOrderByDisplayOrderAsc(Long paintingId);
+
+    // Custom save methods for images
+    @Override
+    <S extends PaintingImage> S save(S entity);
+
+    @Override
+    <S extends PaintingImage> List<S> saveAll(Iterable<S> entities);
+
+    // Batch save methods for multiple images
+    default List<PaintingImage> saveImagesForPainting(List<PaintingImage> images) {
+        return saveAll(images).stream().toList();
+    }
+
+    // Find methods for image management
+    List<PaintingImage> findByPaintingId(Long paintingId);
+
+    List<PaintingImage> findByIsPrimaryTrue();
+
+    List<PaintingImage> findByPaintingIdAndIsPrimaryTrue(Long paintingId);
+
+    // Delete methods
+    void deleteByPaintingId(Long paintingId);
+
+    void deleteByPaintingIdAndIdNotIn(Long paintingId, List<Long> keepIds);
+
+    // Exist methods
+    boolean existsByPaintingIdAndIsPrimaryTrue(Long paintingId);
 }

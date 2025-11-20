@@ -21,6 +21,7 @@ export class AuthService {
   ) {}
 
   register(request: RegisterRequest): Observable<ApiResponse<AuthResponse>> {
+    console.log("Sending request: \n"+JSON.stringify(request))
     return this.http.post<ApiResponse<AuthResponse>>(`${environment.apiUrl}/auth/register`, request)
       .pipe(tap(response => {
         if (response.success && response.data) {

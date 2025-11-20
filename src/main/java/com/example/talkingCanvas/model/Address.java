@@ -28,18 +28,18 @@ public class Address {
     @EqualsAndHashCode.Exclude
     private User user;
 
-    @NotBlank(message = "Street address is required")
+//     @NotBlank(message = "Street address is required")
     @Column(nullable = false)
     private String street;
 
-    @NotBlank(message = "City is required")
+//     @NotBlank(message = "City is required")
     @Column(nullable = false)
     private String city;
 
     @Column(name = "state")
     private String state;
 
-    @NotBlank(message = "Country is required")
+//     @NotBlank(message = "Country is required")
     @Column(nullable = false)
     private String country;
 

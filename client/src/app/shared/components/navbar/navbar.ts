@@ -1,6 +1,8 @@
-import { Component, HostListener, AfterViewInit } from '@angular/core';
+import { Component, HostListener, AfterViewInit, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from "@angular/router";
+import { AuthService } from '../../../core/services/auth.service';
+import { AuthResponse } from '../../../models/user.model';
 
 @Component({
   selector: 'app-navbar',
@@ -9,9 +11,20 @@ import { RouterLink } from "@angular/router";
   templateUrl: './navbar.html',
   styleUrls: ['./navbar.scss']
 })
-export class Navbar implements AfterViewInit {
+export class Navbar implements AfterViewInit, OnInit {
   isHeaderInView = true; // Start as true (transparent) on page load
   private headerSection: HTMLElement | null = null;
+  currentUser: AuthResponse | null = null;
+  isAdmin = false;
+
+  constructor(public authService: AuthService) {}
+
+  ngOnInit() {
+    this.authService.currentUser$.subscribe(user => {
+      this.currentUser = user;
+      this.isAdmin = this.authService.isAdmin();
+    });
+  }
 
   ngAfterViewInit() {
     // Find the header section
@@ -42,6 +55,8 @@ export class Navbar implements AfterViewInit {
     // Once header scrolls past top, show colored background
     this.isHeaderInView = headerRect.bottom > 0;
   }
+
+
 
   get navbarClasses() {
     return {

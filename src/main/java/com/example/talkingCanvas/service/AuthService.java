@@ -1,5 +1,14 @@
 package com.example.talkingCanvas.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.example.talkingCanvas.dto.auth.AuthResponse;
 import com.example.talkingCanvas.dto.auth.LoginRequest;
 import com.example.talkingCanvas.dto.auth.RegisterRequest;
@@ -10,15 +19,8 @@ import com.example.talkingCanvas.model.User;
 import com.example.talkingCanvas.repository.UserRepository;
 import com.example.talkingCanvas.security.JwtTokenProvider;
 import com.example.talkingCanvas.util.EmailService;
+
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Service for authentication operations
@@ -33,7 +35,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider tokenProvider;
-    private final EmailService emailService;
+//     private final EmailService emailService;
 
     @Transactional
     public AuthResponse register(RegisterRequest request) {
@@ -58,10 +60,10 @@ public class AuthService {
         Address address = Address.builder()
                 .user(user)
                 .street(request.getStreet() != null ? request.getStreet() : "")
-                .city(request.getCity())
-                .state(request.getState())
-                .country(request.getCountry())
-                .pincode(request.getPincode())
+                .city(request.getCity() != null ? request.getCity() : "")
+                .state(request.getState() != null ? request.getState() : "")
+                .country(request.getCountry() != null ? request.getCountry() : "")
+                .pincode(request.getPincode() != null ? request.getPincode() : "")
                 .isDefault(true)
                 .build();
 
@@ -77,7 +79,7 @@ public class AuthService {
         User savedUser = userRepository.save(user);
 
         // Send welcome email
-        emailService.sendWelcomeEmail(savedUser.getEmail(), savedUser.getName());
+        // emailService.sendWelcomeEmail(savedUser.getEmail(), savedUser.getName());
 
         // Generate JWT token
         String token = tokenProvider.generateTokenFromUserId(savedUser.getId());

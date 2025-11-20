@@ -63,7 +63,7 @@ public class Painting {
     @Column(nullable = false)
     private Double width; // in cm
 
-    @Column
+    @Column(nullable = false)
     private Double depth; // in cm
 
     @NotBlank(message = "Medium is required")
