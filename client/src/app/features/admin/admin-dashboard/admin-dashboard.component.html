@@ -1,0 +1,77 @@
+<div class="dashboard-container">
+  <div class="header">
+    <h1>Admin Dashboard</h1>
+    <button routerLink="add" class="add-btn">
+      <span class="icon">+</span> Add New Painting
+    </button>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-value">{{ totalPaintings }}</div>
+      <div class="stat-label">Total Paintings</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">{{ totalViews }}</div>
+      <div class="stat-label">Total Views</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">{{ totalPurchases }}</div>
+      <div class="stat-label">Total Purchases</div>
+    </div>
+  </div>
+
+  <div class="content-section">
+    <h2>Painting Inventory</h2>
+
+    <div *ngIf="loading" class="loading-spinner">
+      Loading...
+    </div>
+
+    <div *ngIf="!loading && paintings.length === 0" class="empty-state">
+      <p>No paintings found. Add your first painting!</p>
+    </div>
+
+    <div *ngIf="!loading && paintings.length > 0" class="table-container">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Image</th>
+            <th>Title</th>
+            <th>Artist</th>
+            <th>Price</th>
+            <th>Stock</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let painting of paintings">
+            <td class="image-cell">
+              <img [src]="painting.images?.[0]?.imageUrl || 'assets/images/placeholder-painting.jpg'"
+                alt="{{ painting.title }}" class="thumbnail">
+            </td>
+            <td class="title-cell">{{ painting.title }}</td>
+            <td>{{ painting.artistName }}</td>
+            <td>{{ painting.currency }} {{ painting.price }}</td>
+            <td>{{ painting.stockQuantity }}</td>
+            <td>
+              <span class="status-badge" [class.available]="painting.isAvailable"
+                [class.sold-out]="!painting.isAvailable">
+                {{ painting.isAvailable ? 'Available' : 'Sold Out' }}
+              </span>
+            </td>
+            <td class="actions-cell">
+              <button (click)="editPainting(painting.id)" class="action-btn edit" title="Edit">
+                ✎
+              </button>
+              <button (click)="deletePainting(painting.id)" class="action-btn delete" title="Delete">
+                🗑
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

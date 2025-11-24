@@ -1,0 +1,139 @@
+<div class="landing-page">
+  <header class="hero">
+
+    <div class="hero-content">
+      <h1 class="hero-title">Timeless Art in Every Brushstroke</h1>
+      <p class="hero-subtitle">Original oil paintings that capture emotion, beauty, and the essence of life</p>
+      <button class="cta-button" routerLink="paintings">Explore Gallery</button>
+      <button *ngIf="authService.isAdmin()" class="cta-button admin-btn" routerLink="/admin"
+        style="margin-left: 10px; background-color: #333;">Dashboard</button>
+    </div>
+
+    <div class="scroll-indicator">
+      <span>Scroll to Discover</span>
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="6 9 12 15 18 9"></polyline>
+      </svg>
+    </div>
+  </header>
+
+  <!-- Featured Works Section -->
+  <section class="featured" id="gallery">
+    <div class="container">
+      <h2 class="section-title">Featured Works</h2>
+      <p class="section-subtitle">A curated selection of recent masterpieces</p>
+
+      <div class="gallery-grid">
+        <div class="gallery-item" *ngFor="let painting of featuredPaintings" [routerLink]="['/paintings', painting.id]"
+          style="cursor: pointer;">
+          <div class="gallery-image">
+            <img [src]="getPrimaryImageUrl(painting) || 'assets/images/placeholder-painting.jpg'" [alt]="painting.title"
+              (error)="onImageError($event)">
+          </div>
+          <div class="item-info">
+            <h3>{{ painting.title }}</h3>
+            <p>{{ painting.medium }}</p>
+            <p class="price">₹{{ painting.price }}</p>
+          </div>
+        </div>
+
+        <!-- Loading State -->
+        <div *ngIf="isLoading" class="loading-state">
+          <p>Loading masterpieces...</p>
+        </div>
+
+        <!-- Empty State -->
+        <div *ngIf="!isLoading && featuredPaintings.length === 0" class="empty-state">
+          <p>No featured paintings available at the moment.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- About Section -->
+  <section class="about" id="about">
+    <div class="container">
+      <div class="about-content">
+        <div class="about-image">
+          <img src="assets/images/chacha.png" alt="Artist Photo" class="artist-photo">
+        </div>
+        <div class="about-text">
+          <h2>About the Artist</h2>
+          <p>Born from a turbulent childhood marked by family conflict, he transforms pain into vibrant canvases that
+            speak of resilience and quiet hope. He carries forward his father’s artistic legacy, creating pieces that
+            feel both intimate and universal.</p>
+          <p>An IIT Roorkee B.Tech and JNU M.Tech graduate who codes by day at Capgemini, he blends technical precision
+            with a wide curiosity—astrology, politics and economics inform his vision. Married to Pooja and father of a
+            17-year-old daughter, Hita. His paintings invite collectors to connect with stories of survival, wisdom and
+            understated beauty.<br><a routerLink="about" class="connect-link">Read More...</a></p>
+          <!-- <div class="stats">
+            <div class="stat">
+              <span class="stat-number">30+</span>
+              <span class="stat-label">Years Experience</span>
+            </div>
+            <div class="stat">
+              <span class="stat-number">200+</span>
+              <span class="stat-label">Works Created</span>
+            </div>
+            <div class="stat">
+              <span class="stat-number">15+</span>
+              <span class="stat-label">Exhibitions</span>
+            </div>
+          </div> -->
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonials Section -->
+  <section class="testimonials">
+    <div class="container">
+      <h2 class="section-title">What Collectors Say</h2>
+      <div class="testimonial-grid">
+        <div class="testimonial-card">
+          <p class="testimonial-text">"Each painting is a window into a world of beauty. The attention to detail and
+            emotional depth is extraordinary."</p>
+          <p class="testimonial-author">— Sarah Mitchell</p>
+        </div>
+        <div class="testimonial-card">
+          <p class="testimonial-text">"Owning one of these pieces has brought daily joy to our home. True artistry that
+            stands the test of time."</p>
+          <p class="testimonial-author">— James Rodriguez</p>
+        </div>
+        <div class="testimonial-card">
+          <p class="testimonial-text">"The mastery of light and color is unparalleled. A worthy addition to any serious
+            art collection."</p>
+          <p class="testimonial-author">— Emily Chen</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact Section -->
+  <section class="contact" id="contact">
+    <div class="container">
+      <h2 class="section-title">Get in Touch</h2>
+      <p class="section-subtitle">Interested in a commission or available works?</p>
+
+      <div class="contact-content">
+        <form class="contact-form">
+          <div class="form-group">
+            <input type="text" placeholder="Your Name" required>
+          </div>
+          <div class="form-group">
+            <input type="email" placeholder="Your Email" required>
+          </div>
+          <div class="form-group">
+            <textarea placeholder="Your Message" rows="5" required></textarea>
+          </div>
+          <button type="submit" class="submit-button">Send Message</button>
+          <div class="personal-connect">
+            <a routerLink="contact" class="connect-link">Connect more personally</a>
+          </div>
+        </form>
+
+      </div>
+    </div>
+  </section>
+
+</div>

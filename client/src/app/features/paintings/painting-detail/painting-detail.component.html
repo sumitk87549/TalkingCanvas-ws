@@ -1,0 +1,31 @@
+<div class="painting-detail-container">
+  <!-- Loading State -->
+  <div *ngIf="loading" class="state-message">
+    <p>Loading painting details...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="!loading && !painting" class="state-message">
+    <p>Painting not found.</p>
+    <a routerLink="/paintings" class="btn">Back to Gallery</a>
+  </div>
+
+  <!-- Content -->
+  <div class="painting-detail" *ngIf="!loading && painting">
+    <div class="painting-image">
+      <img [src]="getPrimaryImageUrl() || 'assets/images/placeholder-painting.jpg'" [alt]="painting!.title" />
+    </div>
+    <div class="painting-info">
+      <h1>{{ painting!.title }}</h1>
+      <p class="artist">by {{ painting!.artistName }}</p>
+      <p class="price">₹{{ painting!.price }}</p>
+      <p class="description">{{ painting!.description }}</p>
+      <div class="details">
+        <p><strong>Medium:</strong> {{ painting!.medium }}</p>
+        <p><strong>Year:</strong> {{ painting!.yearCreated }}</p>
+        <p><strong>Dimensions:</strong> {{ painting!.width }}cm x {{ painting!.height }}cm</p>
+      </div>
+      <button (click)="addToCart()" class="btn btn-primary">Add to Cart</button>
+    </div>
+  </div>
+</div>

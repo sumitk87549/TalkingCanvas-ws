@@ -1,0 +1,23 @@
+<div class="paintings-container">
+  <h1>Oil Paintings Collection</h1>
+  <div *ngIf="loading" class="no-paintings">
+    <p>Loading...</p>
+  </div>
+
+  <div class="paintings-grid" *ngIf="!loading">
+    <div class="no-paintings" *ngIf="paintings.length === 0">
+      <p>No paintings available</p>
+    </div>
+    <div *ngFor="let painting of paintings; trackBy: trackByPaintingId" class="painting-card">
+      <div class="painting-image">
+        <img [src]="getPrimaryImageUrl(painting) || 'assets/images/placeholder-painting.jpg'" [alt]="painting.title" />
+      </div>
+      <div class="painting-info">
+        <h3>{{ painting.title }}</h3>
+        <p class="artist">by {{ painting.artistName }}</p>
+        <p class="price">₹{{ painting.price }}</p>
+        <a [routerLink]="['/paintings', painting.id]" class="btn btn-sm">View Details</a>
+      </div>
+    </div>
+  </div>
+</div>

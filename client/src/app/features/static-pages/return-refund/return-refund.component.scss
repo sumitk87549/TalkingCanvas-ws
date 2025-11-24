@@ -1,0 +1,73 @@
+// Variables
+$primary-color:
+  #2c1810;
+$secondary-color: #8b6f47;
+$accent-color: #d4a574;
+$text-dark: #1a1a1a;
+$text-light: #f5f5f5;
+$background-light: #faf8f5;
+
+.policy-container {
+  background: $background-light;
+  padding: 60px 20px 80px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+h1 {
+  font-size: clamp(32px, 5vw, 54px);
+  font-weight: 300;
+  color: $primary-color;
+  margin-bottom: 15px;
+  letter-spacing: 2px;
+  text-align: center;
+}
+
+.policy-content {
+  background: white;
+  padding: 40px;
+  border-radius: 12px;
+  margin-bottom: 30px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+  transition: box-shadow 0.3s ease;
+
+  &:hover {
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  }
+}
+
+h2 {
+  font-size: 28px;
+  color: $primary-color;
+  margin-bottom: 20px;
+  font-weight: 400;
+  padding-bottom: 15px;
+  border-bottom: 2px solid $background-light;
+}
+
+h2:first-child {
+  margin-top: 0;
+}
+
+p {
+  font-size: 16px;
+  line-height: 1.8;
+  color: #444;
+  margin-bottom: 15px;
+  text-align: justify;
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .policy-container {
+    padding: 40px 20px 60px;
+  }
+
+  .policy-content {
+    padding: 25px 20px;
+  }
+
+  h2 {
+    font-size: 24px;
+  }
+}
