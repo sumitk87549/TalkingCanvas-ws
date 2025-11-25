@@ -281,7 +281,16 @@ body {
   margin-bottom: 20px;
   font-weight: 300;
   letter-spacing: 2px;
-  color: #0f0000;
+  color: #e0e0e0;
+}
+
+.section-title-litebg {
+  font-size: clamp(36px, 5vw, 54px);
+  text-align: center;
+  margin-bottom: 20px;
+  font-weight: 300;
+  letter-spacing: 2px;
+  color: #332914;
 }
 
 .section-subtitle {
@@ -516,7 +525,7 @@ body {
     margin-top: 20px;
 
     .connect-link {
-      color: $secondary-color;
+      color: #c97636;
       text-decoration: none;
       font-size: 15px;
       font-style: italic;
