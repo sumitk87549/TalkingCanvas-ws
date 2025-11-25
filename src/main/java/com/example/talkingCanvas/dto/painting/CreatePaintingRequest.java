@@ -31,6 +31,7 @@ public class CreatePaintingRequest {
     @DecimalMin(value = "0.01", message = "Price must be greater than 0")
     private BigDecimal price;
 
+    @Builder.Default
     private String currency = "INR";
 
     @NotNull(message = "Height is required")
@@ -46,10 +47,13 @@ public class CreatePaintingRequest {
 
     private Integer yearCreated;
 
+    @Builder.Default
     private Boolean isAvailable = true;
 
+    @Builder.Default
     private Integer stockQuantity = 1;
 
+    @Builder.Default
     private Boolean adminRecommendation = false;
 
     private String recommendationText;

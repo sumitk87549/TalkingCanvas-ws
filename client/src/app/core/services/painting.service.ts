@@ -81,6 +81,10 @@ export class PaintingService {
     return this.http.post<ApiResponse<void>>(`${environment.apiUrl}/admin/paintings/${paintingId}/images`, formData);
   }
 
+  deleteImage(paintingId: number, imageId: number): Observable<ApiResponse<void>> {
+    return this.http.delete<ApiResponse<void>>(`${environment.apiUrl}/admin/paintings/${paintingId}/images/${imageId}`);
+  }
+
   uploadCertificate(paintingId: number, file: File, title: string, issuer?: string, issueDate?: string, description?: string): Observable<ApiResponse<void>> {
     const formData = new FormData();
     formData.append('file', file);

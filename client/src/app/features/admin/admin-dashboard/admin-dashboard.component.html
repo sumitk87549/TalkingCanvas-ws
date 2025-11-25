@@ -1,7 +1,7 @@
 <div class="dashboard-container">
   <div class="header">
     <h1>Admin Dashboard</h1>
-    <button routerLink="add" class="add-btn">
+    <button routerLink="add" class="add-btn" *ngIf="activeTabIndex === 0">
       <span class="icon">+</span> Add New Painting
     </button>
   </div>
@@ -21,18 +21,22 @@
     </div>
   </div>
 
-  <div class="content-section">
-    <h2>Painting Inventory</h2>
+  <mat-tab-group [(selectedIndex)]="activeTabIndex" class="dashboard-tabs">
+    <!-- Paintings Tab -->
+    <mat-tab label="Paintings">
+      <div class="content-section">
+        <h2>Painting Inventory</h2>
 
-    <div *ngIf="loading" class="loading-spinner">
-      Loading...
-    </div>
+        <div *ngIf="loading" class="loading-spinner">
+          <mat-spinner diameter="40"></mat-spinner>
+          <p>Loading paintings...</p>
+        </div>
 
-    <div *ngIf="!loading && paintings.length === 0" class="empty-state">
-      <p>No paintings found. Add your first painting!</p>
-    </div>
+        <div *ngIf="!loading && paintings.length === 0" class="empty-state">
+          <p>No paintings found. Add your first painting!</p>
+        </div>
 
-    <div *ngIf="!loading && paintings.length > 0" class="table-container">
+        <div *ngIf="!loading && paintings.length > 0" class="table-container">
       <table class="data-table">
         <thead>
           <tr>
@@ -72,6 +76,100 @@
           </tr>
         </tbody>
       </table>
-    </div>
-  </div>
+        </div>
+      </div>
+    </mat-tab>
+
+    <!-- System Metrics Tab -->
+    <mat-tab label="System Metrics">
+      <div class="content-section">
+        <h2>System Health & Metrics</h2>
+        
+        <div *ngIf="loadingMetrics" class="loading-spinner">
+          <mat-spinner diameter="40"></mat-spinner>
+          <p>Loading system metrics...</p>
+        </div>
+
+        <div *ngIf="!loadingMetrics" class="metrics-container">
+          <!-- Health Status -->
+          <mat-card class="metric-card">
+            <mat-card-header>
+              <mat-card-title>Application Health</mat-card-title>
+              <mat-card-subtitle>Current system health status</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content>
+              <div class="health-status" [ngClass]="healthStatus?.status?.toLowerCase()">
+                <div class="status-indicator"></div>
+                <div class="status-text">
+                  <h3>{{ healthStatus?.status || 'UNKNOWN' }}</h3>
+                  <p *ngIf="healthStatus?.status === 'UP'">All systems operational</p>
+                  <p *ngIf="healthStatus?.status !== 'UP'">Some services may be experiencing issues</p>
+                </div>
+              </div>
+              
+              <div class="health-details" *ngIf="healthStatus?.components">
+                <h4>Component Status</h4>
+                <div class="component" *ngFor="let component of getHealthComponents()">
+                  <span class="component-name">{{ component.name }}:</span>
+                  <span class="component-status" [ngClass]="component.status.toLowerCase()">
+                    {{ component.status }}
+                  </span>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+          <!-- JVM Metrics -->
+          <mat-card class="metric-card" *ngIf="jvmMetrics.length > 0">
+            <mat-card-header>
+              <mat-card-title>JVM Metrics</mat-card-title>
+              <mat-card-subtitle>Java Virtual Machine statistics</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content>
+              <div class="metrics-grid">
+                <div class="metric-item" *ngFor="let metric of jvmMetrics">
+                  <div class="metric-name">{{ metric.name }}</div>
+                  <div class="metric-value">{{ formatMetricValue(metric) }}</div>
+                  <div class="metric-desc">{{ metric.description }}</div>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+          <!-- HTTP Metrics -->
+          <mat-card class="metric-card" *ngIf="httpMetrics.length > 0">
+            <mat-card-header>
+              <mat-card-title>HTTP Request Metrics</mat-card-title>
+              <mat-card-subtitle>HTTP request statistics</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content>
+              <div class="metrics-grid">
+                <div class="metric-item" *ngFor="let metric of httpMetrics">
+                  <div class="metric-name">{{ metric.name }}</div>
+                  <div class="metric-value">{{ formatMetricValue(metric) }}</div>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+          <!-- Database Metrics -->
+          <mat-card class="metric-card" *ngIf="dbMetrics.length > 0">
+            <mat-card-header>
+              <mat-card-title>Database Metrics</mat-card-title>
+              <mat-card-subtitle>Database connection statistics</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content>
+              <div class="metrics-grid">
+                <div class="metric-item" *ngFor="let metric of dbMetrics">
+                  <div class="metric-name">{{ metric.name }}</div>
+                  <div class="metric-value">{{ formatMetricValue(metric) }}</div>
+                  <div class="metric-desc">{{ metric.description }}</div>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
 </div>

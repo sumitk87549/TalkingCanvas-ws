@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { PaintingService } from '../../../core/services/painting.service';
-import { Category, CreatePaintingRequest } from '../../../models/painting.model';
+import { Category, CreatePaintingRequest, PaintingImage } from '../../../models/painting.model';
 
 @Component({
     selector: 'app-add-painting',
@@ -17,6 +17,7 @@ export class AddPaintingComponent implements OnInit {
     isEditMode = false;
     paintingId: number | null = null;
     categories: Category[] = [];
+    existingImages: PaintingImage[] = [];
     selectedFiles: File[] = [];
     loading = false;
     error = '';
@@ -74,6 +75,7 @@ export class AddPaintingComponent implements OnInit {
             next: (response) => {
                 if (response.success && response.data) {
                     const painting = response.data;
+                    this.existingImages = painting.images || [];
                     this.paintingForm.patchValue({
                         title: painting.title,
                         artistName: painting.artistName,
@@ -99,6 +101,22 @@ export class AddPaintingComponent implements OnInit {
                 this.loading = false;
             }
         });
+    }
+
+    deleteImage(imageId: number) {
+        if (!confirm('Are you sure you want to delete this image?')) return;
+
+        if (this.paintingId) {
+            this.paintingService.deleteImage(this.paintingId, imageId).subscribe({
+                next: () => {
+                    this.existingImages = this.existingImages.filter(img => img.id !== imageId);
+                },
+                error: (err) => {
+                    console.error('Failed to delete image', err);
+                    this.error = 'Failed to delete image';
+                }
+            });
+        }
     }
 
     onFileSelected(event: any) {

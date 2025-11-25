@@ -281,13 +281,13 @@ body {
   margin-bottom: 20px;
   font-weight: 300;
   letter-spacing: 2px;
-  color: $primary-color;
+  color: #0f0000;
 }
 
 .section-subtitle {
   text-align: center;
   font-size: 18px;
-  color: #666;
+  color: #878787;
   margin-bottom: 60px;
   font-style: italic;
 }
@@ -496,7 +496,7 @@ body {
 // Contact Section
 .contact {
   padding: 120px 20px;
-  background: white;
+  background: rgba(97, 65, 47, 0.397);
 }
 
 .contact-content {
@@ -550,8 +550,9 @@ body {
     input,
     textarea {
       width: 100%;
+      background-color: #e0e0e0;
       padding: 15px 20px;
-      border: 2px solid #e0e0e0;
+      border: 2px solid #826f6f;
       border-radius: 4px;
       font-size: 16px;
       font-family: 'Georgia', serif;

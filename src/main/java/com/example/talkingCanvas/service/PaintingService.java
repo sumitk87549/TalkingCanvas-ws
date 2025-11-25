@@ -245,6 +245,31 @@ public class PaintingService {
     }
 
     @Transactional
+    public void deleteImage(Long paintingId, Long imageId) {
+        logger.info("Deleting image {} from painting {}", imageId, paintingId);
+        Painting painting = paintingRepository.findById(paintingId)
+                .orElseThrow(() -> new ResourceNotFoundException("Painting", "id", paintingId));
+
+        PaintingImage image = imageRepository.findById(imageId)
+                .orElseThrow(() -> new ResourceNotFoundException("Image", "id", imageId));
+
+        if (!image.getPainting().getId().equals(paintingId)) {
+            throw new IllegalArgumentException("Image does not belong to the specified painting");
+        }
+
+        painting.getImages().remove(image);
+        imageRepository.delete(image);
+
+        // If primary image was deleted, set a new primary image if available
+        if (Boolean.TRUE.equals(image.getIsPrimary()) && !painting.getImages().isEmpty()) {
+            painting.getImages().get(0).setIsPrimary(true);
+        }
+
+        paintingRepository.save(painting);
+        logger.info("Image deleted successfully");
+    }
+
+    @Transactional
     public void uploadCertificate(Long paintingId, MultipartFile file, String title, String issuer, LocalDate issueDate,
             String description) {
         logger.info("Uploading certificate for painting: {}", paintingId);

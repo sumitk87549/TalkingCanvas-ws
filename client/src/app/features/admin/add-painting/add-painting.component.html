@@ -110,8 +110,22 @@
 
         <div class="form-section">
             <h3>Images</h3>
+
+            <div class="form-group" *ngIf="existingImages.length > 0">
+                <label>Current Images</label>
+                <div class="image-grid">
+                    <div *ngFor="let image of existingImages" class="image-item">
+                        <img [src]="image.imageUrl" alt="Painting image" class="img-thumbnail">
+                        <button type="button" (click)="deleteImage(image.id)" class="delete-btn" title="Delete Image">
+                            ×
+                        </button>
+                        <span *ngIf="image.isPrimary" class="primary-badge">Primary</span>
+                    </div>
+                </div>
+            </div>
+
             <div class="form-group">
-                <label for="images">Upload Images</label>
+                <label for="images">Upload New Images</label>
                 <input id="images" type="file" multiple (change)="onFileSelected($event)" accept="image/*">
                 <p class="help-text">Select multiple files to upload.</p>
             </div>

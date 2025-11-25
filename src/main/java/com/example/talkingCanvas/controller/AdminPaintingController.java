@@ -75,6 +75,15 @@ public class AdminPaintingController {
         return ResponseEntity.ok(ApiResponse.success(null));
     }
 
+    @DeleteMapping("/paintings/{id}/images/{imageId}")
+    @Operation(summary = "Delete painting image", description = "Delete a specific image from a painting")
+    public ResponseEntity<ApiResponse<Void>> deleteImage(
+            @PathVariable Long id,
+            @PathVariable Long imageId) {
+        paintingService.deleteImage(id, imageId);
+        return ResponseEntity.ok(ApiResponse.success(null));
+    }
+
     @PostMapping(value = "/paintings/{id}/certificates", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "Upload painting certificate", description = "Upload a certificate for a painting")
     public ResponseEntity<ApiResponse<Void>> uploadCertificate(
