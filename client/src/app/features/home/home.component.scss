@@ -167,7 +167,7 @@ body {
   .cta-button {
     padding: 18px 50px;
     font-size: 18px;
-    background: transparent;
+    background: black;
     border: 2px solid $accent-color;
     color: $accent-color;
     cursor: pointer;
@@ -178,12 +178,15 @@ body {
     animation-fill-mode: both;
 
     &:hover {
-      background: $accent-color;
+      background: white;
       color: $primary-color;
       transform: translateY(-3px);
       box-shadow: 0 10px 30px rgba(212, 165, 116, 0.3);
     }
   }
+
+
+
 }
 
 .scroll-indicator {
