@@ -7,9 +7,9 @@
 
       <li *ngIf="authService.isLoggedIn()">{{ isAdmin ? 'WELCOME ADMIN' : 'Welcome' }} {{currentUser?.name}}</li>
       <strong>|</strong>
-      <li><a href="#gallery">Gallery</a></li>
-      <li><a href="#about">About</a></li>
-      <li><a href="#contact">Contact</a></li>
+      <li><a routerLink="paintings">Gallery</a></li>
+      <li><a routerLink="about">About</a></li>
+      <li><a routerLink="contact">Contact</a></li>
       <li *ngIf="isAdmin"><a routerLink="/admin">Dashboard</a></li>
       <li *ngIf="authService.isLoggedIn()"><strong>|</strong></li>
       <li *ngIf="authService.isLoggedIn()"><a routerLink="/logout">Logout</a></li>

@@ -9,6 +9,8 @@
       <p>No paintings available</p>
     </div>
     <div *ngFor="let painting of paintings; trackBy: trackByPaintingId" class="painting-card">
+
+      <a [routerLink]="['/paintings', painting.id]" class="painting-card">
       <div class="painting-image">
         <img [src]="getPrimaryImageUrl(painting) || 'assets/images/placeholder-painting.jpg'" [alt]="painting.title" />
       </div>
@@ -16,8 +18,8 @@
         <h3>{{ painting.title }}</h3>
         <p class="artist">by {{ painting.artistName }}</p>
         <p class="price">₹{{ painting.price }}</p>
-        <a [routerLink]="['/paintings', painting.id]" class="btn btn-sm">View Details</a>
       </div>
+    </a>
     </div>
   </div>
 </div>

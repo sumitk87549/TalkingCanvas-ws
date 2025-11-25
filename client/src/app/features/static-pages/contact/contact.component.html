@@ -1,26 +1,160 @@
-<div class="contact-container">
-  <h1>Contact Us</h1>
-  <form [formGroup]="contactForm" (ngSubmit)="onSubmit()" class="contact-form">
-    <div class="form-group">
-      <label>Name</label>
-      <input type="text" formControlName="name" class="form-control" />
-      <div *ngIf="submitted && f['name'].errors" class="error">Required</div>
+<div class="policy-page">
+  <!-- Hero Section -->
+  <section class="policy-hero">
+    <div class="hero-content">
+      <h1>Contact Us</h1>
+      <p class="last-updated">We're Here to Help</p>
     </div>
-    <div class="form-group">
-      <label>Email</label>
-      <input type="email" formControlName="email" class="form-control" />
-      <div *ngIf="submitted && f['email'].errors" class="error">
-        <span *ngIf="f['email'].errors['required']">Required</span>
-        <span *ngIf="f['email'].errors['email']">Invalid email</span>
+  </section>
+
+  <!-- Content Section -->
+  <div class="policy-content-wrapper">
+    <div class="policy-intro">
+      <p class="lead-text">
+        Whether you have questions about our artwork, need support with an order, or want to discuss a custom commission,
+        we're here to help. Get in touch with us using any of the methods below.
+      </p>
+    </div>
+
+    <!-- Contact Sections -->
+    <section class="terms-section">
+      <h2>1. Send Us a Message</h2>
+      <p>
+        The quickest way to reach us is through our contact form. Send us a detailed message and we'll get back to you as soon as possible.
+      </p>
+
+      <form [formGroup]="contactForm" (ngSubmit)="onSubmit()" class="contact-form-section">
+        <div class="form-group">
+          <label for="name">Your Name <span class="required">*</span></label>
+          <input id="name" type="text" formControlName="name" class="form-control" />
+          <div *ngIf="submitted && f['name'].errors" class="error">Name is required</div>
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email Address <span class="required">*</span></label>
+          <input id="email" type="email" formControlName="email" class="form-control" />
+          <div *ngIf="submitted && f['email'].errors" class="error">
+            <span *ngIf="f['email'].errors['required']">Email is required</span>
+            <span *ngIf="f['email'].errors['email']">Please enter a valid email address</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="message">Your Message <span class="required">*</span></label>
+          <textarea id="message" formControlName="message" class="form-control" rows="6" placeholder="Tell us how we can help you..."></textarea>
+          <div *ngIf="submitted && f['message'].errors" class="error">Message is required</div>
+        </div>
+
+        <button type="submit" class="btn btn-primary" [disabled]="loading">
+          {{ loading ? 'Sending Message...' : 'Send Message' }}
+        </button>
+      </form>
+    </section>
+
+    <section class="terms-section">
+      <h2>2. Direct Contact Information</h2>
+      <p>
+        Prefer to reach us directly? Here are our contact details and business hours.
+      </p>
+
+      <div class="contact-info">
+        <h3>📧 Email</h3>
+        <p><strong>General Inquiries:</strong> <a href="mailto:pkumar.mail@gmail.com">pkumar.mail@gmail.com</a></p>
+<!--        <p><strong>Custom Orders:</strong> <a href="mailto:custom@talkingcanvas.com">custom@talkingcanvas.com</a></p>-->
+        <p><strong>Support:</strong> <a href="mailto:support@talkingcanvas.com">support@talkingcanvas.com</a></p>
+
+        <h3>⏰ Business Hours</h3>
+        <p><strong>Monday - Friday:</strong> 9:00 AM - 6:00 PM IST</p>
+        <p><strong>Saturday:</strong> 10:00 AM - 4:00 PM IST</p>
+        <p><strong>Sunday:</strong> Closed</p>
+        <p><em>Response time: Within 24 hours during business days</em></p>
       </div>
+    </section>
+
+    <section class="terms-section">
+      <h2>3. Visit Our Gallery</h2>
+      <p>
+        Experience our collection in person. We're located in the heart of the art district and welcome visitors by appointment.
+      </p>
+
+      <div class="contact-info">
+        <h3>🏛️ Gallery Address</h3>
+        <p><strong>Talking Canvas Gallery</strong></p>
+        <p>123 Art Street, Connaught Place</p>
+        <p>New Delhi, Delhi 110001</p>
+        <p>India</p>
+
+        <h3>📍 Map & Directions</h3>
+        <p>Located near Connaught Place metro station (Yellow Line)</p>
+        <p>Parking available on nearby streets</p>
+
+        <h3>🕒 Gallery Hours</h3>
+        <p><strong>Viewing by Appointment Only</strong></p>
+        <p>Please call or email to schedule your visit</p>
+      </div>
+    </section>
+
+    <section class="terms-section">
+      <h2>4. Frequently Asked Questions</h2>
+      <h3>4.1 Ordering & Shipping</h3>
+      <ul>
+        <li><strong>Shipping timeframes:</strong> Read our <a routerLink="/shipping">shipping policy</a></li>
+        <li><strong>Return process:</strong> Check our <a routerLink="/return-refund">return & refund policy</a></li>
+        <li><strong>Custom orders:</strong> Allow 2-4 weeks for completion and delivery</li>
+        <li><strong>International shipping:</strong> We ship worldwide with insured delivery</li>
+      </ul>
+
+      <h3>4.2 Artwork Care</h3>
+      <ul>
+        <li><strong>Cleaning paintings:</strong> Use a soft, dry cloth. Avoid harsh chemicals</li>
+        <li><strong>Hanging instructions:</strong> Professional installation recommended for large pieces</li>
+        <li><strong>Certificate of authenticity:</strong> Provided with all original artworks</li>
+        <li><strong>Framing services:</strong> Available upon request</li>
+      </ul>
+
+      <h3>4.3 Pricing & Payment</h3>
+      <ul>
+        <li><strong>Payment methods:</strong> Credit/Debit cards, PayPal, Bank transfer</li>
+        <li><strong>Currency:</strong> All prices displayed in INR (Indian Rupees)</li>
+        <li><strong>Taxes:</strong> Included for Indian customers, additional GST may apply</li>
+        <li><strong>Discounts:</strong> Available for bulk orders and returning customers</li>
+      </ul>
+    </section>
+
+    <section class="terms-section">
+      <h2>5. Social Media</h2>
+      <p>
+        Follow us on social media for the latest artwork releases, behind-the-scenes content, and art inspiration.
+      </p>
+
+      <div class="contact-info">
+        <p><strong>Instagram:</strong> <a href="https://instagram.com/talkingcanvas" target="_blank">Coming Soon...</a></p>
+        <p><strong>Facebook:</strong> <a href="https://facebook.com/talkingcanvas" target="_blank">Coming Soon...</a></p>
+        <p><strong>Pinterest:</strong> <a href="https://pinterest.com/talkingcanvas" target="_blank">Coming Soon...</a></p>
+        <p><strong>Twitter:</strong> <a href="https://twitter.com/talkingcanvas" target="_blank">Coming Soon...</a></p>
+      </div>
+    </section>
+
+    <section class="terms-section">
+      <h2>6. Emergency Contact</h2>
+      <p>
+        For urgent matters outside business hours or if you need immediate assistance with an order issue:
+      </p>
+
+      <div class="contact-info">
+        <h3>🚨 Emergency Support Number</h3>
+        <p><strong>+91 98765 43210</strong></p>
+        <p>Available 24/7 for critical order emergencies</p>
+        <p>Use only for time-sensitive issues like damaged shipments or payment problems</p>
+      </div>
+    </section>
+
+    <!-- Important Notice -->
+    <div class="acceptance-notice">
+      <p>
+        <strong>Thank you for choosing Talking Canvas.</strong> We value your feedback and are committed to providing
+        exceptional service. Your satisfaction as an art collector and supporter of Indian artists is our highest priority.
+      </p>
     </div>
-    <div class="form-group">
-      <label>Message</label>
-      <textarea formControlName="message" class="form-control" rows="5"></textarea>
-      <div *ngIf="submitted && f['message'].errors" class="error">Required</div>
-    </div>
-    <button type="submit" class="btn btn-primary" [disabled]="loading">
-      {{ loading ? 'Sending...' : 'Send Message' }}
-    </button>
-  </form>
+  </div>
 </div>
