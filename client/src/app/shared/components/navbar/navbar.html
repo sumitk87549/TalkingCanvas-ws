@@ -2,18 +2,30 @@
   <nav class="navbar">
     <a class="logo" routerLink="/">Talking Canvas</a>
     <ul class="nav-links">
-      <li *ngIf="!authService.isLoggedIn()"><a routerLink="register">Signup</a></li>
-      <li *ngIf="!authService.isLoggedIn()"><a routerLink="login">Login</a></li>
+      <!-- Guest View -->
+      <ng-container *ngIf="!authService.isLoggedIn()">
+        <li><a routerLink="paintings">Gallery</a></li>
+        <li><a routerLink="about">About</a></li>
+        <li><a routerLink="contact">Contact</a></li>
+        <li><a routerLink="register">Signup</a></li>
+        <li><a routerLink="login">Login</a></li>
+      </ng-container>
 
-      <li *ngIf="authService.isLoggedIn()">{{ isAdmin ? 'WELCOME ADMIN' : 'Welcome' }} {{currentUser?.name}}</li>
-      <li *ngIf="authService.isLoggedIn()"><a routerLink="cart">Cart</a></li>
+      <!-- Logged In View -->
+      <ng-container *ngIf="authService.isLoggedIn()">
+        <li><a routerLink="cart">Cart</a></li>
 
-      <strong>|</strong>
-      <li><a routerLink="paintings">Gallery</a></li>
-      <li><a routerLink="about">About</a></li>
-      <li><a routerLink="contact">Contact</a></li>
-      <li *ngIf="isAdmin"><a routerLink="/admin">Dashboard</a></li>
-      <li *ngIf="authService.isLoggedIn()"><strong>|</strong></li>
-      <li *ngIf="authService.isLoggedIn()"><a routerLink="/logout">Logout</a></li>
+        <li class="dropdown">
+          <span class="dropbtn">{{ isAdmin ? 'WELCOME ADMIN' : 'Welcome' }} {{currentUser?.name}} <i
+              class="arrow-down"></i></span>
+          <div class="dropdown-content">
+            <a routerLink="paintings">Gallery</a>
+            <a routerLink="about">About</a>
+            <a routerLink="contact">Contact</a>
+            <a *ngIf="isAdmin" routerLink="/admin">Dashboard</a>
+            <a routerLink="/logout">Logout</a>
+          </div>
+        </li>
+      </ng-container>
     </ul>
   </nav>

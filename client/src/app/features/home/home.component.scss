@@ -63,7 +63,7 @@ body {
   position: relative;
   width: 100%;
   min-height: 100vh;
-  padding-top: 70px; // Space for fixed navbar
+  padding-top: 0; // Removed space for fixed navbar to allow blending
   box-sizing: border-box;
 }
 
@@ -77,7 +77,7 @@ body {
 .hero {
   position: relative;
   width: 100%;
-  min-height: calc(100vh - 70px); // Subtract navbar height
+  min-height: 100vh; // Full height including navbar area
   color: $text-light;
   display: flex;
   flex-direction: column;
@@ -86,6 +86,28 @@ body {
   overflow: hidden;
   padding: 0;
   z-index: 1;
+
+  // Seamless gradient that blends with navbar
+  background: linear-gradient(135deg,
+      rgba(26, 26, 26, 0.8) 0%, // Dark base starting from navbar blend
+      rgba(44, 24, 16, 0.9) 25%, // Primary color blend
+      rgba(26, 26, 26, 0.95) 75%, // Back to dark
+      rgba(44, 24, 16, 1) 100% // Full primary color
+    );
+
+  // Add a subtle pattern overlay for depth
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" fill="none"/><circle cx="50" cy="50" r="2" fill="rgba(212, 165, 116, 0.03)"/><circle cx="20" cy="30" r="1.5" fill="rgba(212, 165, 116, 0.02)"/><circle cx="80" cy="70" r="1.5" fill="rgba(212, 165, 116, 0.02)"/></svg>');
+    opacity: 0.6;
+    z-index: -1;
+    pointer-events: none;
+  }
 }
 
 .navbar {
@@ -143,6 +165,7 @@ body {
   @include flex-center;
   flex-direction: column;
   text-align: center;
+  // padding: 50px 20px;
   padding: 50px 20px;
   position: relative;
   z-index: 5;
@@ -167,9 +190,10 @@ body {
   .cta-button {
     padding: 18px 50px;
     font-size: 18px;
-    background: black;
-    border: 2px solid $accent-color;
-    color: $accent-color;
+    background: #33333384;
+    border: 2px solid #d4a67460;
+    // color: $accent-color;
+    color: #d4a674f8;
     cursor: pointer;
     letter-spacing: 2px;
     font-family: 'Georgia', serif;
@@ -178,10 +202,23 @@ body {
     animation-fill-mode: both;
 
     &:hover {
-      background: white;
+      background: linear-gradient(135deg, $accent-color 0%, $secondary-color 100%);
       color: $primary-color;
       transform: translateY(-3px);
       box-shadow: 0 10px 30px rgba(212, 165, 116, 0.3);
+    }
+
+    &.admin-btn {
+      background: linear-gradient(135deg, $primary-color 0%, $secondary-color 100%);
+      border: 2px solid transparent;
+      color: $text-light;
+
+      &:hover {
+        background: linear-gradient(135deg, $secondary-color 0%, $accent-color 100%);
+        color: $primary-color;
+        transform: translateY(-3px);
+        box-shadow: 0 10px 30px rgba(44, 24, 16, 0.4);
+      }
     }
   }
 
