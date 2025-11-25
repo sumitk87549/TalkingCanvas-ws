@@ -1,6 +1,7 @@
 <div class="painting-detail-container">
   <!-- Loading State -->
   <div *ngIf="loading" class="state-message">
+    <div class="loading-spinner"></div>
     <p>Loading painting details...</p>
   </div>
 
@@ -12,20 +13,128 @@
 
   <!-- Content -->
   <div class="painting-detail" *ngIf="!loading && painting">
-    <div class="painting-image">
-      <img [src]="getPrimaryImageUrl() || 'assets/images/placeholder-painting.jpg'" [alt]="painting!.title" />
-    </div>
-    <div class="painting-info">
-      <h1>{{ painting!.title }}</h1>
-      <p class="artist">by {{ painting!.artistName }}</p>
-      <p class="price">₹{{ painting!.price }}</p>
-      <p class="description">{{ painting!.description }}</p>
-      <div class="details">
-        <p><strong>Medium:</strong> {{ painting!.medium }}</p>
-        <p><strong>Year:</strong> {{ painting!.yearCreated }}</p>
-        <p><strong>Dimensions:</strong> {{ painting!.width }}cm x {{ painting!.height }}cm</p>
+    <!-- Breadcrumb -->
+    <nav class="breadcrumb">
+      <a routerLink="/paintings">Paintings</a>
+      <span>></span>
+      <span>{{ painting!.title }}</span>
+    </nav>
+
+    <div class="painting-content">
+      <!-- Image Gallery Section -->
+      <div class="image-gallery">
+        <div class="main-image">
+          <img [src]="getPrimaryImageUrl() || 'assets/images/placeholder-painting.jpg'" [alt]="painting!.title" />
+        </div>
+        <div class="thumbnail-gallery" *ngIf="painting!.images && painting!.images.length > 1">
+          <div class="thumbnails">
+            <img
+              *ngFor="let image of painting!.images; let i = index"
+              [src]="image.imageUrl"
+              [alt]="painting!.title + ' view ' + (i+1)"
+              [class.active]="image.isPrimary"
+              (click)="setPrimaryImage(i)"
+            />
+          </div>
+        </div>
       </div>
-      <button (click)="addToCart()" class="btn btn-primary">Add to Cart</button>
+
+      <!-- Painting Information -->
+      <div class="painting-info">
+        <div class="header-section">
+          <h1>{{ painting!.title }}</h1>
+          <p class="artist">by <span class="artist-name">{{ painting!.artistName }}</span></p>
+
+          <!-- Admin Recommendation -->
+          <div *ngIf="painting!.adminRecommendation" class="recommendation">
+            <span class="recommendation-badge">⭐ Curator's Pick</span>
+            <p *ngIf="painting!.recommendationText">{{ painting!.recommendationText }}</p>
+          </div>
+        </div>
+
+        <div class="price-section">
+          <p class="price">{{ painting!.currency === 'INR' ? '₹' : '$' }}{{ painting!.price }}</p>
+          <p class="availability" [class.available]="painting!.isAvailable" [class.unavailable]="!painting!.isAvailable">
+            <span class="status-indicator"></span>
+            {{ painting!.isAvailable ? 'Available' : 'Sold Out' }}
+            <span *ngIf="painting!.isAvailable && painting!.stockQuantity > 0"> ({{ painting!.stockQuantity }} in stock)</span>
+          </p>
+        </div>
+
+        <div class="action-buttons">
+          <button (click)="addToCart()" class="btn btn-primary" [disabled]="!painting!.isAvailable">
+            {{ painting!.isAvailable ? 'Add to Cart' : 'Sold Out' }}
+          </button>
+          <button class="btn btn-secondary">Add to Wishlist</button>
+        </div>
+
+        <!-- Description -->
+        <div class="description-section">
+          <h3>About this Artwork</h3>
+          <p class="description">{{ painting!.description }}</p>
+        </div>
+
+        <!-- Technical Details -->
+        <div class="details-section">
+          <h3>Artwork Details</h3>
+          <div class="details-grid">
+            <div class="detail-item">
+              <span class="label">Medium:</span>
+              <span class="value">{{ painting!.medium }}</span>
+            </div>
+            <div class="detail-item" *ngIf="painting!.yearCreated">
+              <span class="label">Year Created:</span>
+              <span class="value">{{ painting!.yearCreated }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="label">Dimensions:</span>
+              <span class="value">{{ painting!.width }}cm × {{ painting!.height }}cm{{ painting!.depth ? ' × ' + painting!.depth + 'cm' : '' }}</span>
+            </div>
+            <div class="detail-item" *ngIf="painting!.categories && painting!.categories.length > 0">
+              <span class="label">Categories:</span>
+              <span class="value">{{ getCategoryNames() }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="label">Views:</span>
+              <span class="value">{{ painting!.viewCount }}</span>
+            </div>
+            <div class="detail-item" *ngIf="painting!.purchaseCount > 0">
+              <span class="label">Purchased:</span>
+              <span class="value">{{ painting!.purchaseCount }} times</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Certificates -->
+        <div class="certificates-section" *ngIf="painting!.certificates && painting!.certificates.length > 0">
+          <h3>Authenticity & Certificates</h3>
+          <div class="certificates">
+            <div class="certificate" *ngFor="let cert of painting!.certificates">
+              <div class="certificate-icon">🏆</div>
+              <div class="certificate-details">
+                <h4>{{ cert.title }}</h4>
+                <p *ngIf="cert.issuer">Issued by {{ cert.issuer }}</p>
+                <p *ngIf="cert.issueDate">Date: {{ cert.issueDate | date:'mediumDate' }}</p>
+                <p *ngIf="cert.description">{{ cert.description }}</p>
+                <a [href]="cert.certificateUrl" target="_blank" class="certificate-link">View Certificate</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sharing -->
+        <div class="sharing-section">
+          <h3>Share this Artwork</h3>
+          <div class="social-share">
+            <button class="share-btn facebook">Facebook</button>
+            <button class="share-btn twitter">Twitter</button>
+            <button class="share-btn pinterest">Pinterest</button>
+            <button class="share-btn copy-link">Copy Link</button>
+          </div>
+        </div>
+      </div>
     </div>
+
+    <!-- Related Paintings or Similar Section could be added here -->
   </div>
 </div>

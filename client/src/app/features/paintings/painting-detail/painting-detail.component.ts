@@ -6,6 +6,7 @@ import { Painting } from '../../../models/painting.model';
 import { ApiResponse } from '../../../models/api-response.model';
 import { CartService } from '../../../core/services/cart.service';
 import { AddToCartRequest } from '../../../models/cart.model';
+import { ChangeDetectorRef } from '@angular/core';
 
 @Component({
   selector: 'app-painting-detail',
@@ -21,7 +22,8 @@ export class PaintingDetailComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private paintingService: PaintingService,
-    private cartService: CartService
+    private cartService: CartService,
+    private cdr: ChangeDetectorRef
   ) { }
 
   ngOnInit() {
@@ -40,12 +42,14 @@ export class PaintingDetailComponent implements OnInit {
         console.log('Painting API response:', resp);
         this.painting = resp.data || null;
         this.loading = false;
+        this.cdr.detectChanges();
         console.log('Painting loaded:', this.painting);
       },
       error: (err) => {
         console.error('Error loading painting:', err);
         this.painting = null;
         this.loading = false;
+        this.cdr.detectChanges();
       }
     });
   }
@@ -60,5 +64,19 @@ export class PaintingDetailComponent implements OnInit {
     if (!this.painting?.images?.length) return undefined;
     const primary = this.painting.images.find(i => i.isPrimary) || this.painting.images[0];
     return primary?.imageUrl;
+  }
+
+  setPrimaryImage(index: number) {
+    if (!this.painting?.images?.length) return;
+    // Reset all images to not primary
+    this.painting.images.forEach(img => img.isPrimary = false);
+    // Set the selected image as primary
+    this.painting.images[index].isPrimary = true;
+    this.cdr.detectChanges();
+  }
+
+  getCategoryNames(): string {
+    if (!this.painting?.categories?.length) return '';
+    return this.painting.categories.map(cat => cat.name).join(', ');
   }
 }
