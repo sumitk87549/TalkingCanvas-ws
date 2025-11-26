@@ -1,8 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { CartService } from '../../core/services/cart.service';
+import { PaintingService } from '../../core/services/painting.service';
 import { Cart } from '../../models/cart.model';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-cart',
@@ -11,18 +13,56 @@ import { Cart } from '../../models/cart.model';
   templateUrl: './cart.component.html',
   styleUrls: ['./cart.component.scss']
 })
-export class CartComponent implements OnInit {
+export class CartComponent implements OnInit, OnDestroy {
   cart: Cart | null = null;
+  artistNames: Map<number, string> = new Map();
+  paintingMediums: Map<number, string> = new Map();
+  private subscription: Subscription = new Subscription();
 
-  constructor(private cartService: CartService, private router: Router) {}
+  constructor(
+    private cartService: CartService,
+    private paintingService: PaintingService,
+    private router: Router
+  ) {}
 
   ngOnInit() {
     // Load cart data
     this.loadCart();
 
-    // Subscribe to cart changes
-    this.cartService.cart$.subscribe(cart => {
-      this.cart = cart;
+    // Subscribe to cart changes and load painting details
+    this.subscription.add(
+      this.cartService.cart$.subscribe(cart => {
+        this.cart = cart;
+        if (cart?.items && cart.items.length > 0) {
+          this.loadPaintingDetails(cart.items);
+        }
+      })
+    );
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
+  }
+
+  private loadPaintingDetails(cartItems: any[]) {
+    const paintingsToFetch = cartItems.filter(item =>
+      !this.artistNames.has(item.paintingId) || !this.paintingMediums.has(item.paintingId)
+    );
+
+    paintingsToFetch.forEach(item => {
+      this.paintingService.getPaintingById(item.paintingId).subscribe({
+        next: (response) => {
+          if (response.success && response.data) {
+            this.artistNames.set(item.paintingId, response.data.artistName || 'Unknown Artist');
+            this.paintingMediums.set(item.paintingId, response.data.medium || 'Unknown Medium');
+          }
+        },
+        error: (error) => {
+          console.error(`Failed to load painting details for painting ${item.paintingId}`, error);
+          this.artistNames.set(item.paintingId, 'Unknown Artist');
+          this.paintingMediums.set(item.paintingId, 'Unknown Medium');
+        }
+      });
     });
   }
 

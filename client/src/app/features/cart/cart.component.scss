@@ -1,3 +1,4 @@
+
 .cart-container {
   padding: 40px 20px;
   max-width: 1000px;
@@ -8,6 +9,7 @@
 h1 {
   text-align: center;
   margin-bottom: 40px;
+  color: white;
 }
 
 .empty-cart {
@@ -42,7 +44,8 @@ h1 {
   display: flex;
   gap: 20px;
   padding: 20px;
-  background: #1f1e1e;
+  background: white;
+  color:black;
   border: 1px solid #eee;
   border-radius: 8px;
 }
@@ -67,35 +70,52 @@ h1 {
 }
 
 .item-details h3 {
-  margin: 0 0 10px 0;
+  margin: 0 0 8px 0;
 }
 
 .item-details p {
-  color: #667eea;
+  margin: 4px 0;
+}
+
+.item-medium {
+  color: #777;
+  font-weight: normal;
+}
+
+.item-artist {
+  color: #666;
+  font-weight: normal;
+  font-style: italic;
+}
+
+.item-price {
+  color: darkblue;
   font-weight: 600;
 }
 
 .btn-remove {
-  background: #dc3545;
+  background: darkred;
   color: white;
   border: none;
-  padding: 8px 16px;
+  padding: 4px 16px;
   border-radius: 4px;
   cursor: pointer;
   transition: all 0.3s ease;
+  align-self: center;
 }
 
 .btn-remove:hover {
-  background: #c82333;
+  background: black;
 }
 
 .cart-summary {
-  background: black;
+  background: white;
   padding: 20px;
   border: 1px solid #eee;
   border-radius: 8px;
   height: fit-content;
   position: sticky;
+  color:black;
   top: 20px;
 }
 
@@ -107,7 +127,7 @@ h1 {
 .cart-summary p {
   font-size: 1.3rem;
   font-weight: 600;
-  color: #667eea;
+  color: blue;
   margin-bottom: 20px;
 }
 
@@ -127,8 +147,9 @@ h1 {
   width: 100%;
   padding: 12px;
   font-weight: 600;
+  background-color: darkgreen;
 }
 
 .btn-primary:hover {
-  background-color: #5568d3;
+  background-color: #034501;
 }

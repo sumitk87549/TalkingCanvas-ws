@@ -67,8 +67,6 @@ export class PaintingDetailComponent implements OnInit {
     this.cartService.addToCart(req).subscribe({
       next: () => {
         this.checkIfInCart(); // Update local cart status
-        // Ensure navbar updates by reloading cart
-        this.cartService.getCart().subscribe();
       },
       error: (error) => {
         console.error('Failed to add item to cart:', error);

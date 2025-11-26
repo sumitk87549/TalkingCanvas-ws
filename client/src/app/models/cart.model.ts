@@ -11,7 +11,7 @@ export interface CartItem {
   id: number;
   paintingId: number;
   paintingTitle: string;
-//  artistName: string;
+ // artistName: string;
   primaryImage: string;
   price: number;
   currency: string;

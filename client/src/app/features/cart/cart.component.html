@@ -12,7 +12,11 @@
         </div>
         <div class="item-details">
           <h3>{{ item.paintingTitle }}</h3>
-          <p>₹{{ item.price }}</p>
+          <p class="item-medium">Medium: {{ paintingMediums.get(item.paintingId) || 'Loading...' }}</p>
+          <p class="item-artist">Artist: {{ artistNames.get(item.paintingId) || 'Loading...' }}</p>
+          <p class="item-price">Price: ₹{{ item.price }}</p>
+<!--          <p class="item-quantity">Quantity: {{ item.quantity }}</p>-->
+<!--          <p class="item-subtotal">Subtotal: ₹{{ item.subtotal }}</p>-->
         </div>
         <button (click)="removeItem(item.id)" class="btn-remove">Remove</button>
       </div>
