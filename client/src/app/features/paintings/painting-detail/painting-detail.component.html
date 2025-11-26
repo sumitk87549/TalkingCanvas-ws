@@ -62,8 +62,8 @@
         </div>
 
         <div class="action-buttons">
-          <button (click)="addToCart()" class="btn btn-primary" [disabled]="!painting!.isAvailable">
-            {{ painting!.isAvailable ? 'Add to Cart' : 'Sold Out' }}
+          <button (click)="addToCart()" class="btn btn-primary" [disabled]="!painting!.isAvailable || isInCart">
+            {{ isInCart ? 'Already in Cart' : (painting!.isAvailable ? 'Add to Cart' : 'Sold Out') }}
           </button>
           <button class="btn btn-secondary">Add to Wishlist</button>
         </div>
@@ -123,15 +123,15 @@
         </div>
 
         <!-- Sharing -->
-        <div class="sharing-section">
-          <h3>Share this Artwork</h3>
-          <div class="social-share">
-            <button class="share-btn facebook">Facebook</button>
-            <button class="share-btn twitter">Twitter</button>
-            <button class="share-btn pinterest">Pinterest</button>
-            <button class="share-btn copy-link">Copy Link</button>
-          </div>
-        </div>
+<!--        <div class="sharing-section">-->
+<!--          <h3>Share this Artwork</h3>-->
+<!--          <div class="social-share">-->
+<!--            <button class="share-btn facebook">Facebook</button>-->
+<!--            <button class="share-btn twitter">Twitter</button>-->
+<!--            <button class="share-btn pinterest">Pinterest</button>-->
+<!--            <button class="share-btn copy-link">Copy Link</button>-->
+<!--          </div>-->
+<!--        </div>-->
       </div>
     </div>
 

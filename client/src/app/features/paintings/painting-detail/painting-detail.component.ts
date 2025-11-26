@@ -18,6 +18,7 @@ import { ChangeDetectorRef } from '@angular/core';
 export class PaintingDetailComponent implements OnInit {
   painting: Painting | null = null;
   loading = false;
+  isInCart = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -29,6 +30,11 @@ export class PaintingDetailComponent implements OnInit {
   ngOnInit() {
     this.route.params.subscribe(params => {
       this.loadPainting(params['id']);
+    });
+
+    // Subscribe to cart changes to update in-cart status
+    this.cartService.cart$.subscribe(() => {
+      this.checkIfInCart();
     });
   }
 
@@ -43,6 +49,7 @@ export class PaintingDetailComponent implements OnInit {
         this.painting = resp.data || null;
         this.loading = false;
         this.cdr.detectChanges();
+        this.checkIfInCart();
         console.log('Painting loaded:', this.painting);
       },
       error: (err) => {
@@ -57,7 +64,16 @@ export class PaintingDetailComponent implements OnInit {
   addToCart() {
     if (!this.painting) return;
     const req: AddToCartRequest = { paintingId: this.painting.id, quantity: 1 };
-    this.cartService.addToCart(req).subscribe();
+    this.cartService.addToCart(req).subscribe({
+      next: () => {
+        this.checkIfInCart(); // Update local cart status
+        // Ensure navbar updates by reloading cart
+        this.cartService.getCart().subscribe();
+      },
+      error: (error) => {
+        console.error('Failed to add item to cart:', error);
+      }
+    });
   }
 
   getPrimaryImageUrl(): string | undefined {
@@ -78,5 +94,29 @@ export class PaintingDetailComponent implements OnInit {
   getCategoryNames(): string {
     if (!this.painting?.categories?.length) return '';
     return this.painting.categories.map(cat => cat.name).join(', ');
+  }
+
+  private checkIfInCart() {
+    if (!this.painting?.id) {
+      this.isInCart = false;
+      this.cdr.detectChanges();
+      return;
+    }
+
+    this.cartService.getItemCount(this.painting.id).subscribe({
+      next: (response) => {
+        if (response.success && response.data !== undefined) {
+          this.isInCart = response.data > 0;
+        } else {
+          this.isInCart = false;
+        }
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Error checking if item is in cart:', err);
+        this.isInCart = false;
+        this.cdr.detectChanges();
+      }
+    });
   }
 }
