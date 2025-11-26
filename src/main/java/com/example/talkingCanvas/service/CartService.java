@@ -146,6 +146,16 @@ public class CartService {
         logger.info("Cart cleared for user: {}", userId);
     }
 
+    public Long getTotalItemsCountByUserId(Long userId) {
+        logger.info("Getting total items count for user: {}", userId);
+        return cartRepository.getTotalItemsCountByUserId(userId);
+    }
+
+    public Long getItemCountInCartByUserIdAndPaintingId(Long userId, Long paintingId) {
+        logger.info("Getting item count for user: {}, painting: {}", userId, paintingId);
+        return cartRepository.getItemCountInCartByUserIdAndPaintingId(userId, paintingId);
+    }
+
     private Cart getOrCreateCart(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));

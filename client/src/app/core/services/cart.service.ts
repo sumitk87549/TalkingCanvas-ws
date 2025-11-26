@@ -60,6 +60,14 @@ export class CartService {
       }));
   }
 
+  getTotalItemsCount(): Observable<ApiResponse<number>> {
+    return this.http.get<ApiResponse<number>>(`${environment.apiUrl}/cart/count`);
+  }
+
+  getItemCount(paintingId: number): Observable<ApiResponse<number>> {
+    return this.http.get<ApiResponse<number>>(`${environment.apiUrl}/cart/count/${paintingId}`);
+  }
+
   getCartItemCount(): number {
     const cart = this.cartSubject.value;
     return cart?.totalItems || 0;

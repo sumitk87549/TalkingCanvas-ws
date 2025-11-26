@@ -76,6 +76,22 @@ public class CartController {
         return ResponseEntity.ok(ApiResponse.success("Item removed from cart", cart));
     }
 
+    @GetMapping("/count")
+    @Operation(summary = "Get total items count", description = "Get total number of items in the shopping cart")
+    public ResponseEntity<ApiResponse<Long>> getTotalItemsCount(@AuthenticationPrincipal UserPrincipal currentUser) {
+        Long count = cartService.getTotalItemsCountByUserId(currentUser.getId());
+        return ResponseEntity.ok(ApiResponse.success(count));
+    }
+
+    @GetMapping("/count/{paintingId}")
+    @Operation(summary = "Get item count", description = "Get quantity of a specific painting in the cart")
+    public ResponseEntity<ApiResponse<Long>> getItemCount(
+            @AuthenticationPrincipal UserPrincipal currentUser,
+            @PathVariable Long paintingId) {
+        Long count = cartService.getItemCountInCartByUserIdAndPaintingId(currentUser.getId(), paintingId);
+        return ResponseEntity.ok(ApiResponse.success(count));
+    }
+
     @DeleteMapping
     @SecurityRequirement(name = "Bearer Authentication")
     @Operation(summary = "Clear cart", description = "Remove all items from the cart")

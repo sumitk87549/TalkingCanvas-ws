@@ -2,6 +2,7 @@ import { Component, HostListener, AfterViewInit, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from "@angular/router";
 import { AuthService } from '../../../core/services/auth.service';
+import { CartService } from '../../../core/services/cart.service';
 import { AuthResponse } from '../../../models/user.model';
 
 @Component({
@@ -16,13 +17,34 @@ export class Navbar implements AfterViewInit, OnInit {
   private headerSection: HTMLElement | null = null;
   currentUser: AuthResponse | null = null;
   isAdmin = false;
+  cartItemCount = 0;
 
-  constructor(public authService: AuthService) {}
+  constructor(public authService: AuthService, private cartService: CartService) {}
 
   ngOnInit() {
     this.authService.currentUser$.subscribe(user => {
       this.currentUser = user;
       this.isAdmin = this.authService.isAdmin();
+      if (user) {
+        this.loadCartItemCount();
+      } else {
+        this.cartItemCount = 0;
+      }
+    });
+
+    this.cartService.cart$.subscribe(cart => {
+      this.cartItemCount = cart?.totalItems || 0;
+    });
+  }
+
+  private loadCartItemCount() {
+    this.cartService.getTotalItemsCount().subscribe(response => {
+      if (response.success && response.data !== undefined) {
+        this.cartItemCount = response.data;
+      }
+    }, error => {
+      console.error('Error loading cart count:', error);
+      this.cartItemCount = 0;
     });
   }
 

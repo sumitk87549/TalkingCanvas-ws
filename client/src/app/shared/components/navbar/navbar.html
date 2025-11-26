@@ -12,14 +12,13 @@
       </ng-container>
 
       <!-- Logged In View -->
-      
 
         <li class="dropdown">
           <span class="dropbtn">{{ isAdmin ? 'WELCOME ADMIN' : 'Welcome' }} {{currentUser?.name}} <i
               class="arrow-down"></i></span>
           <div class="dropdown-content">
             <ng-container *ngIf="authService.isLoggedIn()">
-            <a routerLink="cart">Cart</a>
+            <a routerLink="cart">Cart <span *ngIf="cartItemCount > 0">({{cartItemCount}})</span><span *ngIf="cartItemCount == 0">({{"0"}})</span></a>
             </ng-container>
             <a routerLink="paintings">Gallery</a>
             <a routerLink="about">About</a>
