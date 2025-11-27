@@ -58,8 +58,14 @@
   }
 
   @media (max-width: 768px) {
+    -webkit-tap-highlight-color: rgba(139, 111, 71, 0.15);
+
     &:hover {
       transform: none;
+    }
+
+    &:active {
+      transform: scale(0.98);
     }
   }
 
@@ -206,6 +212,20 @@ label {
 
   &:active:not(:disabled) {
     transform: translateY(0);
+  }
+
+  @media (max-width: 768px) {
+    -webkit-tap-highlight-color: rgba(139, 111, 71, 0.3);
+
+    &:active:not(:disabled) {
+      transform: scale(0.97);
+
+      &::before {
+        width: 300px;
+        height: 300px;
+        opacity: 0.5;
+      }
+    }
   }
 }
 
