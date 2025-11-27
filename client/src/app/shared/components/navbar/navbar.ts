@@ -1,4 +1,4 @@
-import { Component, HostListener, AfterViewInit, OnInit } from '@angular/core';
+import { Component, HostListener, AfterViewInit, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from "@angular/router";
 import { AuthService } from '../../../core/services/auth.service';
@@ -19,7 +19,11 @@ export class Navbar implements AfterViewInit, OnInit {
   isAdmin = false;
   cartItemCount = 0;
 
-  constructor(public authService: AuthService, private cartService: CartService) {}
+  constructor(
+    public authService: AuthService,
+    private cartService: CartService,
+    private cdr: ChangeDetectorRef
+  ) { }
 
   ngOnInit() {
     this.authService.currentUser$.subscribe(user => {
@@ -32,8 +36,10 @@ export class Navbar implements AfterViewInit, OnInit {
       }
     });
 
+    // Subscribe to cart changes and manually trigger change detection
     this.cartService.cart$.subscribe(cart => {
       this.cartItemCount = cart?.totalItems || 0;
+      this.cdr.markForCheck(); // Force change detection
     });
   }
 
