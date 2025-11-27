@@ -1,30 +1,46 @@
 <div class="cart-container">
-  <h1>Shopping Cart</h1>
-  <div *ngIf="!cart || !cart.items || cart.items.length === 0" class="empty-cart">
-    <p>Your cart is empty</p>
-    <a routerLink="/paintings" class="btn btn-primary">Continue Shopping</a>
-  </div>
-  <div *ngIf="cart && cart.items && cart.items.length > 0" class="cart-content">
-    <div class="cart-items">
-      <div *ngFor="let item of cart.items" class="cart-item">
-        <div class="item-image">
-          <img [src]="item.primaryImage || 'assets/images/placeholder-painting.jpg'" [alt]="item.paintingTitle" />
-        </div>
-        <div class="item-details">
-          <h3>{{ item.paintingTitle }}</h3>
-          <p class="item-medium">Medium: {{ paintingMediums.get(item.paintingId) || 'Loading...' }}</p>
-          <p class="item-artist">Artist: {{ artistNames.get(item.paintingId) || 'Loading...' }}</p>
-          <p class="item-price">Price: ₹{{ item.price }}</p>
-<!--          <p class="item-quantity">Quantity: {{ item.quantity }}</p>-->
-<!--          <p class="item-subtotal">Subtotal: ₹{{ item.subtotal }}</p>-->
-        </div>
-        <button (click)="removeItem(item.id)" class="btn-remove">Remove</button>
-      </div>
+  <div class="cart-content-wrapper">
+    <h1>Shopping Cart</h1>
+    <div *ngIf="!cart || !cart.items || cart.items.length === 0" class="empty-cart">
+      <p>Your cart is empty</p>
+      <a routerLink="/paintings" class="btn btn-primary">Continue Shopping</a>
     </div>
-    <div class="cart-summary">
-      <h2>Order Summary</h2>
-      <p>Total: ₹{{ cart.totalAmount }}</p>
-      <button (click)="checkout()" class="btn btn-primary">Proceed to Checkout</button>
+    <div *ngIf="cart && cart.items && cart.items.length > 0" class="cart-content">
+      <div class="cart-items">
+        <div *ngFor="let item of cart.items" class="cart-item">
+          <div class="item-image">
+            <img [src]="item.primaryImage || 'assets/images/placeholder-painting.jpg'" [alt]="item.paintingTitle" />
+          </div>
+          <div class="item-details">
+            <h3>{{ item.paintingTitle }}</h3>
+            <p class="item-medium">
+              Medium: 
+              <ng-container *ngIf="loadingDetails.has(item.paintingId)">
+                <span class="loading-text">Loading...</span>
+              </ng-container>
+              <ng-container *ngIf="!loadingDetails.has(item.paintingId)">
+                {{ paintingMediums.get(item.paintingId) || 'Not specified' }}
+              </ng-container>
+            </p>
+            <p class="item-artist">
+              Artist: 
+              <ng-container *ngIf="loadingDetails.has(item.paintingId)">
+                <span class="loading-text">Loading...</span>
+              </ng-container>
+              <ng-container *ngIf="!loadingDetails.has(item.paintingId)">
+                {{ artistNames.get(item.paintingId) || 'Not specified' }}
+              </ng-container>
+            </p>
+            <p class="item-price">Price: ₹{{ item.price }}</p>
+          </div>
+          <button (click)="removeItem(item.id)" class="btn-remove">Remove</button>
+        </div>
+      </div>
+      <div class="cart-summary">
+        <h2>Order Summary</h2>
+        <p>Total: ₹{{ cart.totalAmount }}</p>
+        <button (click)="checkout()" class="btn btn-primary">Proceed to Checkout</button>
+      </div>
     </div>
   </div>
 </div>

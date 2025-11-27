@@ -17,6 +17,7 @@ export class CartComponent implements OnInit, OnDestroy {
   cart: Cart | null = null;
   artistNames: Map<number, string> = new Map();
   paintingMediums: Map<number, string> = new Map();
+  loadingDetails = new Set<number>(); // Track which painting details are being loaded
   private subscription: Subscription = new Subscription();
 
   constructor(
@@ -45,22 +46,33 @@ export class CartComponent implements OnInit, OnDestroy {
   }
 
   private loadPaintingDetails(cartItems: any[]) {
-    const paintingsToFetch = cartItems.filter(item =>
-      !this.artistNames.has(item.paintingId) || !this.paintingMediums.has(item.paintingId)
+    if (!cartItems || cartItems.length === 0) return;
+
+    // Only fetch details for paintings that we don't already have or are not currently loading
+    const paintingsToFetch = cartItems.filter(item => 
+      !this.loadingDetails.has(item.paintingId) && 
+      (!this.artistNames.has(item.paintingId) || !this.paintingMediums.has(item.paintingId))
     );
 
     paintingsToFetch.forEach(item => {
+      this.loadingDetails.add(item.paintingId);
+      
       this.paintingService.getPaintingById(item.paintingId).subscribe({
         next: (response) => {
           if (response.success && response.data) {
-            this.artistNames.set(item.paintingId, response.data.artistName || 'Unknown Artist');
-            this.paintingMediums.set(item.paintingId, response.data.medium || 'Unknown Medium');
+            this.artistNames.set(item.paintingId, response.data.artistName || 'Not specified');
+            this.paintingMediums.set(item.paintingId, response.data.medium || 'Not specified');
+          } else {
+            this.artistNames.set(item.paintingId, 'Not specified');
+            this.paintingMediums.set(item.paintingId, 'Not specified');
           }
+          this.loadingDetails.delete(item.paintingId);
         },
         error: (error) => {
           console.error(`Failed to load painting details for painting ${item.paintingId}`, error);
-          this.artistNames.set(item.paintingId, 'Unknown Artist');
-          this.paintingMediums.set(item.paintingId, 'Unknown Medium');
+          this.artistNames.set(item.paintingId, 'Not specified');
+          this.paintingMediums.set(item.paintingId, 'Not specified');
+          this.loadingDetails.delete(item.paintingId);
         }
       });
     });

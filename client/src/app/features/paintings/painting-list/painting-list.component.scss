@@ -199,7 +199,7 @@ h3 {
 .btn {
   width: 100%;
   padding: 12px 20px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
   color: white;
   border: none;
   border-radius: 10px;
@@ -207,12 +207,30 @@ h3 {
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
 
   &:hover:not(:disabled) {
-    background: linear-gradient(135deg, #5568d3 0%, #6a3d99 100%);
+    background: linear-gradient(135deg, #4338ca 0%, #6d28d9 100%);
     transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+    box-shadow: 0 6px 16px rgba(79, 70, 229, 0.4);
+    
+    &::before {
+      opacity: 1;
+    }
   }
 
   &:disabled {
@@ -224,8 +242,10 @@ h3 {
 }
 
 .btn-primary:disabled {
-  background: linear-gradient(135deg, #fb923c 0%, #ea580c 100%);
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
   cursor: not-allowed;
+  opacity: 0.8;
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2);
 }
 
 .btn-sm {
