@@ -90,6 +90,7 @@ $background-dark: #1a1a1a;
     padding: 0;
     gap: 2rem;
     align-items: center;
+    margin-right: 1px; // Push everything to the right
 
     a {
       color: $text-light;
@@ -124,15 +125,17 @@ $background-dark: #1a1a1a;
       position: relative;
       display: inline-block;
       cursor: pointer;
+      margin-right: 1px; // Push dropdown to the right
 
       .dropbtn {
         color: $text-light;
         font-size: 16px;
         letter-spacing: 1px;
-        padding: 10px 0;
+        padding: 10px 0 10px 20px; // Add left padding for better spacing
         display: flex;
         align-items: center;
         gap: 5px;
+        white-space: nowrap; // Prevent text wrapping
 
         .arrow-down {
           border: solid $text-light;

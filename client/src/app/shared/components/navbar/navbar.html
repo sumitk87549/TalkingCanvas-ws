@@ -14,7 +14,7 @@
       <!-- Logged In View -->
 
       <li class="dropdown">
-        <span class="dropbtn">{{ isAdmin ? 'WELCOME ADMIN' : 'Welcome' }} {{currentUser?.name}} <i
+        <span class="dropbtn">{{ isAdmin ? 'WELCOME ADMIN' : 'Welcome,\n' }}<br> {{currentUser?.name | uppercase}} <i
             class="arrow-down"></i></span>
         <div class="dropdown-content">
           <ng-container *ngIf="authService.isLoggedIn()">
