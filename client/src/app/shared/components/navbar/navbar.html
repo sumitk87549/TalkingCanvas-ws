@@ -39,14 +39,14 @@
 
         <!-- Desktop Dropdown (Hidden on Mobile) -->
         <li class="dropdown desktop-only-dropdown">
-          <span class="dropbtn">{{ isAdmin ? 'ADMIN' : 'Welcome' }} <br> {{currentUser?.name | uppercase}} <i
-              class="arrow-down"></i></span>
+          <!-- <span class="dropbtn">{{ isAdmin ? 'ADMIN' : 'Welcome' }} <br> {{currentUser?.name | uppercase}} <i class="arrow-down"></i></span> -->
+          <span class="dropbtn">{{ isAdmin ? 'ADMIN' : 'Welcome' }} <br> {{currentUser?.name | uppercase}} <i class="arrow-down"></i></span>
           <div class="dropdown-content">
-            <a routerLink="cart">Cart ({{cartItemCount}})</a>
+            <!-- <a routerLink="cart">Cart ({{cartItemCount}})</a>
             <a routerLink="paintings">Gallery</a>
             <a routerLink="about">About</a>
             <a routerLink="contact">Contact</a>
-            <a *ngIf="isAdmin" routerLink="/admin">Dashboard</a>
+            <a *ngIf="isAdmin" routerLink="/admin">Dashboard</a> -->
             <a routerLink="/logout">Logout</a>
           </div>
         </li>

@@ -1,3 +1,10 @@
+// Mixins
+@mixin mobile {
+  @media (max-width: 767px) {
+    @content;
+  }
+}
+
 // Variables
 $background-light: #faf8f5;
 $text-dark: #1a1a1a;
@@ -105,9 +112,16 @@ h1 {
     border-color: rgba(191, 149, 63, 0.3);
   }
 
-  @media (max-width: 768px) {
+  @include mobile {
+    -webkit-tap-highlight-color: rgba(191, 149, 63, 0.15);
+
     &:hover {
       transform: none;
+    }
+
+    &:active {
+      transform: scale(0.98);
+      background: rgba(191, 149, 63, 0.05);
     }
   }
 
@@ -223,8 +237,15 @@ h1 {
   }
 
   @media (max-width: 768px) {
+    -webkit-tap-highlight-color: rgba(220, 38, 38, 0.3);
+
     &:hover {
       transform: none;
+    }
+
+    &:active {
+      transform: scale(0.96);
+      opacity: 0.9;
     }
   }
 
@@ -287,8 +308,14 @@ h1 {
   }
 
   @media (max-width: 768px) {
+    -webkit-tap-highlight-color: rgba(102, 126, 234, 0.3);
+
     &:hover {
       transform: none;
+    }
+
+    &:active {
+      transform: scale(0.97);
     }
   }
 }

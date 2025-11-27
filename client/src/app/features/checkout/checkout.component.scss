@@ -177,8 +177,14 @@ label {
   }
 
   @media (max-width: 768px) {
+    -webkit-tap-highlight-color: rgba(102, 126, 234, 0.3);
+
     &:hover:not(:disabled) {
       transform: none;
+    }
+
+    &:active:not(:disabled) {
+      transform: scale(0.97);
     }
   }
 
