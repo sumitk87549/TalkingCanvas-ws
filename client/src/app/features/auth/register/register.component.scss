@@ -4,10 +4,14 @@
   align-items: flex-start;
   min-height: 100vh;
   background-color: #1A1A1A;
-  padding: 20px;
+  padding: 100px 20px 80px; // Adjusted for fixed navbar
   box-sizing: border-box;
   width: 100%;
   margin: 0 auto;
+
+  @media (max-width: 768px) {
+    padding: 80px 15px 60px;
+  }
 }
 
 .register-card {
@@ -17,8 +21,16 @@
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
   width: 100%;
   max-width: 1000px;
-  margin-top: 4rem;
+  margin-top: 0; // Removed margin-top as padding handles it
   box-sizing: border-box;
+
+  @media (max-width: 768px) {
+    padding: 1.5rem;
+  }
+
+  @media (max-width: 480px) {
+    padding: 1.2rem;
+  }
 }
 
 h2 {
@@ -26,6 +38,11 @@ h2 {
   margin-bottom: 2rem;
   color: white;
   font-size: 1.8rem;
+
+  @media (max-width: 480px) {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
 }
 
 // Form layout
@@ -36,7 +53,7 @@ h2 {
   margin-bottom: 2rem;
   width: 100%;
   box-sizing: border-box;
-  
+
   @media (max-width: 900px) {
     flex-direction: column;
     gap: 1.5rem;
@@ -45,13 +62,17 @@ h2 {
 
 .form-section {
   flex: 1;
-  min-width: 300px;
+  min-width: 0; // Fix flexbox overflow
   background: rgba(47, 42, 42, 0.8);
   padding: 1.8rem;
   border-radius: 8px;
   box-sizing: border-box;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  
+
+  @media (max-width: 480px) {
+    padding: 1.2rem;
+  }
+
   h3 {
     color: #F3E9E5;
     margin-top: 0;
@@ -60,15 +81,27 @@ h2 {
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     font-size: 1.25rem;
     font-weight: 600;
+
+    @media (max-width: 480px) {
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+    }
   }
-  
+
   .form-group {
     margin-bottom: 1.25rem;
-    
+
     &:last-child {
       margin-bottom: 0;
     }
   }
+}
+
+label {
+  display: block;
+  margin-bottom: 8px;
+  color: #F3E9E5;
+  font-weight: 500;
 }
 
 // Form controls required
@@ -81,11 +114,17 @@ h2 {
   background-color: #e9e8e8;
   color: #000;
   transition: border-color 0.3s ease;
-  
+  box-sizing: border-box;
+
   &:focus {
     border-color: #6c63ff;
     outline: none;
     box-shadow: 0 0 0 2px rgba(108, 99, 255, 0.2);
+  }
+
+  @media (max-width: 480px) {
+    padding: 12px;
+    font-size: 16px; // Prevent zoom
   }
 }
 
@@ -99,11 +138,17 @@ h2 {
   background-color: #2F2A2A;
   color: #F3E9E5;
   transition: border-color 0.3s ease;
-  
+  box-sizing: border-box;
+
   &:focus {
     border-color: #6c63ff;
     outline: none;
     box-shadow: 0 0 0 2px rgba(108, 99, 255, 0.2);
+  }
+
+  @media (max-width: 480px) {
+    padding: 12px;
+    font-size: 16px; // Prevent zoom
   }
 }
 
@@ -111,7 +156,7 @@ h2 {
 .form-actions {
   text-align: center;
   margin-top: 1.5rem;
-  
+
   .btn {
     min-width: 200px;
     padding: 0.9rem 2rem;
@@ -123,14 +168,19 @@ h2 {
     color: white;
     cursor: pointer;
     transition: background-color 0.3s ease;
-    
+    min-height: 50px; // Touch target
+
     &:hover {
       background-color: #5a52d4;
     }
-    
+
     &:disabled {
       background-color: #7a73e0;
       cursor: not-allowed;
+    }
+
+    @media (max-width: 480px) {
+      width: 100%;
     }
   }
 }
@@ -154,12 +204,12 @@ h2 {
   text-align: center;
   margin-top: 1.5rem;
   color: #F3E9E5;
-  
+
   a {
     color: #6c63ff;
     text-decoration: none;
     font-weight: 600;
-    
+
     &:hover {
       text-decoration: underline;
     }

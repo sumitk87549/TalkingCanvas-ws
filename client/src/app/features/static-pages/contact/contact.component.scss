@@ -15,7 +15,7 @@ $background-light: #faf8f5;
 // Hero Section
 .policy-hero {
   background: linear-gradient(135deg, $primary-color 0%, $secondary-color 100%);
-  padding: 100px 20px 60px;
+  padding: 120px 20px 80px;
   text-align: center;
   position: relative;
   overflow: hidden;
@@ -30,6 +30,10 @@ $background-light: #faf8f5;
     background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" fill="none"/><path d="M0 50 Q 25 25, 50 50 T 100 50" stroke="rgba(212, 165, 116, 0.1)" fill="none" stroke-width="2"/></svg>');
     opacity: 0.3;
   }
+
+  @media (max-width: 768px) {
+    padding: 100px 20px 60px;
+  }
 }
 
 .hero-content {
@@ -39,11 +43,15 @@ $background-light: #faf8f5;
   z-index: 1;
 
   h1 {
-    font-size: clamp(32px, 5vw, 54px);
+    font-size: clamp(2rem, 5vw, 3.5rem);
     font-weight: 300;
     color: $text-light;
     margin-bottom: 15px;
     letter-spacing: 2px;
+
+    @media (max-width: 480px) {
+      letter-spacing: 1px;
+    }
   }
 
   .last-updated {
@@ -58,12 +66,20 @@ $background-light: #faf8f5;
   max-width: 1000px;
   margin: 0 auto;
   padding: 60px 20px 80px;
+
+  @media (max-width: 768px) {
+    padding: 40px 15px 60px;
+  }
 }
 
 // Intro Section
 .policy-intro {
   margin-bottom: 50px;
   text-align: center;
+
+  @media (max-width: 480px) {
+    margin-bottom: 30px;
+  }
 
   .lead-text {
     font-size: 20px;
@@ -72,6 +88,10 @@ $background-light: #faf8f5;
     font-style: italic;
     max-width: 800px;
     margin: 0 auto;
+
+    @media (max-width: 480px) {
+      font-size: 18px;
+    }
   }
 }
 
@@ -84,15 +104,32 @@ $background-light: #faf8f5;
   box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
   transition: box-shadow 0.3s ease;
 
+  @media (max-width: 768px) {
+    padding: 25px 20px;
+  }
+
+  @media (max-width: 480px) {
+    padding: 20px 15px;
+  }
+
   &:hover {
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  }
+
+  @media (max-width: 768px) {
+    &:hover {
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+    }
   }
 
   &.highlight-box {
     background: linear-gradient(135deg, $primary-color 0%, $secondary-color 100%);
     color: white;
 
-    h2, h3, p, li {
+    h2,
+    h3,
+    p,
+    li {
       color: white;
     }
 
@@ -113,6 +150,10 @@ $background-light: #faf8f5;
     font-weight: 400;
     padding-bottom: 15px;
     border-bottom: 2px solid $background-light;
+
+    @media (max-width: 480px) {
+      font-size: 22px;
+    }
   }
 
   h3 {
@@ -120,6 +161,11 @@ $background-light: #faf8f5;
     color: $secondary-color;
     margin: 30px 0 15px 0;
     font-weight: 500;
+
+    @media (max-width: 480px) {
+      font-size: 18px;
+      margin: 20px 0 10px 0;
+    }
   }
 
   p {
@@ -129,9 +175,14 @@ $background-light: #faf8f5;
     margin-bottom: 15px;
   }
 
-  ul, ol {
+  ul,
+  ol {
     margin: 15px 0;
     padding-left: 25px;
+
+    @media (max-width: 480px) {
+      padding-left: 20px;
+    }
 
     li {
       font-size: 16px;
@@ -190,6 +241,10 @@ $background-light: #faf8f5;
 .contact-form-section {
   max-width: 500px;
   margin: 30px auto 0;
+
+  @media (max-width: 768px) {
+    max-width: 100%;
+  }
 
   .form-group {
     margin-bottom: 20px;
@@ -255,12 +310,19 @@ $background-light: #faf8f5;
     transition: all 0.3s ease;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    min-height: 50px; // Touch target
 
     &:hover:not(:disabled) {
       transform: translateY(-2px);
       box-shadow: 0 8px 25px rgba(44, 24, 16, 0.2);
 
       background: linear-gradient(135deg, #6a3e2b 0%, #1f120c 100%);
+    }
+
+    @media (max-width: 768px) {
+      &:hover:not(:disabled) {
+        transform: none;
+      }
     }
 
     &:active {
@@ -313,6 +375,7 @@ $background-light: #faf8f5;
     text-decoration: none;
     font-weight: 500;
     transition: color 0.3s ease;
+    padding: 5px 0; // Touch target
 
     &:hover {
       color: $secondary-color;
@@ -329,48 +392,16 @@ $background-light: #faf8f5;
   border-left: 4px solid $accent-color;
   margin-top: 40px;
 
+  @media (max-width: 480px) {
+    padding: 20px;
+  }
+
   p {
     font-size: 16px;
     line-height: 1.7;
     color: $primary-color;
     margin: 0;
     text-align: center;
-  }
-}
-
-// Responsive Design
-@media (max-width: 768px) {
-  .policy-hero {
-    padding: 80px 20px 40px;
-  }
-
-  .policy-content-wrapper {
-    padding: 40px 15px 60px;
-  }
-
-  .terms-section {
-    padding: 25px 20px;
-
-    h2 {
-      font-size: 24px;
-    }
-
-    h3 {
-      font-size: 20px;
-    }
-  }
-
-  .contact-form-section {
-    max-width: 100%;
-
-    .form-control {
-      font-size: 16px; // Prevents zoom on iOS
-    }
-
-    .btn-primary {
-      padding: 14px;
-      font-size: 15px;
-    }
   }
 }
 

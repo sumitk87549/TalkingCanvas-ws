@@ -4,10 +4,11 @@
   align-items: center;
   min-height: 100vh;
   background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-  padding: 20px;
+  padding: 100px 20px 80px; // Adjusted for fixed navbar
   margin: 0;
   position: relative;
   z-index: 1;
+  box-sizing: border-box;
 
   // Subtle pattern overlay
   &::before {
@@ -20,6 +21,10 @@
     background-image: radial-gradient(circle, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
     background-size: 40px 40px;
     pointer-events: none;
+  }
+
+  @media (max-width: 768px) {
+    padding: 80px 15px 60px;
   }
 }
 
@@ -42,12 +47,22 @@
       0 10px 25px rgba(0, 0, 0, 0.25);
     transform: translateY(-5px);
   }
+
+  @media (max-width: 768px) {
+    &:hover {
+      transform: none;
+    }
+  }
+
+  @media (max-width: 480px) {
+    padding: 30px 20px;
+  }
 }
 
 h2 {
   text-align: center;
   margin-bottom: 40px;
-  font-size: clamp(32px, 5vw, 42px);
+  font-size: clamp(2rem, 5vw, 2.6rem);
   font-weight: 700;
   letter-spacing: 1px;
   background: linear-gradient(135deg, #8b6f47 0%, #d4a574 100%);
@@ -60,6 +75,10 @@ h2 {
   &:hover {
     text-shadow: 0 0 30px rgba(139, 111, 71, 0.5);
     transform: scale(1.02);
+  }
+
+  @media (max-width: 480px) {
+    margin-bottom: 30px;
   }
 }
 
@@ -87,6 +106,7 @@ label {
   color: #1a1a1a;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  box-sizing: border-box;
 
   &::placeholder {
     color: #999;
@@ -103,6 +123,11 @@ label {
     border-color: #8b6f47;
     box-shadow: 0 0 0 4px rgba(139, 111, 71, 0.15);
     transform: translateY(-1px);
+  }
+
+  @media (max-width: 480px) {
+    padding: 12px 14px;
+    font-size: 16px; // Prevent zoom on iOS
   }
 }
 
@@ -128,6 +153,7 @@ label {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
+  min-height: 50px; // Touch target
 
   &::before {
     content: '';
@@ -146,6 +172,10 @@ label {
     width: 400px;
     height: 400px;
   }
+
+  @media (max-width: 480px) {
+    padding: 14px;
+  }
 }
 
 .btn-primary {
@@ -157,6 +187,12 @@ label {
     background: linear-gradient(135deg, #7a623e 0%, #c49968 100%);
     box-shadow: 0 6px 20px rgba(139, 111, 71, 0.4);
     transform: translateY(-2px);
+  }
+
+  @media (max-width: 768px) {
+    &:hover:not(:disabled) {
+      transform: none;
+    }
   }
 
   &:active:not(:disabled) {

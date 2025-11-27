@@ -2,45 +2,60 @@
   padding: 1.5rem;
   max-width: 1400px;
   margin: 0 auto;
-  margin-top: 4%;
-  
+  margin-top: 80px; // Adjusted for fixed navbar
+
+  @media (max-width: 768px) {
+    padding: 1rem;
+    margin-top: 60px;
+  }
+
   .dashboard-tabs {
     margin-top: 1.5rem;
   }
-  
+
   /* Metrics Styles */
   .metrics-container {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
     gap: 1.5rem;
     margin-top: 1.5rem;
+
+    @media (max-width: 480px) {
+      grid-template-columns: 1fr;
+    }
   }
-  
+
   .metric-card {
     margin-bottom: 1.5rem;
     height: 100%;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
-    
+
     &:hover {
       transform: translateY(-2px);
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
-    
+
+    @media (max-width: 768px) {
+      &:hover {
+        transform: none;
+      }
+    }
+
     mat-card-header {
       padding-bottom: 0.5rem;
       border-bottom: 1px solid #f0f0f0;
       margin-bottom: 1rem;
-      
+
       mat-card-title {
         font-size: 1.1rem;
         font-weight: 500;
       }
-      
+
       mat-card-subtitle {
         margin-bottom: 0;
       }
     }
-    
+
     .health-status {
       display: flex;
       align-items: center;
@@ -48,94 +63,97 @@
       padding: 1rem;
       border-radius: 4px;
       margin-bottom: 1rem;
-      
+
       &.up {
         background-color: #e8f5e9;
         color: #2e7d32;
       }
-      
-      &.down, &.out_of_service {
+
+      &.down,
+      &.out_of_service {
         background-color: #ffebee;
         color: #c62828;
       }
-      
+
       &.unknown {
         background-color: #fff8e1;
         color: #ff8f00;
       }
-      
+
       .status-indicator {
         width: 16px;
         height: 16px;
         border-radius: 50%;
-        
+
         .up & {
           background-color: #4caf50;
         }
-        
-        .down &, .out_of_service & {
+
+        .down &,
+        .out_of_service & {
           background-color: #f44336;
         }
-        
+
         .unknown & {
           background-color: #ffc107;
         }
       }
-      
+
       h3 {
         margin: 0;
         font-size: 1.2rem;
         font-weight: 500;
       }
-      
+
       p {
         margin: 0.25rem 0 0;
         font-size: 0.9rem;
         opacity: 0.9;
       }
     }
-    
+
     .health-details {
       margin-top: 1rem;
       padding-top: 1rem;
       border-top: 1px solid #f0f0f0;
-      
+
       h4 {
         margin: 0 0 0.75rem;
         font-size: 1rem;
         color: #555;
       }
-      
+
       .component {
         display: flex;
         justify-content: space-between;
         padding: 0.5rem 0;
         font-size: 0.9rem;
-        
+
         &:not(:last-child) {
           border-bottom: 1px solid #f5f5f5;
         }
-        
+
         .component-name {
           font-weight: 500;
         }
-        
+
         .component-status {
           padding: 0.2rem 0.5rem;
           border-radius: 12px;
           font-size: 0.8rem;
           font-weight: 500;
-          
+
           &.up {
             background-color: #e8f5e9;
             color: #2e7d32;
           }
-          
-          &.down, &.out_of_service {
+
+          &.down,
+          &.out_of_service {
             background-color: #ffebee;
             color: #c62828;
           }
-          
+
           &.unknown {
             background-color: #fff8e1;
             color: #ff8f00;
@@ -143,31 +161,35 @@
         }
       }
     }
-    
+
     .metrics-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
       gap: 1rem;
+
+      @media (max-width: 480px) {
+        grid-template-columns: 1fr;
+      }
     }
-    
+
     .metric-item {
       padding: 0.75rem;
       background-color: #f9f9f9;
       border-radius: 6px;
-      
+
       .metric-name {
         font-size: 0.85rem;
         color: #555;
         margin-bottom: 0.25rem;
       }
-      
+
       .metric-value {
         font-size: 1.25rem;
         font-weight: 600;
         color: #333;
         margin-bottom: 0.25rem;
       }
-      
+
       .metric-desc {
         font-size: 0.75rem;
         color: #777;
@@ -183,10 +205,20 @@
   align-items: center;
   margin-bottom: 2rem;
 
+  @media (max-width: 480px) {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+
   h1 {
     font-size: 2rem;
     color: #dbc222;
     margin: 0;
+
+    @media (max-width: 480px) {
+      font-size: 1.8rem;
+    }
   }
 
   .add-btn {
@@ -202,6 +234,11 @@
     gap: 0.5rem;
     text-decoration: none;
     transition: background 0.2s;
+
+    @media (max-width: 480px) {
+      width: 100%;
+      justify-content: center;
+    }
 
     &:hover {
       background: #0056b3;
@@ -219,6 +256,11 @@
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 1.5rem;
   margin-bottom: 3rem;
+
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
 }
 
 .stat-card {
@@ -249,6 +291,10 @@
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
   padding: 1.5rem;
 
+  @media (max-width: 480px) {
+    padding: 1rem;
+  }
+
   h2 {
     margin-top: 0;
     margin-bottom: 1.5rem;
@@ -259,11 +305,20 @@
 
 .table-container {
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch; // Smooth scrolling on iOS
+  margin: 0 -1.5rem; // Negative margin to allow full width scroll
+  padding: 0 1.5rem; // Padding to align content
+
+  @media (max-width: 480px) {
+    margin: 0 -1rem;
+    padding: 0 1rem;
+  }
 }
 
 .data-table {
   width: 100%;
   border-collapse: collapse;
+  min-width: 600px; // Ensure table doesn't squash too much
 
   th,
   td {
@@ -276,6 +331,7 @@
     font-weight: 600;
     color: #555;
     background: #f9f9f9;
+    white-space: nowrap;
   }
 
   tr:hover {
@@ -297,6 +353,7 @@
 .title-cell {
   font-weight: 500;
   color: #333;
+  min-width: 150px;
 }
 
 .status-badge {
@@ -304,6 +361,7 @@
   border-radius: 12px;
   font-size: 0.85rem;
   font-weight: 500;
+  white-space: nowrap;
 
   &.available {
     background: #e6f4ea;
@@ -326,6 +384,8 @@
     padding: 0.5rem;
     font-size: 1.2rem;
     transition: transform 0.2s;
+    min-width: 44px; // Touch target
+    min-height: 44px;
 
     &:hover {
       transform: scale(1.1);
@@ -356,7 +416,7 @@
   flex-direction: column;
   align-items: center;
   gap: 1rem;
-  
+
   mat-spinner {
     margin: 0 auto;
   }

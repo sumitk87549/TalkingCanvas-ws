@@ -14,10 +14,12 @@ $background-dark: #1a1a1a;
   color: rgba(255, 255, 255, 0.6);
   text-align: center;
   font-family: 'Helvetica Neue', Arial, sans-serif;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
 
   .container {
     max-width: 1200px;
     margin: 0 auto;
+    width: 100%;
   }
 
   .footer-content {
@@ -26,6 +28,11 @@ $background-dark: #1a1a1a;
     justify-content: center;
     flex-wrap: wrap;
     gap: 15px;
+
+    @media (max-width: 768px) {
+      flex-direction: column;
+      gap: 20px;
+    }
   }
 
   .copyright {
@@ -34,6 +41,11 @@ $background-dark: #1a1a1a;
     margin: 0;
     color: #ffffff;
     white-space: nowrap;
+
+    @media (max-width: 480px) {
+      font-size: 12px;
+      white-space: normal;
+    }
   }
 
   .main-divider {
@@ -42,6 +54,10 @@ $background-dark: #1a1a1a;
     font-size: 16px;
     margin: 0 10px;
     user-select: none;
+
+    @media (max-width: 768px) {
+      display: none;
+    }
   }
 
   .footer-links {
@@ -50,6 +66,7 @@ $background-dark: #1a1a1a;
     flex-wrap: wrap;
     gap: 5px;
     margin: 0;
+    justify-content: center;
 
     .footer-link {
       color: #d4d4d4;
@@ -57,7 +74,8 @@ $background-dark: #1a1a1a;
       font-size: 12px;
       transition: color 0.3s ease;
       white-space: nowrap;
-      padding: 2px 0;
+      padding: 8px 5px;
+      /* Increased touch target */
 
       &:hover {
         color: $accent-color;
@@ -71,16 +89,21 @@ $background-dark: #1a1a1a;
       user-select: none;
       font-size: 12px;
     }
-  }
 
-  @media (max-width: 768px) {
-    .footer-content {
+    @media (max-width: 480px) {
       flex-direction: column;
       gap: 10px;
-    }
-    
-    .main-divider {
-      display: none;
+
+      .divider {
+        display: none;
+      }
+
+      .footer-link {
+        font-size: 14px;
+        padding: 5px 0;
+        display: block;
+        width: 100%;
+      }
     }
   }
 }

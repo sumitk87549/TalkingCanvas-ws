@@ -1,9 +1,10 @@
 import { Component, HostListener, AfterViewInit, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from "@angular/router";
+import { RouterLink, Router, NavigationEnd } from "@angular/router";
 import { AuthService } from '../../../core/services/auth.service';
 import { CartService } from '../../../core/services/cart.service';
 import { AuthResponse } from '../../../models/user.model';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-navbar',
@@ -18,12 +19,21 @@ export class Navbar implements AfterViewInit, OnInit {
   currentUser: AuthResponse | null = null;
   isAdmin = false;
   cartItemCount = 0;
+  isMobileMenuOpen = false;
 
   constructor(
     public authService: AuthService,
     private cartService: CartService,
-    private cdr: ChangeDetectorRef
-  ) { }
+    private cdr: ChangeDetectorRef,
+    private router: Router
+  ) {
+    // Close mobile menu on route change
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd)
+    ).subscribe(() => {
+      this.closeMobileMenu();
+    });
+  }
 
   ngOnInit() {
     this.authService.currentUser$.subscribe(user => {
@@ -84,12 +94,26 @@ export class Navbar implements AfterViewInit, OnInit {
     this.isHeaderInView = headerRect.bottom > 0;
   }
 
+  toggleMobileMenu() {
+    this.isMobileMenuOpen = !this.isMobileMenuOpen;
+    // Prevent body scroll when menu is open
+    if (this.isMobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+  }
 
+  closeMobileMenu() {
+    this.isMobileMenuOpen = false;
+    document.body.style.overflow = '';
+  }
 
   get navbarClasses() {
     return {
-      'transparent': this.isHeaderInView,
-      'colored': !this.isHeaderInView
+      'transparent': this.isHeaderInView && !this.isMobileMenuOpen,
+      'colored': !this.isHeaderInView || this.isMobileMenuOpen,
+      'mobile-open': this.isMobileMenuOpen
     };
   }
 }

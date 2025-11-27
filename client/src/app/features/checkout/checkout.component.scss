@@ -1,9 +1,10 @@
 .checkout-container {
-  padding: 80px 20px;
+  padding: 100px 20px 80px; // Adjusted for fixed navbar
   max-width: 1200px;
   margin: 0 auto;
   min-height: 100vh;
   position: relative;
+  box-sizing: border-box;
 
   /* Elegant gradient background */
   background: linear-gradient(135deg, #16213e 0%, #0f3460 50%, #1a1a2e 100%);
@@ -37,12 +38,16 @@
         rgba(255, 255, 255, 0.02) 61px);
     pointer-events: none;
   }
+
+  @media (max-width: 768px) {
+    padding: 80px 15px 60px;
+  }
 }
 
 h1 {
   text-align: center;
   margin-bottom: 60px;
-  font-size: 3.5rem;
+  font-size: clamp(2rem, 5vw, 3.5rem);
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 2px;
@@ -55,6 +60,10 @@ h1 {
   background-clip: text;
   color: transparent;
   filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.5));
+
+  @media (max-width: 480px) {
+    margin-bottom: 40px;
+  }
 }
 
 h2 {
@@ -66,6 +75,11 @@ h2 {
   &:first-child {
     margin-top: 0;
   }
+
+  @media (max-width: 480px) {
+    font-size: 1.2rem;
+    margin: 25px 0 20px 0;
+  }
 }
 
 .checkout-content {
@@ -74,11 +88,10 @@ h2 {
   gap: 40px;
   position: relative;
   z-index: 1;
-}
 
-@media (max-width: 768px) {
-  .checkout-content {
+  @media (max-width: 992px) {
     grid-template-columns: 1fr;
+    gap: 30px;
   }
 }
 
@@ -91,6 +104,14 @@ h2 {
   box-shadow:
     0 8px 32px rgba(0, 0, 0, 0.15),
     0 2px 8px rgba(0, 0, 0, 0.1);
+
+  @media (max-width: 768px) {
+    padding: 30px 20px;
+  }
+
+  @media (max-width: 480px) {
+    padding: 25px 15px;
+  }
 }
 
 .form-group {
@@ -120,6 +141,11 @@ label {
     border-color: #667eea;
     box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
   }
+
+  @media (max-width: 480px) {
+    padding: 12px 14px;
+    font-size: 16px; // Prevent zoom on iOS
+  }
 }
 
 .error {
@@ -142,6 +168,7 @@ label {
   transition: all 0.3s ease;
   margin-top: 30px;
   box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  min-height: 50px; // Touch target
 
   &:hover:not(:disabled) {
     background: linear-gradient(135deg, #5568d3 0%, #6a3d99 100%);
@@ -149,10 +176,21 @@ label {
     box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
   }
 
+  @media (max-width: 768px) {
+    &:hover:not(:disabled) {
+      transform: none;
+    }
+  }
+
   &:disabled {
     opacity: 0.6;
     cursor: not-allowed;
     transform: none;
+  }
+
+  @media (max-width: 480px) {
+    padding: 14px;
+    font-size: 1rem;
   }
 }
 
@@ -168,6 +206,11 @@ label {
   box-shadow:
     0 8px 32px rgba(0, 0, 0, 0.15),
     0 2px 8px rgba(0, 0, 0, 0.1);
+
+  @media (max-width: 992px) {
+    position: static;
+    margin-top: 20px;
+  }
 }
 
 .order-summary h2 {
@@ -180,57 +223,4 @@ label {
   font-size: 1.5rem;
   font-weight: 700;
   color: #0f3460;
-}
-
-/* Responsive Design */
-@media (max-width: 1024px) {
-  .checkout-container {
-    padding: 60px 20px;
-  }
-
-  h1 {
-    font-size: 3rem;
-  }
-}
-
-@media (max-width: 768px) {
-  .checkout-container {
-    padding: 40px 15px;
-  }
-
-  h1 {
-    font-size: 2.5rem;
-    margin-bottom: 40px;
-  }
-
-  .checkout-form {
-    padding: 30px 20px;
-  }
-
-  .order-summary {
-    top: 20px;
-  }
-}
-
-@media (max-width: 480px) {
-  h1 {
-    font-size: 2rem;
-  }
-
-  .checkout-form {
-    padding: 25px 15px;
-  }
-
-  h2 {
-    font-size: 1.2rem;
-  }
-
-  .form-control {
-    padding: 12px 14px;
-  }
-
-  .btn {
-    padding: 14px;
-    font-size: 1rem;
-  }
 }
