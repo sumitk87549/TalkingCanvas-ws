@@ -7,16 +7,47 @@
   --text-light: #f5f5f5;
   --background-light: #faf8f5;
   --background-dark: #1a1a1a;
+  --transition-speed: 0.3s;
+  --transition-ease: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Premium Enhancement Mixins */
+@mixin premium-hover {
+  transition: all var(--transition-speed) var(--transition-ease);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  }
+}
+
+@mixin subtle-lift {
+  transition: all 0.25s var(--transition-ease);
+
+  &:hover {
+    transform: translateY(-1px);
+  }
+}
+
+@mixin text-glow {
+  text-shadow: 0 0 20px rgba(212, 165, 116, 0.4);
+  transition: text-shadow var(--transition-speed) ease;
+
+  &:hover {
+    text-shadow: 0 0 30px rgba(212, 165, 116, 0.6);
+  }
 }
 
 /* Reset and Base Styles */
-html, body {
+html,
+body {
   margin: 0 !important;
   padding: 0 !important;
   width: 100% !important;
   min-height: 100vh !important;
   overflow-x: hidden !important;
   box-sizing: border-box !important;
+  scroll-behavior: smooth;
 }
 
 *,
@@ -32,33 +63,22 @@ body {
   line-height: 1.6;
   background-color: var(--background-dark);
   color: var(--text-light);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Ensure all elements inherit the box-sizing */
-*, *::before, *::after {
-  box-sizing: inherit;
-}
-
-/* Remove default list styles */
-ul, ol {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-/* Reset links */
+/* Enhanced Interactive Elements */
 a {
   text-decoration: none;
   color: inherit;
+  transition: all var(--transition-speed) var(--transition-ease);
+
+  &:hover {
+    color: var(--accent-color);
+    transform: translateX(2px);
+  }
 }
 
-/* Make images easier to work with */
-img, picture {
-  max-width: 100%;
-  display: block;
-}
-
-/* Remove default button styles */
 button {
   border: none;
   background: none;
@@ -66,15 +86,48 @@ button {
   cursor: pointer;
   padding: 0;
   margin: 0;
+  transition: all var(--transition-speed) var(--transition-ease);
+
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
 }
 
-/* Remove default input styles */
-input, textarea, select, button {
+/* Enhanced Input Fields */
+input,
+textarea,
+select {
   font: inherit;
   color: inherit;
   background: none;
   border: none;
   outline: none;
+  transition: all var(--transition-speed) var(--transition-ease);
+
+  &:focus {
+    transform: scale(1.01);
+    box-shadow: 0 0 0 3px rgba(212, 165, 116, 0.2);
+  }
+}
+
+/* Enhanced Images */
+img {
+  max-width: 100%;
+  display: block;
+  transition: all 0.4s var(--transition-ease);
+
+  &:hover {
+    filter: brightness(1.05);
+  }
 }
 
 /* Remove default table spacing */

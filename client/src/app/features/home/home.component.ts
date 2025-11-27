@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
@@ -37,12 +37,25 @@ export class HomeComponent implements OnInit {
 
   constructor(
     public authService: AuthService,
-    private paintingService: PaintingService
+    private paintingService: PaintingService,
+    private el: ElementRef
   ) { }
 
   ngOnInit(): void {
     this.loadFeaturedPaintings();
     this.initializeStaticData();
+  }
+
+  @HostListener('mousemove', ['$event'])
+  onMouseMove(event: MouseEvent) {
+    const heroContent = this.el.nativeElement.querySelector('.hero-content');
+    if (heroContent) {
+      const rect = heroContent.getBoundingClientRect();
+      const x = event.clientX - rect.left;
+      const y = event.clientY - rect.top;
+      heroContent.style.setProperty('--x', `${x}px`);
+      heroContent.style.setProperty('--y', `${y}px`);
+    }
   }
 
   loadFeaturedPaintings(): void {

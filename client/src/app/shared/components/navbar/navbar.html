@@ -13,19 +13,19 @@
 
       <!-- Logged In View -->
 
-        <li class="dropdown">
-          <span class="dropbtn">{{ isAdmin ? 'WELCOME ADMIN' : 'Welcome' }} {{currentUser?.name}} <i
-              class="arrow-down"></i></span>
-          <div class="dropdown-content">
-            <ng-container *ngIf="authService.isLoggedIn()">
+      <li class="dropdown">
+        <span class="dropbtn">{{ isAdmin ? 'WELCOME ADMIN' : 'Welcome' }} {{currentUser?.name}} <i
+            class="arrow-down"></i></span>
+        <div class="dropdown-content">
+          <ng-container *ngIf="authService.isLoggedIn()">
             <a routerLink="cart">Cart ({{cartItemCount}})</a>
-            </ng-container>
-            <a routerLink="paintings">Gallery</a>
-            <a routerLink="about">About</a>
-            <a routerLink="contact">Contact</a>
-            <a *ngIf="isAdmin" routerLink="/admin">Dashboard</a>
-            <a routerLink="/logout">Logout</a>
-          </div>
-        </li>
+          </ng-container>
+          <a routerLink="paintings">Gallery</a>
+          <a routerLink="about">About</a>
+          <a routerLink="contact">Contact</a>
+          <a *ngIf="isAdmin" routerLink="/admin">Dashboard</a>
+          <a *ngIf="authService.isLoggedIn()" routerLink="/logout">Logout</a>
+        </div>
+      </li>
     </ul>
   </nav>
