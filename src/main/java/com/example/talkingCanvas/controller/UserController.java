@@ -5,7 +5,9 @@ import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.talkingCanvas.dto.common.ApiResponse;
 import com.example.talkingCanvas.dto.order.OrderResponse;
+import com.example.talkingCanvas.dto.user.AddressDTO;
 import com.example.talkingCanvas.dto.user.ChangePasswordRequest;
 import com.example.talkingCanvas.dto.user.UpdateProfileRequest;
 import com.example.talkingCanvas.dto.user.UserProfileResponse;
@@ -41,7 +44,8 @@ public class UserController {
 
     @GetMapping("/profile")
     @Operation(summary = "Get user profile", description = "Get current user's profile information")
-    public ResponseEntity<ApiResponse<UserProfileResponse>> getProfile(@AuthenticationPrincipal UserPrincipal currentUser) {
+    public ResponseEntity<ApiResponse<UserProfileResponse>> getProfile(
+            @AuthenticationPrincipal UserPrincipal currentUser) {
         UserProfileResponse profile = userService.getUserProfile(currentUser.getId());
         return ResponseEntity.ok(ApiResponse.success(profile));
     }
@@ -72,5 +76,50 @@ public class UserController {
             @RequestParam(defaultValue = "10") int size) {
         List<OrderResponse> orders = userService.getUserOrders(currentUser.getId(), page, size);
         return ResponseEntity.ok(ApiResponse.success(orders));
+    }
+
+    @GetMapping("/addresses")
+    @Operation(summary = "Get user addresses", description = "Get all addresses for the current user")
+    public ResponseEntity<ApiResponse<List<AddressDTO>>> getUserAddresses(
+            @AuthenticationPrincipal UserPrincipal currentUser) {
+        List<AddressDTO> addresses = userService.getUserAddresses(currentUser.getId());
+        return ResponseEntity.ok(ApiResponse.success(addresses));
+    }
+
+    @PostMapping("/addresses")
+    @Operation(summary = "Add address", description = "Add a new address for the current user")
+    public ResponseEntity<ApiResponse<AddressDTO>> addAddress(
+            @AuthenticationPrincipal UserPrincipal currentUser,
+            @Valid @RequestBody AddressDTO addressDTO) {
+        AddressDTO address = userService.addAddress(currentUser.getId(), addressDTO);
+        return ResponseEntity.ok(ApiResponse.success("Address added successfully", address));
+    }
+
+    @PutMapping("/addresses/{id}")
+    @Operation(summary = "Update address", description = "Update an existing address")
+    public ResponseEntity<ApiResponse<AddressDTO>> updateAddress(
+            @AuthenticationPrincipal UserPrincipal currentUser,
+            @PathVariable Long id,
+            @Valid @RequestBody AddressDTO addressDTO) {
+        AddressDTO address = userService.updateAddress(currentUser.getId(), id, addressDTO);
+        return ResponseEntity.ok(ApiResponse.success("Address updated successfully", address));
+    }
+
+    @DeleteMapping("/addresses/{id}")
+    @Operation(summary = "Delete address", description = "Delete an address")
+    public ResponseEntity<ApiResponse<Void>> deleteAddress(
+            @AuthenticationPrincipal UserPrincipal currentUser,
+            @PathVariable Long id) {
+        userService.deleteAddress(currentUser.getId(), id);
+        return ResponseEntity.ok(ApiResponse.success("Address deleted successfully", null));
+    }
+
+    @PutMapping("/addresses/{id}/set-default")
+    @Operation(summary = "Set default address", description = "Set an address as the default")
+    public ResponseEntity<ApiResponse<AddressDTO>> setDefaultAddress(
+            @AuthenticationPrincipal UserPrincipal currentUser,
+            @PathVariable Long id) {
+        AddressDTO address = userService.setDefaultAddress(currentUser.getId(), id);
+        return ResponseEntity.ok(ApiResponse.success("Default address set successfully", address));
     }
 }
