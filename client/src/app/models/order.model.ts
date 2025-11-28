@@ -1,4 +1,4 @@
-import { Address } from './user.model';
+import { Address, User } from './user.model';
 
 export interface Order {
   id: number;
@@ -14,6 +14,7 @@ export interface Order {
   createdAt: string;
   updatedAt: string;
   adminContact: AdminContact;
+  user: User;
 }
 
 export interface OrderItem {

@@ -32,4 +32,5 @@ public class OrderResponse {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private AdminContactDTO adminContact;
+    private com.example.talkingCanvas.dto.user.UserProfileResponse user;
 }

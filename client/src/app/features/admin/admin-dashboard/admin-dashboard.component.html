@@ -37,45 +37,109 @@
         </div>
 
         <div *ngIf="!loading && paintings.length > 0" class="table-container">
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>Image</th>
-            <th>Title</th>
-            <th>Artist</th>
-            <th>Price</th>
-            <th>Stock</th>
-            <th>Status</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let painting of paintings">
-            <td class="image-cell">
-              <img [src]="painting.images?.[0]?.imageUrl || 'assets/images/placeholder-painting.jpg'"
-                alt="{{ painting.title }}" class="thumbnail">
-            </td>
-            <td class="title-cell">{{ painting.title }}</td>
-            <td>{{ painting.artistName }}</td>
-            <td>{{ painting.currency }} {{ painting.price }}</td>
-            <td>{{ painting.stockQuantity }}</td>
-            <td>
-              <span class="status-badge" [class.available]="painting.isAvailable"
-                [class.sold-out]="!painting.isAvailable">
-                {{ painting.isAvailable ? 'Available' : 'Sold Out' }}
-              </span>
-            </td>
-            <td class="actions-cell">
-              <button (click)="editPainting(painting.id)" class="action-btn edit" title="Edit">
-                ✎
-              </button>
-              <button (click)="deletePainting(painting.id)" class="action-btn delete" title="Delete">
-                🗑
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Image</th>
+                <th>Title</th>
+                <th>Artist</th>
+                <th>Price</th>
+                <th>Stock</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let painting of paintings">
+                <td class="image-cell">
+                  <img [src]="painting.images?.[0]?.imageUrl || 'assets/images/placeholder-painting.jpg'"
+                    alt="{{ painting.title }}" class="thumbnail">
+                </td>
+                <td class="title-cell">{{ painting.title }}</td>
+                <td>{{ painting.artistName }}</td>
+                <td>{{ painting.currency }} {{ painting.price }}</td>
+                <td>{{ painting.stockQuantity }}</td>
+                <td>
+                  <span class="status-badge" [class.available]="painting.isAvailable"
+                    [class.sold-out]="!painting.isAvailable">
+                    {{ painting.isAvailable ? 'Available' : 'Sold Out' }}
+                  </span>
+                </td>
+                <td class="actions-cell">
+                  <button (click)="editPainting(painting.id)" class="action-btn edit" title="Edit">
+                    ✎
+                  </button>
+                  <button (click)="deletePainting(painting.id)" class="action-btn delete" title="Delete">
+                    🗑
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </mat-tab>
+
+    <!-- Orders Tab -->
+    <mat-tab label="Orders">
+      <div class="content-section">
+        <h2>Order Management</h2>
+
+        <div *ngIf="loadingOrders" class="loading-spinner">
+          <mat-spinner diameter="40"></mat-spinner>
+          <p>Loading orders...</p>
+        </div>
+
+        <div *ngIf="!loadingOrders && orders.length === 0" class="empty-state">
+          <p>No orders found.</p>
+        </div>
+
+        <div *ngIf="!loadingOrders && orders.length > 0" class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Order ID</th>
+                <th>User</th>
+                <th>Contact</th>
+                <th>Paintings</th>
+                <th>Total</th>
+                <th>Status</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let order of orders">
+                <td>{{ order.orderNumber }}</td>
+                <td>
+                  <div class="user-info">
+                    <span class="name">{{ order.user?.name || 'Unknown' }}</span>
+                    <span class="email">{{ order.user?.email || 'No Email' }}</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="contact-info">
+                    <p>{{ order.deliveryAddress.street }}</p>
+                    <p>{{ order.deliveryAddress.city }}, {{ order.deliveryAddress.state }}</p>
+                    <p>{{ order.deliveryAddress.pincode }}</p>
+                  </div>
+                </td>
+                <td>
+                  <ul class="painting-list">
+                    <li *ngFor="let item of order.items">
+                      {{ item.paintingTitle }} (x{{ item.quantity }})
+                    </li>
+                  </ul>
+                </td>
+                <td>{{ order.currency }} {{ order.totalAmount }}</td>
+                <td>
+                  <span class="status-badge" [ngClass]="order.orderStatus.toLowerCase()">
+                    {{ order.orderStatus }}
+                  </span>
+                </td>
+                <td>{{ order.createdAt | date:'medium' }}</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </mat-tab>
@@ -84,7 +148,7 @@
     <mat-tab label="System Metrics">
       <div class="content-section">
         <h2>System Health & Metrics</h2>
-        
+
         <div *ngIf="loadingMetrics" class="loading-spinner">
           <mat-spinner diameter="40"></mat-spinner>
           <p>Loading system metrics...</p>
@@ -106,7 +170,7 @@
                   <p *ngIf="healthStatus?.status !== 'UP'">Some services may be experiencing issues</p>
                 </div>
               </div>
-              
+
               <div class="health-details" *ngIf="healthStatus?.components">
                 <h4>Component Status</h4>
                 <div class="component" *ngFor="let component of getHealthComponents()">

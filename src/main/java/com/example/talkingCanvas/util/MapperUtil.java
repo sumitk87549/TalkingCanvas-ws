@@ -202,6 +202,7 @@ public class MapperUtil {
                                 .createdAt(order.getCreatedAt())
                                 .updatedAt(order.getUpdatedAt())
                                 .adminContact(adminContact)
+                                .user(toUserProfileResponse(order.getUser()))
                                 .build();
         }
 
