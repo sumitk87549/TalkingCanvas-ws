@@ -5,8 +5,9 @@
       <div class="emoji-circle" (click)="toggleEmojiPicker($event)">
         {{ user?.profileEmoji || '😊' }}
       </div>
-      <button type="button" class="edit-emoji-btn" (click)="toggleEmojiPicker($event)" title="Change emoji">
-        <i class="fas fa-edit"></i>
+      <button type="button" class="edit-emoji-btn" (click)="toggleEmojiPicker($event)" title="Change emoji" aria-label="Change emoji">
+        ✏️
+        <!-- ✎ -->
       </button>
 
       <!-- Emoji Picker Modal -->
@@ -160,7 +161,7 @@
 
         <div class="address-card add-new" (click)="openAddAddress()">
           <div class="add-icon">
-            <i class="fas fa-plus"></i>
+            ＋
           </div>
           <p>Add New Address</p>
         </div>
