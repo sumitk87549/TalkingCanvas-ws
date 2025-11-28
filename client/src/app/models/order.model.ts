@@ -34,5 +34,6 @@ export interface AdminContact {
 
 export interface CreateOrderRequest {
   deliveryAddress: Address;
+  paymentMethod: string;
   notes?: string;
 }

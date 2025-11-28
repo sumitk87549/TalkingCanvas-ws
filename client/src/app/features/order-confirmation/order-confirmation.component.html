@@ -1,0 +1,31 @@
+<div class="confirmation-container">
+    <div class="confirmation-card">
+        <div class="success-icon">✓</div>
+        <h1>Order Placed Successfully!</h1>
+
+        <div class="order-details" *ngIf="order">
+            <p class="order-number">Order #{{ order.orderNumber }}</p>
+
+            <div class="message-box">
+                <p>Thank you for your purchase. We have received your order request.</p>
+
+                <ul class="info-list">
+                    <li>We will contact you shortly on the contact number you provided to confirm the details.</li>
+                    <li>Your selected painting(s) have been marked as "Sold" and removed from the gallery.</li>
+                    <li>Your order request will be replied to soon.</li>
+                </ul>
+
+                <div class="contact-info">
+                    <p>If you have any questions, please contact us directly:</p>
+                    <p><strong>Phone:</strong> {{ order.adminContact.phone }}</p>
+                    <p><strong>Email:</strong> {{ order.adminContact.email }}</p>
+                </div>
+            </div>
+
+            <div class="actions">
+                <a routerLink="/" class="btn-home">Return to Home</a>
+                <a routerLink="/profile" class="btn-orders">View My Orders</a>
+            </div>
+        </div>
+    </div>
+</div>
