@@ -11,7 +11,8 @@ export interface CartItem {
   id: number;
   paintingId: number;
   paintingTitle: string;
- // artistName: string;
+  artistName?: string;  // Made optional with ?
+  medium?: string;      // Added optional medium property
   primaryImage: string;
   price: number;
   currency: string;
