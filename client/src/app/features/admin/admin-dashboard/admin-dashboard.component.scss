@@ -4,7 +4,7 @@
   margin: 0 auto;
   margin-top: 4%;
   min-height: calc(100vh - 64px);
-  background-color: var(--surface-ground);
+  background-color: var(--bg-primary);
 
   .header {
     display: flex;
@@ -24,19 +24,19 @@
       align-items: center;
       gap: 0.5rem;
       padding: 0.75rem 1.5rem;
-      background-color: var(--primary);
-      color: white;
+      background-color: var(--button-bg);
+      color: var(--button-text);
       border: none;
       border-radius: 8px;
       font-size: 1rem;
       cursor: pointer;
       transition: all 0.2s;
-      box-shadow: 0 4px 6px rgba(var(--primary-rgb), 0.2);
+      box-shadow: 0 4px 6px var(--shadow-color);
 
       &:hover {
-        background-color: var(--primary-dark);
+        background-color: var(--button-hover);
         transform: translateY(-1px);
-        box-shadow: 0 6px 8px rgba(var(--primary-rgb), 0.3);
+        box-shadow: 0 6px 8px var(--shadow-medium);
       }
 
       .icon {
@@ -53,10 +53,10 @@
     margin-bottom: 2rem;
 
     .stat-card {
-      background: var(--surface-card);
+      background: var(--card-bg);
       padding: 1.5rem;
       border-radius: 12px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      box-shadow: 0 4px 6px var(--shadow-color);
       border: 1px solid var(--border-light);
       transition: transform 0.2s;
 
@@ -67,7 +67,7 @@
       .stat-value {
         font-size: 2.5rem;
         font-weight: 700;
-        color: var(--primary);
+        color: var(--accent);
         margin-bottom: 0.5rem;
         font-family: 'Playfair Display', serif;
       }
@@ -81,13 +81,13 @@
   }
 
   .dashboard-tabs {
-    background: var(--surface-card);
+    background: var(--card-bg);
     border-radius: 12px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 4px 6px var(--shadow-color);
     overflow: hidden;
 
     ::ng-deep .mat-mdc-tab-header {
-      background: var(--surface-ground);
+      background: var(--bg-secondary);
       border-bottom: 1px solid var(--border-light);
     }
 
@@ -115,9 +115,9 @@
         padding: 4rem;
         color: var(--text-secondary);
         font-size: 1.1rem;
-        background: var(--surface-ground);
+        background: var(--bg-secondary);
         border-radius: 8px;
-        border: 2px dashed var(--border-medium);
+        border: 2px dashed var(--border-color);
       }
 
       .table-container {
@@ -128,7 +128,7 @@
         .data-table {
           width: 100%;
           border-collapse: collapse;
-          background: var(--surface-card);
+          background: var(--card-bg);
 
           th,
           td {
@@ -138,7 +138,7 @@
           }
 
           th {
-            background: var(--surface-ground);
+            background: var(--bg-secondary);
             color: var(--text-secondary);
             font-weight: 600;
             font-size: 0.9rem;
@@ -263,10 +263,10 @@
                 margin-right: 0.25rem;
 
                 &.edit {
-                  color: var(--primary);
+                  color: var(--accent);
 
                   &:hover {
-                    background-color: rgba(var(--primary-rgb), 0.1);
+                    background-color: var(--bg-tertiary);
                   }
                 }
 
@@ -285,7 +285,7 @@
             transition: background-color 0.2s;
 
             &:hover {
-              background-color: rgba(0, 0, 0, 0.02);
+              background-color: var(--bg-tertiary);
             }
           }
         }
@@ -415,7 +415,7 @@
 
             .metric-item {
               padding: 0.75rem;
-              background: var(--surface-ground);
+              background: var(--bg-secondary);
               border-radius: 6px;
 
               .metric-name {
@@ -427,7 +427,7 @@
               .metric-value {
                 font-size: 1.1rem;
                 font-weight: 600;
-                color: var(--primary);
+                color: var(--accent);
               }
 
               .metric-desc {

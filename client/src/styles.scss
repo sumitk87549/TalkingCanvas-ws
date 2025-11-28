@@ -14,6 +14,104 @@
   --container-padding: 20px;
   --header-height: 80px;
   --header-height-mobile: 60px;
+
+  /* Day Theme Colors - Bright & Clear */
+  --day-bg-primary: #ffffff;
+  --day-bg-secondary: #fafafa;
+  --day-bg-tertiary: #f5f5f5;
+  --day-text-primary: #1a1a1a;
+  --day-text-secondary: #525252;
+  --day-text-muted: #737373;
+  --day-border: rgba(0, 0, 0, 0.12);
+  --day-border-light: rgba(0, 0, 0, 0.06);
+  --day-shadow: rgba(0, 0, 0, 0.08);
+  --day-shadow-medium: rgba(0, 0, 0, 0.12);
+  --day-shadow-strong: rgba(0, 0, 0, 0.2);
+  --day-accent: #d4a574;
+  --day-accent-hover: #c89564;
+  --day-button-bg: #2c1810;
+  --day-button-text: #ffffff;
+  --day-button-hover: #3d2418;
+  --day-input-bg: #ffffff;
+  --day-input-border: rgba(0, 0, 0, 0.23);
+  --day-card-bg: #ffffff;
+  --day-overlay: rgba(0, 0, 0, 0.5);
+
+  /* Night Theme Colors - Deep & Comfortable */
+  --night-bg-primary: #0f0f0f;
+  --night-bg-secondary: #1a1a1a;
+  --night-bg-tertiary: #2a2a2a;
+  --night-text-primary: #e5e5e5;
+  --night-text-secondary: #a3a3a3;
+  --night-text-muted: #737373;
+  --night-border: rgba(255, 255, 255, 0.12);
+  --night-border-light: rgba(255, 255, 255, 0.06);
+  --night-shadow: rgba(0, 0, 0, 0.6);
+  --night-shadow-medium: rgba(0, 0, 0, 0.8);
+  --night-shadow-strong: rgba(0, 0, 0, 0.95);
+  --night-accent: #e4b584;
+  --night-accent-hover: #f0c599;
+  --night-button-bg: #d4a574;
+  --night-button-text: #1a1a1a;
+  --night-button-hover: #e4b584;
+  --night-input-bg: #2a2a2a;
+  --night-input-border: rgba(255, 255, 255, 0.23);
+  --night-card-bg: #1f1f1f;
+  --night-overlay: rgba(0, 0, 0, 0.85);
+
+  /* Active Theme Variables (default to day) */
+  --bg-primary: var(--day-bg-primary);
+  --bg-secondary: var(--day-bg-secondary);
+  --bg-tertiary: var(--day-bg-tertiary);
+  --text-primary: var(--day-text-primary);
+  --text-secondary: var(--day-text-secondary);
+  --text-muted: var(--day-text-muted);
+  --border-color: var(--day-border);
+  --border-light: var(--day-border-light);
+  --shadow-color: var(--day-shadow);
+  --shadow-medium: var(--day-shadow-medium);
+  --shadow-strong: var(--day-shadow-strong);
+  --accent: var(--day-accent);
+  --accent-hover: var(--day-accent-hover);
+  --button-bg: var(--day-button-bg);
+  --button-text: var(--day-button-text);
+  --button-hover: var(--day-button-hover);
+  --input-bg: var(--day-input-bg);
+  --input-border: var(--day-input-border);
+  --card-bg: var(--day-card-bg);
+  --overlay-bg: var(--day-overlay);
+
+  /* Alpha/Transparency helpers for backgrounds */
+  --bg-secondary-alpha-80: rgba(250, 250, 250, 0.9);
+  --bg-secondary-alpha-0: rgba(250, 250, 250, 0);
+}
+
+/* Night Mode Override */
+body.night-mode {
+  --bg-primary: var(--night-bg-primary);
+  --bg-secondary: var(--night-bg-secondary);
+  --bg-tertiary: var(--night-bg-tertiary);
+  --text-primary: var(--night-text-primary);
+  --text-secondary: var(--night-text-secondary);
+  --text-muted: var(--night-text-muted);
+  --border-color: var(--night-border);
+  --border-light: var(--night-border-light);
+  --shadow-color: var(--night-shadow);
+  --shadow-medium: var(--night-shadow-medium);
+  --shadow-strong: var(--night-shadow-strong);
+  --accent: var(--night-accent);
+  --accent-hover: var(--night-accent-hover);
+  --button-bg: var(--night-button-bg);
+  --button-text: var(--night-button-text);
+  --button-hover: var(--night-button-hover);
+  --input-bg: var(--night-input-bg);
+  --input-border: var(--night-input-border);
+  --card-bg: var(--night-card-bg);
+  --overlay-bg: var(--night-overlay);
+
+  /* Alpha/Transparency helpers for night mode backgrounds */
+  --bg-secondary-alpha-80: rgba(26, 26, 26, 0.95);
+  --bg-secondary-alpha-0: rgba(26, 26, 26, 0);
 }
 
 /* Breakpoints Mixins */
@@ -147,12 +245,15 @@ body {
 body {
   font-family: 'Georgia', serif;
   line-height: 1.6;
-  background-color: var(--background-dark);
-  color: var(--text-light);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-size: 16px;
   /* Base font size */
+
+  /* Smooth theme transitions */
+  transition: background-color 0.5s ease, color 0.5s ease;
 
   /* Enhanced mobile scroll behavior */
   -webkit-overflow-scrolling: touch;

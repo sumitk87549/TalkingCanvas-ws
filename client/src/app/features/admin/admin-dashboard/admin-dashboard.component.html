@@ -112,9 +112,9 @@
                 <td>{{ order.orderNumber }}</td>
                 <td>
                   <div class="user-info">
-                    <span class="name">{{ order.user?.name || 'Unknown' }}</span>
-                    <span class="email">{{ order.user?.email || 'No Email' }}</span>
-                    <span class="phone" *ngIf="order.user?.contactNumber">{{ order.user?.contactNumber }}</span>
+                    <span class="name">{{ order.user.name || 'Unknown' }}</span>
+                    <span class="email">{{ order.user.email || 'No Email' }}</span>
+                    <span class="phone" *ngIf="order.user?.contactNumber">{{ order.user.contactNumber }}</span>
                   </div>
                 </td>
                 <td>

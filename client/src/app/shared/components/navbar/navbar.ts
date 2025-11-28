@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterLink, Router, NavigationEnd } from "@angular/router";
 import { AuthService } from '../../../core/services/auth.service';
 import { CartService } from '../../../core/services/cart.service';
+import { ThemeService } from '../../../core/services/theme.service';
 import { AuthResponse } from '../../../models/user.model';
 import { filter } from 'rxjs/operators';
 
@@ -20,12 +21,15 @@ export class Navbar implements AfterViewInit, OnInit {
   isAdmin = false;
   cartItemCount = 0;
   isMobileMenuOpen = false;
+  isDayMode = false; // Default to dark theme initially
+  isAutoMode = true; // Track current theme mode (auto/manual)
 
   constructor(
     public authService: AuthService,
     private cartService: CartService,
     private cdr: ChangeDetectorRef,
-    private router: Router
+    private router: Router,
+    public themeService: ThemeService
   ) {
     // Close mobile menu on route change
     this.router.events.pipe(
@@ -50,6 +54,18 @@ export class Navbar implements AfterViewInit, OnInit {
     this.cartService.cart$.subscribe(cart => {
       this.cartItemCount = cart?.totalItems || 0;
       this.cdr.markForCheck(); // Force change detection
+    });
+
+    // Subscribe to theme changes
+    this.themeService.currentTheme$.subscribe(theme => {
+      this.isDayMode = theme === 'day';
+      this.cdr.markForCheck();
+    });
+
+    // Subscribe to theme mode changes
+    this.themeService.currentThemeMode$.subscribe(mode => {
+      this.isAutoMode = mode === 'auto';
+      this.cdr.markForCheck();
     });
   }
 
@@ -115,5 +131,21 @@ export class Navbar implements AfterViewInit, OnInit {
       'colored': !this.isHeaderInView || this.isMobileMenuOpen,
       'mobile-open': this.isMobileMenuOpen
     };
+  }
+
+  toggleTheme() {
+    this.themeService.toggleTheme();
+  }
+
+  toggleThemeMode() {
+    this.themeService.toggleThemeMode();
+  }
+
+  getThemeButtonLabel(): string {
+    if (this.isAutoMode) {
+      return `Auto mode (Currently ${this.isDayMode ? 'Day' : 'Night'}). Click to switch theme.`;
+    } else {
+      return `Manual mode (${this.isDayMode ? 'Day' : 'Night'}). Click to switch theme.`;
+    }
   }
 }

@@ -2,6 +2,15 @@
   <nav class="navbar">
     <a class="logo" routerLink="/">TalkingCanvas</a>
 
+    <!-- Theme Toggle Button -->
+    <button class="theme-toggle" (click)="toggleTheme()" [attr.aria-label]="getThemeButtonLabel()"
+      [class.auto-mode]="isAutoMode"
+      [title]="isAutoMode ? 'Auto mode - Right click to switch to manual' : 'Manual mode - Right click to switch to auto'"
+      (contextmenu)="toggleThemeMode(); $event.preventDefault()">
+      <span class="theme-icon">{{ isDayMode ? '☀️' : '🌙' }}</span>
+      <span class="mode-indicator" *ngIf="isAutoMode">A</span>
+    </button>
+
     <!-- Mobile Menu Toggle Button -->
     <button class="mobile-menu-toggle" (click)="toggleMobileMenu()" [class.active]="isMobileMenuOpen"
       aria-label="Toggle navigation">
