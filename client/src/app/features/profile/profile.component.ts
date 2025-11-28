@@ -148,6 +148,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
           next: (response) => {
             if (response.success && response.data) {
               this.user = response.data;
+              this.authService.updateUser(this.user); // Update auth state
               this.profileForm.markAsPristine();
               this.saveSuccess = true;
               setTimeout(() => this.saveSuccess = false, 3000);
@@ -170,10 +171,10 @@ export class ProfileComponent implements OnInit, OnDestroy {
   // Handle clicks outside the emoji picker
   @HostListener('document:click', ['$event'])
   onClick(event: MouseEvent) {
-    if (this.showEmojiPicker && 
-        this.emojiPickerElement && 
-        !this.emojiPickerElement.nativeElement.contains(event.target) &&
-        !(event.target as HTMLElement).closest('.emoji-circle, .edit-emoji-btn')) {
+    if (this.showEmojiPicker &&
+      this.emojiPickerElement &&
+      !this.emojiPickerElement.nativeElement.contains(event.target) &&
+      !(event.target as HTMLElement).closest('.emoji-circle, .edit-emoji-btn')) {
       this.showEmojiPicker = false;
     }
   }
@@ -200,6 +201,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
         next: (response) => {
           if (response.success && response.data) {
             this.user = response.data;
+            this.authService.updateUser(this.user); // Update auth state
             this.success = 'Emoji updated successfully!';
             setTimeout(() => this.success = null, 3000);
           }
