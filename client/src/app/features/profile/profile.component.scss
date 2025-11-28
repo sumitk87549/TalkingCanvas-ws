@@ -493,11 +493,18 @@
       font-size: 1rem;
       transition: border-color 0.3s ease;
       box-sizing: border-box;
+      color: #333; /* Darker text color for better visibility */
+
+      &::placeholder {
+        color: #888; /* Slightly darker placeholder text */
+        opacity: 1; /* Ensure full opacity */
+      }
 
       &:focus {
         outline: none;
         border-color: var(--primary-color);
         box-shadow: 0 0 0 2px rgba(44, 24, 16, 0.2);
+        color: #222; /* Even darker text when focused */
       }
 
       &[readonly] {
