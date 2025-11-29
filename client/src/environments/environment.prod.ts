@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://talkingcanvas-ws-production.up.railway.app/api'
+  apiUrl: 'https://talkingcanvas-backend.onrender.com/api'
 };
