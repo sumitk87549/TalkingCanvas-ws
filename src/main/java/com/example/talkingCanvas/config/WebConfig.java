@@ -10,7 +10,12 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOriginPatterns("https://talking-canvas-ws-git-main-sumit-kumar-s-projects-fd473391.vercel.app", "https://*.vercel.app")
+                .allowedOriginPatterns(
+                        "http://localhost:4200", // Local development
+                        "https://*.vercel.app", // All Vercel deployments
+                        "https://*.netlify.app", // All Netlify deployments
+                        "https://*.github.io" // GitHub Pages deployments
+                )
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("Authorization", "Content-Type", "Accept")
                 .allowCredentials(true)
