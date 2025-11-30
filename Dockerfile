@@ -26,8 +26,9 @@ COPY --from=build /app/target/*.jar app.jar
 EXPOSE 8080
 
 # Health check
+# Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=60s \
-  CMD wget --quiet --tries=1 --spider http://localhost:8080/actuator/health || exit 1
+  CMD wget --quiet --tries=1 --spider http://localhost:${PORT:-8080}/api/actuator/health || exit 1
 
 # Run application
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["sh", "-c", "java -jar -Dserver.port=${PORT:-8080} -Dspring.profiles.active=${SPRING_PROFILES_ACTIVE:-prod} app.jar"]
