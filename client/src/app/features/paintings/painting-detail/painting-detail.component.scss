@@ -1,3 +1,4 @@
+@use 'sass:color';
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap');
 
 // Variables
@@ -238,7 +239,7 @@ $background-dark: #1a1a1a;
         color: $primary-color;
 
         &:hover {
-          background: lighten($accent-color, 10%);
+          background: color.adjust($accent-color, $lightness: 10%);
           transform: translateY(-2px);
         }
 
