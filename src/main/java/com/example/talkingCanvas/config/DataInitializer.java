@@ -203,14 +203,23 @@ public class DataInitializer implements CommandLineRunner {
                 PaintingCategory landscape = categoryRepository.findByName("Landscape").orElse(null);
                 PaintingCategory modern = categoryRepository.findByName("Modern").orElse(null);
 
-                // Directory containing real image files (relative to project root)
-                String imageDir = "client/src/assets/paintings";
-
-                // Helper to load image bytes safely
+                // Load images from classpath (works in both dev and production with Docker)
                 java.util.function.Function<String, byte[]> loadImage = filename -> {
                         try {
-                                java.nio.file.Path path = java.nio.file.Paths.get(imageDir, filename);
-                                return java.nio.file.Files.readAllBytes(path);
+                                // Try loading from classpath (src/main/resources/static/paintings)
+                                org.springframework.core.io.ClassPathResource resource = new org.springframework.core.io.ClassPathResource(
+                                                "static/paintings/" + filename);
+
+                                if (resource.exists()) {
+                                        try (java.io.InputStream is = resource.getInputStream()) {
+                                                return is.readAllBytes();
+                                        }
+                                } else {
+                                        logger.warn("Image not found in classpath: {}", filename);
+                                        // fallback to a tiny transparent PNG placeholder
+                                        String placeholderBase64 = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO08L8MAAAAASUVORK5CYII=";
+                                        return java.util.Base64.getDecoder().decode(placeholderBase64);
+                                }
                         } catch (Exception e) {
                                 logger.warn("Failed to load image {}: {}. Using placeholder.", filename,
                                                 e.getMessage());
