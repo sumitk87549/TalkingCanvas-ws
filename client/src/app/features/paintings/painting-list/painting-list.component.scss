@@ -135,15 +135,7 @@ h1 {
 }
 
 .painting-card {
-  // Default to white if variable not set
-  --dominant-color: 255, 255, 255;
-
-  // Dynamic gradient based on dominant color
-  background: linear-gradient(135deg,
-      rgba(var(--dominant-color), 0.15) 0%,
-      rgba(var(--dominant-color), 0.05) 100%);
-
-  backdrop-filter: blur(10px);
+  background: #f3f4f6;
   border-radius: 16px;
   overflow: hidden;
   box-shadow:
