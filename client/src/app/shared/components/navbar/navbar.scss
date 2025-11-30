@@ -380,9 +380,9 @@ $background-dark: #1a1a1a;
       bottom: 0;
       background-color: var(--bg-secondary);
       flex-direction: column;
-      justify-content: center;
+      justify-content: flex-start; // Changed from center to flex-start to prevent overlap
       align-items: center;
-      padding-top: 80px; // Space for navbar header
+      padding-top: 100px; // Increased space for navbar header
       transform: translateX(100%);
       transition: transform 0.3s ease-in-out, background-color 0.5s ease;
       overflow-y: auto;

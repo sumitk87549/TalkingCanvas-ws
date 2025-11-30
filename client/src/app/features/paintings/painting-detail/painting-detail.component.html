@@ -28,13 +28,9 @@
         </div>
         <div class="thumbnail-gallery" *ngIf="painting!.images && painting!.images.length > 1">
           <div class="thumbnails">
-            <img
-              *ngFor="let image of painting!.images; let i = index"
-              [src]="image.imageUrl"
-              [alt]="painting!.title + ' view ' + (i+1)"
-              [class.active]="image.isPrimary"
-              (click)="setPrimaryImage(i)"
-            />
+            <img *ngFor="let image of painting!.images; let i = index" [src]="image.imageUrl"
+              [alt]="painting!.title + ' view ' + (i+1)" [class.active]="image.isPrimary"
+              (click)="setPrimaryImage(i)" />
           </div>
         </div>
       </div>
@@ -54,16 +50,19 @@
 
         <div class="price-section">
           <p class="price">{{ painting!.currency === 'INR' ? '₹' : '$' }}{{ painting!.price }}</p>
-          <p class="availability" [class.available]="painting!.isAvailable" [class.unavailable]="!painting!.isAvailable">
+          <p class="availability" [class.available]="painting!.isAvailable"
+            [class.unavailable]="!painting!.isAvailable">
             <span class="status-indicator"></span>
             {{ painting!.isAvailable ? 'Available' : 'Sold Out' }}
-            <span *ngIf="painting!.isAvailable && painting!.stockQuantity > 0"> ({{ painting!.stockQuantity }} in stock)</span>
+            <span *ngIf="painting!.isAvailable && painting!.stockQuantity > 0"> ({{ painting!.stockQuantity }} in
+              stock)</span>
           </p>
         </div>
 
         <div class="action-buttons">
-          <button (click)="addToCart()" class="btn btn-primary" [disabled]="!painting!.isAvailable || isInCart">
-            {{ isInCart ? 'Already in Cart' : (painting!.isAvailable ? 'Add to Cart' : 'Sold Out') }}
+          <button (click)="toggleCart()" class="btn" [class.btn-primary]="!cartItemId" [class.btn-danger]="cartItemId"
+            [disabled]="!painting!.isAvailable && !cartItemId">
+            {{ cartItemId ? 'Remove from Cart' : (painting!.isAvailable ? 'Add to Cart' : 'Sold Out') }}
           </button>
           <button class="btn btn-secondary">Add to Wishlist</button>
         </div>
@@ -88,7 +87,8 @@
             </div>
             <div class="detail-item">
               <span class="label">Dimensions:</span>
-              <span class="value">{{ painting!.width }}cm × {{ painting!.height }}cm{{ painting!.depth ? ' × ' + painting!.depth + 'cm' : '' }}</span>
+              <span class="value">{{ painting!.width }}cm × {{ painting!.height }}cm{{ painting!.depth ? ' × ' +
+                painting!.depth + 'cm' : '' }}</span>
             </div>
             <div class="detail-item" *ngIf="painting!.categories && painting!.categories.length > 0">
               <span class="label">Categories:</span>
@@ -123,15 +123,15 @@
         </div>
 
         <!-- Sharing -->
-<!--        <div class="sharing-section">-->
-<!--          <h3>Share this Artwork</h3>-->
-<!--          <div class="social-share">-->
-<!--            <button class="share-btn facebook">Facebook</button>-->
-<!--            <button class="share-btn twitter">Twitter</button>-->
-<!--            <button class="share-btn pinterest">Pinterest</button>-->
-<!--            <button class="share-btn copy-link">Copy Link</button>-->
-<!--          </div>-->
-<!--        </div>-->
+        <!--        <div class="sharing-section">-->
+        <!--          <h3>Share this Artwork</h3>-->
+        <!--          <div class="social-share">-->
+        <!--            <button class="share-btn facebook">Facebook</button>-->
+        <!--            <button class="share-btn twitter">Twitter</button>-->
+        <!--            <button class="share-btn pinterest">Pinterest</button>-->
+        <!--            <button class="share-btn copy-link">Copy Link</button>-->
+        <!--          </div>-->
+        <!--        </div>-->
       </div>
     </div>
 

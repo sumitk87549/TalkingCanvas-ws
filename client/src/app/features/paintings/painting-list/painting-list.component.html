@@ -10,7 +10,7 @@
         <p>No paintings available</p>
       </div>
       <ng-container *ngFor="let painting of paintings; trackBy: trackByPaintingId">
-        <div class="painting-card" *ngIf="painting.stockQuantity > 0">
+        <div class="painting-card" *ngIf="painting.stockQuantity > 0" [appDominantColor]="getPrimaryImageUrl(painting)">
           <a [routerLink]="['/paintings', painting.id]" class="painting-link">
             <div class="painting-image">
               <img [src]="getPrimaryImageUrl(painting) || 'assets/images/placeholder-painting.jpg'"
@@ -23,11 +23,11 @@
             </div>
           </a>
           <div class="painting-actions">
-            <button (click)="addToCart(painting)" class="btn btn-primary"
-              [disabled]="!painting.isAvailable || (paintingsInCart.get(painting.id) || false)">
-              {{ (paintingsInCart.get(painting.id) || false) ? 'Already in Cart' : (painting.isAvailable ? 'Add to Cart'
-              :
-              'Sold Out') }}
+            <button (click)="toggleCart(painting)" class="btn" [class.btn-primary]="!cartItemsMap.has(painting.id)"
+              [class.btn-danger]="cartItemsMap.has(painting.id)"
+              [disabled]="!painting.isAvailable && !cartItemsMap.has(painting.id)">
+              {{ cartItemsMap.has(painting.id) ? 'Remove from Cart' : (painting.isAvailable ? 'Add to Cart' : 'Sold
+              Out') }}
             </button>
           </div>
         </div>

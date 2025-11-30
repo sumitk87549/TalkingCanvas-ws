@@ -263,6 +263,24 @@ $background-dark: #1a1a1a;
         }
       }
 
+      &.btn-danger {
+        background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+        color: white;
+        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+
+        &:hover:not(:disabled) {
+          background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+          box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
+          transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+          &:hover {
+            transform: none;
+          }
+        }
+      }
+
       &.btn-secondary {
         background: transparent;
         border: 2px solid rgba(255, 255, 255, 0.2);

@@ -18,7 +18,8 @@ import { ChangeDetectorRef } from '@angular/core';
 export class PaintingDetailComponent implements OnInit {
   painting: Painting | null = null;
   loading = false;
-  isInCart = false;
+  cartItemId: number | null = null;
+  private currentCart: any = null;
 
   constructor(
     private route: ActivatedRoute,
@@ -32,9 +33,10 @@ export class PaintingDetailComponent implements OnInit {
       this.loadPainting(params['id']);
     });
 
-    // Subscribe to cart changes to update in-cart status
-    this.cartService.cart$.subscribe(() => {
-      this.checkIfInCart();
+    // Subscribe to cart changes
+    this.cartService.cart$.subscribe(cart => {
+      this.currentCart = cart;
+      this.updateCartStatus();
     });
   }
 
@@ -42,15 +44,12 @@ export class PaintingDetailComponent implements OnInit {
     console.log('Loading painting with ID:', id);
     this.loading = true;
     const pid = Number(id);
-    console.log('Converted to number:', pid);
     this.paintingService.getPaintingById(pid).subscribe({
       next: (resp: ApiResponse<Painting>) => {
-        console.log('Painting API response:', resp);
         this.painting = resp.data || null;
         this.loading = false;
+        this.updateCartStatus();
         this.cdr.detectChanges();
-        this.checkIfInCart();
-        console.log('Painting loaded:', this.painting);
       },
       error: (err) => {
         console.error('Error loading painting:', err);
@@ -61,17 +60,32 @@ export class PaintingDetailComponent implements OnInit {
     });
   }
 
-  addToCart() {
+  toggleCart() {
     if (!this.painting) return;
-    const req: AddToCartRequest = { paintingId: this.painting.id, quantity: 1 };
-    this.cartService.addToCart(req).subscribe({
-      next: () => {
-        this.checkIfInCart(); // Update local cart status
-      },
-      error: (error) => {
-        console.error('Failed to add item to cart:', error);
+
+    if (this.cartItemId) {
+      // Remove from cart
+      this.cartService.removeCartItem(this.cartItemId).subscribe({
+        error: (error) => console.error('Failed to remove item from cart:', error)
+      });
+    } else {
+      // Add to cart
+      const req: AddToCartRequest = { paintingId: this.painting.id, quantity: 1 };
+      this.cartService.addToCart(req).subscribe({
+        error: (error) => console.error('Failed to add item to cart:', error)
+      });
+    }
+  }
+
+  private updateCartStatus() {
+    this.cartItemId = null;
+    if (this.painting && this.currentCart && this.currentCart.items) {
+      const cartItem = this.currentCart.items.find((item: any) => item.paintingId === this.painting?.id);
+      if (cartItem) {
+        this.cartItemId = cartItem.id;
       }
-    });
+    }
+    this.cdr.detectChanges();
   }
 
   getPrimaryImageUrl(): string | undefined {
@@ -92,29 +106,5 @@ export class PaintingDetailComponent implements OnInit {
   getCategoryNames(): string {
     if (!this.painting?.categories?.length) return '';
     return this.painting.categories.map(cat => cat.name).join(', ');
-  }
-
-  private checkIfInCart() {
-    if (!this.painting?.id) {
-      this.isInCart = false;
-      this.cdr.detectChanges();
-      return;
-    }
-
-    this.cartService.getItemCount(this.painting.id).subscribe({
-      next: (response) => {
-        if (response.success && response.data !== undefined) {
-          this.isInCart = response.data > 0;
-        } else {
-          this.isInCart = false;
-        }
-        this.cdr.detectChanges();
-      },
-      error: (err) => {
-        console.error('Error checking if item is in cart:', err);
-        this.isInCart = false;
-        this.cdr.detectChanges();
-      }
-    });
   }
 }
