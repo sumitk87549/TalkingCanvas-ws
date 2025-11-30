@@ -40,10 +40,16 @@ public class DatabaseConfig {
             String username = dbUri.getUserInfo().split(":")[0];
             String password = dbUri.getUserInfo().split(":")[1];
 
+            // Get port, default to 5432 if not specified
+            int port = dbUri.getPort();
+            if (port == -1) {
+                port = 5432; // PostgreSQL default port
+            }
+
             // Construct JDBC URL from the postgresql:// format
             String jdbcUrl = "jdbc:postgresql://" +
                     dbUri.getHost() +
-                    ":" + dbUri.getPort() +
+                    ":" + port +
                     dbUri.getPath();
 
             // Add SSL parameters for Render PostgreSQL
