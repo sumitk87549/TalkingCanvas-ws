@@ -24,4 +24,7 @@ public class UpdateProfileRequest {
     @NotBlank(message = "Contact number is required")
     @Pattern(regexp = "^\\+?[1-9]\\d{1,14}$", message = "Invalid phone number format")
     private String contactNumber;
+
+    @Size(max = 10, message = "Profile emoji must be a valid emoji")
+    private String profileEmoji;
 }

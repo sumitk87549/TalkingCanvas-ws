@@ -8,6 +8,7 @@ import com.example.talkingCanvas.service.PaintingService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,6 +18,7 @@ import java.util.List;
 /**
  * Controller for public painting endpoints
  */
+@Slf4j
 @RestController
 @RequestMapping("/api/paintings")
 @RequiredArgsConstructor
@@ -32,9 +34,10 @@ public class PaintingController {
             @RequestParam(defaultValue = "12") int size,
             @RequestParam(defaultValue = "createdAt") String sortBy,
             @RequestParam(defaultValue = "desc") String sortDirection) {
-        System.out.println("Inside getAllPaintings in PaintingController.java");
+        log.debug("Fetching paintings with page={}, size={}, sortBy={}, sortDirection={}", page, size, sortBy,
+                sortDirection);
         PageResponse<PaintingResponse> paintings = paintingService.getAllPaintings(page, size, sortBy, sortDirection);
-        System.out.println(paintings);
+        log.debug("Retrieved {} paintings", paintings.getTotalElements());
         return ResponseEntity.ok(ApiResponse.success(paintings));
     }
 

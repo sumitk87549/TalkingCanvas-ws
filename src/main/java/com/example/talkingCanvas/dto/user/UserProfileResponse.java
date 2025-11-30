@@ -21,6 +21,7 @@ public class UserProfileResponse {
     private String name;
     private String email;
     private String contactNumber;
+    private String profileEmoji;
     private String role;
     private Boolean isActive;
     private List<AddressDTO> addresses;

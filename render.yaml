@@ -1,0 +1,35 @@
+services:
+  - type: web
+    name: talkingcanvas-backend
+    runtime: java
+    plan: free
+    buildCommand: ./mvnw clean package -DskipTests
+    startCommand: java -Xmx512m -Dserver.port=$PORT -Dspring.profiles.active=prod -jar target/talkingCanvas-0.0.1-SNAPSHOT.jar
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+      - key: DATABASE_URL
+        fromDatabase:
+          name: talkingcanvas-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: FRONTEND_URL
+        value: https://talking-canvas-ws.vercel.app
+      - key: MAIL_USERNAME
+        sync: false
+      - key: MAIL_PASSWORD
+        sync: false
+      - key: ADMIN_EMAIL
+        value: pkumar.mail@gmail.com
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: ADMIN_NAME
+        value: Praveen Kumar
+    healthCheckPath: /api/actuator/health
+
+databases:
+  - name: talkingcanvas-db
+    plan: free
+    databaseName: talkingcanvas
+    user: talkingcanvas

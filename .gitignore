@@ -32,3 +32,14 @@ target
 target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst
 target/maven-status/maven-compiler-plugin/testCompile/default-testCompile/inputFiles.lst
 .vscode/settings.json
+uploads/
+
+# Environment files (security)
+.env
+.env.local
+.env.production
+*.env
+
+# Sensitive configurations
+application-local.properties
+system.properties.local

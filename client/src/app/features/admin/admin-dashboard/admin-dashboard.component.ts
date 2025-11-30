@@ -2,19 +2,21 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { PaintingService } from '../../../core/services/painting.service';
+import { AdminService } from '../../../core/services/admin.service';
 import { ActuatorService, HealthResponse, MetricData } from '../../../core/services/actuator.service';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatCardModule } from '@angular/material/card';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { Order } from '../../../models/order.model';
 
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
   imports: [
-    CommonModule, 
-    RouterModule, 
-    MatTabsModule, 
-    MatCardModule, 
+    CommonModule,
+    RouterModule,
+    MatTabsModule,
+    MatCardModule,
     MatProgressSpinnerModule
   ],
   templateUrl: './admin-dashboard.component.html',
@@ -22,11 +24,13 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 })
 export class AdminDashboardComponent implements OnInit {
   paintings: any[] = [];
+  orders: Order[] = [];
   loading = true;
+  loadingOrders = false;
   totalPaintings = 0;
   totalViews = 0;
   totalPurchases = 0;
-  
+
   // Actuator metrics
   healthStatus: any;
   jvmMetrics: MetricData[] = [];
@@ -37,6 +41,7 @@ export class AdminDashboardComponent implements OnInit {
 
   constructor(
     private paintingService: PaintingService,
+    private adminService: AdminService,
     private actuatorService: ActuatorService,
     private router: Router,
     private cdr: ChangeDetectorRef
@@ -44,12 +49,31 @@ export class AdminDashboardComponent implements OnInit {
 
   ngOnInit() {
     this.loadPaintings();
+    this.loadOrders();
     this.loadActuatorMetrics();
+  }
+
+  loadOrders() {
+    this.loadingOrders = true;
+    this.adminService.getAllOrders(0, 100).subscribe({
+      next: (response) => {
+        if (response.success && response.data) {
+          this.orders = response.data.content;
+        }
+        this.loadingOrders = false;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Failed to load orders', err);
+        this.loadingOrders = false;
+        this.cdr.detectChanges();
+      }
+    });
   }
 
   loadActuatorMetrics() {
     this.loadingMetrics = true;
-    
+
     // Load health status
     this.actuatorService.getHealth().subscribe({
       next: (health) => {
@@ -111,7 +135,7 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   // Helper method to convert health components to array
-  getHealthComponents(): {name: string, status: string}[] {
+  getHealthComponents(): { name: string, status: string }[] {
     if (!this.healthStatus?.components) return [];
     return Object.entries(this.healthStatus.components).map(([name, component]: [string, any]) => ({
       name,
@@ -122,7 +146,7 @@ export class AdminDashboardComponent implements OnInit {
   // Format metric values for display
   formatMetricValue(metric: any): string {
     if (!metric || metric.value === undefined) return 'N/A';
-    
+
     // Format memory in MB or GB
     if (metric.name.toLowerCase().includes('memory')) {
       const valueInMB = metric.value / (1024 * 1024);
@@ -131,7 +155,7 @@ export class AdminDashboardComponent implements OnInit {
       }
       return `${valueInMB.toFixed(2)} MB`;
     }
-    
+
     // Format time in ms or s
     if (metric.name.toLowerCase().includes('time') || metric.name.toLowerCase().includes('duration')) {
       if (metric.value < 1) {
@@ -139,7 +163,7 @@ export class AdminDashboardComponent implements OnInit {
       }
       return `${metric.value.toFixed(2)} s`;
     }
-    
+
     // Format counts
     return metric.value.toLocaleString();
   }

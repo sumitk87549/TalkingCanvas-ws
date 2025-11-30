@@ -65,6 +65,20 @@ export class AuthService {
     return user?.role === 'ADMIN';
   }
 
+  updateUser(updatedUser: any): void {
+    const currentUser = this.getCurrentUser();
+    if (currentUser) {
+      // Merge updated fields into current user
+      const newAuthData: AuthResponse = {
+        ...currentUser,
+        name: updatedUser.name || currentUser.name,
+        email: updatedUser.email || currentUser.email,
+        profileEmoji: updatedUser.profileEmoji || currentUser.profileEmoji
+      };
+      this.setAuthData(newAuthData);
+    }
+  }
+
   private setAuthData(authResponse: AuthResponse): void {
     localStorage.setItem(this.TOKEN_KEY, authResponse.token);
     localStorage.setItem(this.USER_KEY, JSON.stringify(authResponse));

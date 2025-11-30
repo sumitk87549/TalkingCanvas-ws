@@ -56,32 +56,31 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
-                .cors(cors -> {})
+                .cors(cors -> {
+                })
                 .exceptionHandling(exception -> exception
-                        .authenticationEntryPoint(authenticationEntryPoint)
-                )
+                        .authenticationEntryPoint(authenticationEntryPoint))
                 .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                )
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         // Public endpoints
                         .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/").permitAll()
                         .requestMatchers("/api/contact/submit").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/paintings/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/images/**").permitAll()
                         .requestMatchers("/api/docs/**", "/api/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                        .requestMatchers("/actuator/**").permitAll()
+                        .requestMatchers("/api/actuator/**").permitAll()
                         .requestMatchers("/uploads/**").permitAll()
-                        
+
                         // Admin endpoints
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                        
+
                         // User endpoints (requires authentication)
                         .requestMatchers("/api/users/**", "/api/cart/**", "/api/orders/**").authenticated()
-                        
+
                         // All other requests require authentication
-                        .anyRequest().authenticated()
-                )
+                        .anyRequest().authenticated())
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 

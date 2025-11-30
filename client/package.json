@@ -4,7 +4,9 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build",
+    "build": "ng build --configuration production",
+    "build:prod": "ng build --configuration production --optimization --output-hashing=all",
+    "deploy:gh": "ng build --configuration production --base-href /TalkingCanvas-ws/ && npx angular-cli-ghpages --dir=dist/client/browser",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },
@@ -32,6 +34,7 @@
     "@angular/platform-browser": "^20.3.0",
     "@angular/platform-browser-dynamic": "^20.3.0",
     "@angular/router": "^20.3.0",
+    "@fortawesome/fontawesome-free": "^7.1.0",
     "ng-particles": "^3.12.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",

@@ -2,117 +2,141 @@
   <div class="checkout-wrapper">
     <h1>Checkout</h1>
     <div class="checkout-content">
-    <form [formGroup]="checkoutForm" (ngSubmit)="onSubmit()" class="checkout-form">
-      <h2>Delivery Address</h2>
-      <div class="form-group">
-        <label>Street Address</label>
-        <input type="text" formControlName="street" class="form-control" />
-        <div *ngIf="submitted && f['street'].errors" class="error">Required</div>
-      </div>
-      <div class="form-group">
-        <label>City</label>
-        <input type="text" formControlName="city" class="form-control" />
-        <div *ngIf="submitted && f['city'].errors" class="error">Required</div>
-      </div>
-      <div class="form-group">
-        <label>State</label>
-        <input type="text" formControlName="state" class="form-control" />
-        <div *ngIf="submitted && f['state'].errors" class="error">Required</div>
-      </div>
-      <div class="form-group">
-        <label>Country</label>
-        <input type="text" formControlName="country" class="form-control" />
-        <div *ngIf="submitted && f['country'].errors" class="error">Required</div>
-      </div>
-      <div class="form-group">
-        <label>Pincode</label>
-        <input type="text" formControlName="pincode" class="form-control" />
-        <div *ngIf="submitted && f['pincode'].errors" class="error">Required</div>
-      </div>
+      <form [formGroup]="checkoutForm" (ngSubmit)="onSubmit()" class="checkout-form">
+        <h2>Delivery Address</h2>
 
-      <h2>Payment Method</h2>
-      <div class="form-group">
-        <label>
-          <input type="radio" formControlName="paymentMethod" value="COD" />
-          Cash on Delivery
-        </label>
-      </div>
-
-      <button type="submit" class="btn btn-primary" [disabled]="loading">
-        {{ loading ? 'Processing...' : 'Place Order' }}
-      </button>
-    </form>
-    <div class="order-summary">
-      <h2>Order Summary</h2>
-      
-      <!-- Loading State -->
-      <div *ngIf="isLoading" class="loading-state">
-        <div class="spinner"></div>
-        <p>Loading your order...</p>
-      </div>
-      
-      <!-- Error State -->
-      <div *ngIf="error && !isLoading" class="error-state">
-        <p>{{ error }}</p>
-        <button (click)="loadCart()" class="btn-retry">Retry</button>
-      </div>
-      
-      <!-- Empty Cart State -->
-      <div *ngIf="!isLoading && !error && (!cartItems || cartItems.length === 0)" class="empty-state">
-        <p>Your cart is empty</p>
-        <a routerLink="/paintings" class="btn-shop">Continue Shopping</a>
-      </div>
-      
-      <!-- Cart Items -->
-      <div *ngIf="!isLoading && !error && cartItems && cartItems.length > 0" class="order-items">
-        <div *ngFor="let item of cartItems" class="order-item">
-          <div class="item-image">
-            <img 
-              [src]="item.primaryImage || 'assets/images/placeholder-painting.jpg'" 
-              [alt]="item.paintingTitle" 
-              (error)="handleImageError($event)"
-              class="item-img"
-            />
+        <!-- Saved Addresses List -->
+        <div *ngIf="addresses.length > 0" class="saved-addresses">
+          <div *ngFor="let address of addresses" class="address-card"
+            [class.selected]="selectedAddressId === address.id" (click)="selectAddress(address.id!)">
+            <div class="address-header">
+              <span class="address-type" *ngIf="address.isDefault">Default</span>
+              <span class="select-indicator" *ngIf="selectedAddressId === address.id">✓</span>
+            </div>
+            <p>{{ address.street }}</p>
+            <p>{{ address.city }}, {{ address.state }} {{ address.pincode }}</p>
+            <p>{{ address.country }}</p>
           </div>
-          <div class="item-details">
-            <h4 class="item-title" [title]="item.paintingTitle">
-              {{ item.paintingTitle || 'Untitled' }}
-            </h4>
-            
-            <div *ngIf="item.artistName" class="item-artist">
-              By {{ item.artistName }}
+
+          <button type="button" class="btn-new-address" (click)="toggleNewAddress()" *ngIf="!showNewAddressForm">
+            + Add New Address
+          </button>
+        </div>
+
+        <!-- New Address Form -->
+        <div *ngIf="showNewAddressForm || addresses.length === 0" class="new-address-form">
+          <h3 *ngIf="addresses.length > 0">New Address</h3>
+          <div class="form-group">
+            <label>Street Address</label>
+            <input type="text" formControlName="street" class="form-control" />
+            <div *ngIf="submitted && f['street'].errors" class="error">Required</div>
+          </div>
+          <div class="form-group">
+            <label>City</label>
+            <input type="text" formControlName="city" class="form-control" />
+            <div *ngIf="submitted && f['city'].errors" class="error">Required</div>
+          </div>
+          <div class="form-group">
+            <label>State</label>
+            <input type="text" formControlName="state" class="form-control" />
+            <div *ngIf="submitted && f['state'].errors" class="error">Required</div>
+          </div>
+          <div class="form-group">
+            <label>Country</label>
+            <input type="text" formControlName="country" class="form-control" />
+            <div *ngIf="submitted && f['country'].errors" class="error">Required</div>
+          </div>
+          <div class="form-group">
+            <label>Pincode</label>
+            <input type="text" formControlName="pincode" class="form-control" />
+            <div *ngIf="submitted && f['pincode'].errors" class="error">Required</div>
+          </div>
+
+          <button type="button" class="btn-cancel" (click)="selectAddress(addresses[0].id!)"
+            *ngIf="addresses.length > 0">
+            Cancel
+          </button>
+        </div>
+
+        <h2>Payment Method</h2>
+        <div class="form-group">
+          <label class="payment-option">
+            <input type="radio" formControlName="paymentMethod" value="COD" />
+            <span>Cash on Delivery</span>
+          </label>
+        </div>
+
+        <button type="submit" class="btn btn-primary" [disabled]="loading">
+          {{ loading ? 'Processing...' : 'Place Order' }}
+        </button>
+      </form>
+      <div class="order-summary">
+        <h2>Order Summary</h2>
+
+        <!-- Loading State -->
+        <div *ngIf="isLoading" class="loading-state">
+          <div class="spinner"></div>
+          <p>Loading your order...</p>
+        </div>
+
+        <!-- Error State -->
+        <div *ngIf="error && !isLoading" class="error-state">
+          <p>{{ error }}</p>
+          <button (click)="loadCart()" class="btn-retry">Retry</button>
+        </div>
+
+        <!-- Empty Cart State -->
+        <div *ngIf="!isLoading && !error && (!cartItems || cartItems.length === 0)" class="empty-state">
+          <p>Your cart is empty</p>
+          <a routerLink="/paintings" class="btn-shop">Continue Shopping</a>
+        </div>
+
+        <!-- Cart Items -->
+        <div *ngIf="!isLoading && !error && cartItems && cartItems.length > 0" class="order-items">
+          <div *ngFor="let item of cartItems" class="order-item">
+            <div class="item-image">
+              <img [src]="item.primaryImage || 'assets/images/placeholder-painting.jpg'" [alt]="item.paintingTitle"
+                (error)="handleImageError($event)" class="item-img" />
             </div>
-            
-            <div *ngIf="item.medium" class="item-medium">
-              {{ item.medium }}
-            </div>
-            
-            <div class="item-meta">
-              <div class="price-row">
-                <span class="price">₹{{ (item.price || 0) | number:'1.0-0' }}</span>
-                <span class="quantity">× {{ item.quantity || 0 }}</span>
-                <span class="subtotal">₹{{ (item.subtotal || 0) | number:'1.0-0' }}</span>
+            <div class="item-details">
+              <h4 class="item-title" [title]="item.paintingTitle">
+                {{ item.paintingTitle || 'Untitled' }}
+              </h4>
+
+              <div *ngIf="item.artistName" class="item-artist">
+                By {{ item.artistName }}
+              </div>
+
+              <div *ngIf="item.medium" class="item-medium">
+                {{ item.medium }}
+              </div>
+
+              <div class="item-meta">
+                <div class="price-row">
+                  <span class="price">₹{{ (item.price || 0) | number:'1.0-0' }}</span>
+                  <span class="quantity">× {{ item.quantity || 0 }}</span>
+                  <span class="subtotal">₹{{ (item.subtotal || 0) | number:'1.0-0' }}</span>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-      
-      <!-- Order Totals -->
-      <div *ngIf="!isLoading && !error && cartItems && cartItems.length > 0" class="order-totals">
-        <div class="total-row">
-          <span>Subtotal</span>
-          <span>₹{{ total | number:'1.0-0' }}</span>
-        </div>
-        <div class="total-row">
-          <span>Shipping</span>
-          <span>Free</span>
-        </div>
-        <div class="total-row grand-total">
-          <span>Total</span>
-          <span>₹{{ total | number:'1.0-0' }}</span>
+
+        <!-- Order Totals -->
+        <div *ngIf="!isLoading && !error && cartItems && cartItems.length > 0" class="order-totals">
+          <div class="total-row">
+            <span>Subtotal</span>
+            <span>₹{{ total | number:'1.0-0' }}</span>
+          </div>
+          <div class="total-row">
+            <span>Shipping</span>
+            <span>Free</span>
+          </div>
+          <div class="total-row grand-total">
+            <span>Total</span>
+            <span>₹{{ total | number:'1.0-0' }}</span>
+          </div>
         </div>
       </div>
     </div>
   </div>
-</div>

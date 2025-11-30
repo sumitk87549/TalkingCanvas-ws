@@ -3,6 +3,7 @@ export interface User {
   name: string;
   email: string;
   contactNumber: string;
+  profileEmoji?: string;
   role: string;
   isActive: boolean;
   addresses: Address[];
@@ -41,6 +42,7 @@ export interface AuthResponse {
   token: string;
   type: string;
   userId: number;
+  profileEmoji?: string;
   name: string;
   email: string;
   role: string;

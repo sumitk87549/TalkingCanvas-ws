@@ -21,7 +21,7 @@ import java.util.Set;
  */
 @Entity
 @Table(name = "users", indexes = {
-    @Index(name = "idx_user_email", columnList = "email")
+        @Index(name = "idx_user_email", columnList = "email")
 })
 @Data
 @NoArgsConstructor
@@ -49,6 +49,10 @@ public class User {
     @Pattern(regexp = "^\\+?[1-9]\\d{1,14}$", message = "Invalid phone number format")
     @Column(name = "contact_number")
     private String contactNumber;
+
+    @Column(name = "profile_emoji", length = 10)
+    @Builder.Default
+    private String profileEmoji = "😊";
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

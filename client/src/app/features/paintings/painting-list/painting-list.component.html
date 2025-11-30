@@ -9,26 +9,29 @@
       <div class="no-paintings" *ngIf="paintings.length === 0">
         <p>No paintings available</p>
       </div>
-      <div *ngFor="let painting of paintings; trackBy: trackByPaintingId" class="painting-card">
-        <a [routerLink]="['/paintings', painting.id]" class="painting-link">
-          <div class="painting-image">
-            <img [src]="getPrimaryImageUrl(painting) || 'assets/images/placeholder-painting.jpg'"
-              [alt]="painting.title" />
+      <ng-container *ngFor="let painting of paintings; trackBy: trackByPaintingId">
+        <div class="painting-card" *ngIf="painting.stockQuantity > 0" [appDominantColor]="getPrimaryImageUrl(painting)">
+          <a [routerLink]="['/paintings', painting.id]" class="painting-link">
+            <div class="painting-image">
+              <img [src]="getPrimaryImageUrl(painting) || 'assets/images/placeholder-painting.jpg'"
+                [alt]="painting.title" />
+            </div>
+            <div class="painting-info">
+              <h3>{{ painting.title }}</h3>
+              <p class="artist">by {{ painting.artistName }}</p>
+              <p class="price">₹{{ painting.price }}</p>
+            </div>
+          </a>
+          <div class="painting-actions">
+            <button (click)="toggleCart(painting)" class="btn" [class.btn-primary]="!cartItemsMap.has(painting.id)"
+              [class.btn-danger]="cartItemsMap.has(painting.id)"
+              [disabled]="!painting.isAvailable && !cartItemsMap.has(painting.id)">
+              {{ cartItemsMap.has(painting.id) ? 'Remove from Cart' : (painting.isAvailable ? 'Add to Cart' : 'Sold
+              Out') }}
+            </button>
           </div>
-          <div class="painting-info">
-            <h3>{{ painting.title }}</h3>
-            <p class="artist">by {{ painting.artistName }}</p>
-            <p class="price">₹{{ painting.price }}</p>
-          </div>
-        </a>
-        <div class="painting-actions">
-          <button (click)="addToCart(painting)" class="btn btn-primary"
-            [disabled]="!painting.isAvailable || (paintingsInCart.get(painting.id) || false)">
-            {{ (paintingsInCart.get(painting.id) || false) ? 'Already in Cart' : (painting.isAvailable ? 'Add to Cart' :
-            'Sold Out') }}
-          </button>
         </div>
-      </div>
+      </ng-container>
     </div>
   </div>
 </div>

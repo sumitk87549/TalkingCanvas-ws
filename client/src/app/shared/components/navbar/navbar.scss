@@ -20,41 +20,38 @@ $background-dark: #1a1a1a;
 
 // Navbar Container
 .navbar-container {
-  color: $text-light;
+  color: var(--text-primary);
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   z-index: 1000;
   padding: 0 2rem;
-  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  transition: background-color 0.5s ease, box-shadow 0.3s ease, color 0.5s ease;
 
   // Blended gradient background that flows into hero section
   background: linear-gradient(to bottom,
-      rgba(26, 26, 26, 0.8) 0%,
-      rgba(26, 26, 26, 0) 100%);
+      var(--bg-secondary-alpha-80) 0%,
+      var(--bg-secondary-alpha-0) 100%);
   box-shadow: none;
 
   // Transparent state (in contact with header)
   &.transparent {
     background: linear-gradient(to bottom,
-        rgba(26, 26, 26, 0.8) 0%,
-        rgba(26, 26, 26, 0) 100%);
+        var(--bg-secondary-alpha-80) 0%,
+        var(--bg-secondary-alpha-0) 100%);
     box-shadow: none;
   }
 
   // Colored state (not in contact with header)
   &.colored {
-    background: linear-gradient(to bottom,
-        rgba(26, 26, 26, 0.95) 0%,
-        rgba(26, 26, 26, 0.9) 50%,
-        rgba(26, 26, 26, 0.8) 100%);
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    background: var(--bg-secondary);
+    box-shadow: 0 2px 10px var(--shadow-color);
   }
 
   // Mobile Open State
   &.mobile-open {
-    background: #1a1a1a; // Solid background when menu is open
+    background: var(--bg-secondary); // Solid background when menu is open
     height: 100vh; // Full height
     overflow-y: auto; // Allow scrolling within menu if needed
   }
@@ -81,7 +78,7 @@ $background-dark: #1a1a1a;
     font-size: 1.5rem;
     font-weight: 1000;
     font-family: 'Playfair Display', serif;
-    color: white;
+    color: var(--text-primary);
     margin: 0;
     padding: 0.5rem 0;
     white-space: nowrap;
@@ -90,11 +87,87 @@ $background-dark: #1a1a1a;
     max-width: 180px;
     letter-spacing: 0.5px;
     text-decoration: none;
-    transition: color 0.3s ease;
+    transition: color 0.5s ease;
     z-index: 1002; // Above mobile menu overlay
 
     &:hover {
-      color: $accent-color;
+      color: var(--accent);
+    }
+  }
+
+  // Theme Toggle Button
+  .theme-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--bg-tertiary);
+    border: 2px solid var(--border-color);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 1002;
+    margin-left: auto; // Push to right side
+    margin-right: 1rem;
+    position: relative;
+
+    .theme-icon {
+      font-size: 1.5rem;
+      transition: transform 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      display: block;
+    }
+
+    .mode-indicator {
+      position: absolute;
+      top: -2px;
+      right: -2px;
+      width: 16px;
+      height: 16px;
+      background: var(--accent);
+      color: var(--button-text);
+      border-radius: 50%;
+      font-size: 10px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid var(--bg-secondary);
+      animation: pulse 2s infinite;
+    }
+
+    &.auto-mode {
+      border-color: var(--accent);
+    }
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px var(--shadow-medium);
+      border-color: var(--accent);
+
+      .theme-icon {
+        transform: rotate(180deg);
+      }
+    }
+
+    &:active {
+      transform: scale(0.95);
+    }
+
+    @media (max-width: 768px) {
+      margin-right: 0.5rem;
+      width: 40px;
+      height: 40px;
+
+      .theme-icon {
+        font-size: 1.3rem;
+      }
+
+      .mode-indicator {
+        width: 14px;
+        height: 14px;
+        font-size: 9px;
+      }
     }
   }
 
@@ -118,7 +191,7 @@ $background-dark: #1a1a1a;
     .bar {
       width: 100%;
       height: 3px;
-      background-color: $text-light;
+      background-color: var(--text-primary);
       border-radius: 3px;
       transition: all 0.3s ease-in-out;
     }
@@ -152,7 +225,7 @@ $background-dark: #1a1a1a;
     margin-right: 1px; // Push everything to the right
 
     a {
-      color: $text-light;
+      color: var(--text-primary);
       text-decoration: none;
       font-size: 16px;
       letter-spacing: 1px;
@@ -166,12 +239,12 @@ $background-dark: #1a1a1a;
         left: 0;
         width: 0;
         height: 2px;
-        background: $accent-color;
+        background: var(--accent);
         @include transition(width);
       }
 
       &:hover {
-        color: $accent-color;
+        color: var(--accent);
 
         &::after {
           width: 100%;
@@ -196,18 +269,32 @@ $background-dark: #1a1a1a;
       max-width: 100%;
 
       .dropbtn {
-        color: $text-light;
+        color: var(--text-primary);
         font-size: 14px;
         letter-spacing: 0.5px;
         padding: 8px 30px 8px 15px;
         display: flex;
         align-items: center;
+        gap: 8px;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
         position: relative;
         max-width: 100%;
         min-width: 0;
+
+        .user-emoji-circle {
+          width: 32px;
+          height: 32px;
+          border-radius: 50%;
+          background: linear-gradient(135deg, $secondary-color, var(--accent));
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 18px;
+          flex-shrink: 0;
+          box-shadow: 0 2px 8px var(--shadow-color);
+        }
 
         &::after {
           content: '';
@@ -217,21 +304,21 @@ $background-dark: #1a1a1a;
           transform: translateY(-50%) rotate(45deg);
           width: 6px;
           height: 6px;
-          border-right: 2px solid $text-light;
-          border-bottom: 2px solid $text-light;
+          border-right: 2px solid var(--text-primary);
+          border-bottom: 2px solid var(--text-primary);
           transition: transform 0.3s ease, border-color 0.3s ease;
           flex-shrink: 0;
         }
 
         &:hover::after {
-          border-color: $accent-color;
+          border-color: var(--accent);
         }
 
         &:hover {
-          color: $accent-color;
+          color: var(--accent);
 
           .arrow-down {
-            border-color: $accent-color;
+            border-color: var(--accent);
           }
         }
       }
@@ -239,18 +326,20 @@ $background-dark: #1a1a1a;
       .dropdown-content {
         display: none;
         position: absolute;
+        top: 79%;
         right: 0;
-        background-color: rgba(26, 26, 26, 0.98);
+        margin-top: 5px;
+        background-color: var(--card-bg);
         min-width: 200px;
         max-width: 100vw;
-        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 8px 16px var(--shadow-medium);
         z-index: 1001;
         border-radius: 4px;
         padding: 10px 0;
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        border: 1px solid var(--border-color);
 
         a {
-          color: $text-light;
+          color: var(--text-primary);
           padding: 12px 20px;
           text-decoration: none;
           display: block;
@@ -260,8 +349,8 @@ $background-dark: #1a1a1a;
           transition: background-color 0.2s;
 
           &:hover {
-            background-color: rgba(255, 255, 255, 0.1);
-            color: $accent-color;
+            background-color: var(--bg-tertiary);
+            color: var(--accent);
 
             &::after {
               width: 0; // Disable underline for dropdown items
@@ -289,13 +378,13 @@ $background-dark: #1a1a1a;
       left: 0;
       right: 0;
       bottom: 0;
-      background-color: #1a1a1a;
+      background-color: var(--bg-secondary);
       flex-direction: column;
-      justify-content: center;
+      justify-content: flex-start; // Changed from center to flex-start to prevent overlap
       align-items: center;
-      padding-top: 80px; // Space for navbar header
+      padding-top: 100px; // Increased space for navbar header
       transform: translateX(100%);
-      transition: transform 0.3s ease-in-out;
+      transition: transform 0.3s ease-in-out, background-color 0.5s ease;
       overflow-y: auto;
 
       &.active {
@@ -339,7 +428,7 @@ $background-dark: #1a1a1a;
         }
 
         &:hover {
-          color: $accent-color;
+          color: var(--accent);
         }
       }
 
@@ -348,13 +437,30 @@ $background-dark: #1a1a1a;
 
         .user-info {
           padding: 15px 0;
-          color: $accent-color;
+          color: var(--accent);
           font-size: 18px;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+          border-bottom: 1px solid var(--border-color);
           margin-bottom: 20px;
           width: 80%;
           margin-left: auto;
           margin-right: auto;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 12px;
+
+          .user-emoji-circle-mobile {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, $secondary-color, var(--accent));
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+            box-shadow: 0 2px 8px var(--shadow-color);
+          }
         }
       }
 
@@ -374,5 +480,19 @@ $background-dark: #1a1a1a;
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  50% {
+    transform: scale(1.1);
+    opacity: 0.8;
   }
 }

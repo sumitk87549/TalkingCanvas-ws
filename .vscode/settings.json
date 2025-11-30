@@ -1,4 +1,5 @@
 {
     "java.compile.nullAnalysis.mode": "automatic",
-    "CodeGPT.apiKey": "Anthropic"
+    "CodeGPT.apiKey": "Anthropic",
+    "java.configuration.updateBuildConfiguration": "automatic"
 }

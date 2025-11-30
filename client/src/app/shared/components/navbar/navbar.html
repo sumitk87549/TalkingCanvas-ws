@@ -2,6 +2,15 @@
   <nav class="navbar">
     <a class="logo" routerLink="/">TalkingCanvas</a>
 
+    <!-- Theme Toggle Button -->
+    <button class="theme-toggle" (click)="toggleTheme()" [attr.aria-label]="getThemeButtonLabel()"
+      [class.auto-mode]="isAutoMode"
+      [title]="isAutoMode ? 'Auto mode - Right click to switch to manual' : 'Manual mode - Right click to switch to auto'"
+      (contextmenu)="toggleThemeMode(); $event.preventDefault()">
+      <span class="theme-icon">{{ isDayMode ? '☀️' : '🌙' }}</span>
+      <span class="mode-indicator" *ngIf="isAutoMode">A</span>
+    </button>
+
     <!-- Mobile Menu Toggle Button -->
     <button class="mobile-menu-toggle" (click)="toggleMobileMenu()" [class.active]="isMobileMenuOpen"
       aria-label="Toggle navigation">
@@ -26,6 +35,7 @@
         <!-- Mobile Only Links for Logged In User -->
         <li class="mobile-only-link">
           <div class="user-info">
+            <span class="user-emoji-circle-mobile">{{ currentUser?.profileEmoji || '😊' }}</span>
             <span class="welcome-text">Welcome, {{currentUser?.name}}</span>
           </div>
         </li>
@@ -37,17 +47,19 @@
 
         <li *ngIf="isAdmin"><a routerLink="/admin" (click)="closeMobileMenu()">Dashboard</a></li>
 
+        <!-- Mobile Only Profile Link -->
+        <li class="mobile-only-link"><a routerLink="/profile" (click)="closeMobileMenu()">My Profile</a></li>
+
         <!-- Desktop Dropdown (Hidden on Mobile) -->
         <li class="dropdown desktop-only-dropdown">
-          <!-- <span class="dropbtn">{{ isAdmin ? 'ADMIN' : 'Welcome' }} <br> {{currentUser?.name | uppercase}} <i class="arrow-down"></i></span> -->
-          <span class="dropbtn">{{ isAdmin ? 'ADMIN' : 'Welcome' }} <br> {{currentUser?.name | uppercase}} <i class="arrow-down"></i></span>
+          <span class="dropbtn">
+            <span class="user-emoji-circle">{{ currentUser?.profileEmoji || '😊' }}</span>
+            {{ isAdmin ? 'ADMIN' : 'Welcome' }} <br> {{currentUser?.name | uppercase}} <i class="arrow-down"></i>
+          </span>
           <div class="dropdown-content">
-            <!-- <a routerLink="cart">Cart ({{cartItemCount}})</a>
-            <a routerLink="paintings">Gallery</a>
-            <a routerLink="about">About</a>
-            <a routerLink="contact">Contact</a>
-            <a *ngIf="isAdmin" routerLink="/admin">Dashboard</a> -->
-            <a routerLink="/logout">Logout</a>
+            <a routerLink="/profile"><i class="fas fa-user"></i> My Profile</a>
+            <div class="dropdown-divider"></div>
+            <a routerLink="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
           </div>
         </li>
 

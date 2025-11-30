@@ -17,10 +17,12 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Controller for authentication endpoints
  */
+@Slf4j
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
@@ -32,7 +34,7 @@ public class AuthController {
     @PostMapping("/register")
     @Operation(summary = "Register new user", description = "Register a new user account")
     public ResponseEntity<ApiResponse<AuthResponse>> register(@Valid @RequestBody RegisterRequest request) {
-        System.out.println("register API/controller called......");
+        log.info("User registration request received for email: {}", request.getEmail());
         AuthResponse response = authService.register(request);
         return ResponseEntity
                 .status(HttpStatus.CREATED)

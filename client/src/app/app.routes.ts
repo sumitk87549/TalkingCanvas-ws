@@ -28,6 +28,11 @@ export const routes: Routes = [
     loadComponent: () => import('./features/paintings/painting-detail/painting-detail.component').then(m => m.PaintingDetailComponent)
   },
   {
+    path: 'profile',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/profile/profile.component').then(m => m.ProfileComponent)
+  },
+  {
     path: 'cart',
     canActivate: [authGuard],
     loadComponent: () => import('./features/cart/cart.component').then(m => m.CartComponent)
@@ -36,6 +41,11 @@ export const routes: Routes = [
     path: 'checkout',
     canActivate: [authGuard],
     loadComponent: () => import('./features/checkout/checkout.component').then(m => m.CheckoutComponent)
+  },
+  {
+    path: 'order-confirmation',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/order-confirmation/order-confirmation.component').then(m => m.OrderConfirmationComponent)
   },
   {
     path: 'orders',
@@ -47,11 +57,7 @@ export const routes: Routes = [
     canActivate: [authGuard],
     loadComponent: () => import('./features/orders/order-detail/order-detail.component').then(m => m.OrderDetailComponent)
   },
-  {
-    path: 'profile',
-    canActivate: [authGuard],
-    loadComponent: () => import('./features/profile/profile.component').then(m => m.ProfileComponent)
-  },
+
   {
     path: 'admin',
     canActivate: [adminGuard],

@@ -1,3 +1,4 @@
+@use 'sass:color';
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap');
 
 // Variables
@@ -238,7 +239,7 @@ $background-dark: #1a1a1a;
         color: $primary-color;
 
         &:hover {
-          background: lighten($accent-color, 10%);
+          background: color.adjust($accent-color, $lightness: 10%);
           transform: translateY(-2px);
         }
 
@@ -259,6 +260,24 @@ $background-dark: #1a1a1a;
           color: #888;
           cursor: not-allowed;
           transform: none;
+        }
+      }
+
+      &.btn-danger {
+        background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+        color: white;
+        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+
+        &:hover:not(:disabled) {
+          background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+          box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
+          transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+          &:hover {
+            transform: none;
+          }
         }
       }
 
