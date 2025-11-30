@@ -22,7 +22,7 @@ export class Navbar implements AfterViewInit, OnInit {
   cartItemCount = 0;
   isMobileMenuOpen = false;
   isDayMode = false; // Default to dark theme initially
-  isAutoMode = true; // Track current theme mode (auto/manual)
+  isAutoMode = false; // Track current theme mode (auto/manual)
 
   constructor(
     public authService: AuthService,

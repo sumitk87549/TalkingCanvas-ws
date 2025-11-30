@@ -192,7 +192,7 @@ export class ThemeService implements OnDestroy {
         } catch (error) {
             console.warn('Failed to load theme from localStorage:', error);
         }
-        return 'day'; // Default theme
+        return 'night'; // Default theme
     }
 
     /**
@@ -218,7 +218,7 @@ export class ThemeService implements OnDestroy {
         } catch (error) {
             console.warn('Failed to load theme mode from localStorage:', error);
         }
-        return 'auto'; // Default to auto mode
+        return 'manual'; // Default to manual mode
     }
 
     /**

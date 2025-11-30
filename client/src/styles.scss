@@ -59,35 +59,7 @@
   --night-card-bg: #1f1f1f;
   --night-overlay: rgba(0, 0, 0, 0.85);
 
-  /* Active Theme Variables (default to day) */
-  --bg-primary: var(--day-bg-primary);
-  --bg-secondary: var(--day-bg-secondary);
-  --bg-tertiary: var(--day-bg-tertiary);
-  --text-primary: var(--day-text-primary);
-  --text-secondary: var(--day-text-secondary);
-  --text-muted: var(--day-text-muted);
-  --border-color: var(--day-border);
-  --border-light: var(--day-border-light);
-  --shadow-color: var(--day-shadow);
-  --shadow-medium: var(--day-shadow-medium);
-  --shadow-strong: var(--day-shadow-strong);
-  --accent: var(--day-accent);
-  --accent-hover: var(--day-accent-hover);
-  --button-bg: var(--day-button-bg);
-  --button-text: var(--day-button-text);
-  --button-hover: var(--day-button-hover);
-  --input-bg: var(--day-input-bg);
-  --input-border: var(--day-input-border);
-  --card-bg: var(--day-card-bg);
-  --overlay-bg: var(--day-overlay);
-
-  /* Alpha/Transparency helpers for backgrounds */
-  --bg-secondary-alpha-80: rgba(250, 250, 250, 0.9);
-  --bg-secondary-alpha-0: rgba(250, 250, 250, 0);
-}
-
-/* Night Mode Override */
-body.night-mode {
+  /* Active Theme Variables (default to night) */
   --bg-primary: var(--night-bg-primary);
   --bg-secondary: var(--night-bg-secondary);
   --bg-tertiary: var(--night-bg-tertiary);
@@ -109,9 +81,37 @@ body.night-mode {
   --card-bg: var(--night-card-bg);
   --overlay-bg: var(--night-overlay);
 
-  /* Alpha/Transparency helpers for night mode backgrounds */
+  /* Alpha/Transparency helpers for backgrounds */
   --bg-secondary-alpha-80: rgba(26, 26, 26, 0.95);
   --bg-secondary-alpha-0: rgba(26, 26, 26, 0);
+}
+
+/* Day Mode Override */
+body.day-mode {
+  --bg-primary: var(--day-bg-primary);
+  --bg-secondary: var(--day-bg-secondary);
+  --bg-tertiary: var(--day-bg-tertiary);
+  --text-primary: var(--day-text-primary);
+  --text-secondary: var(--day-text-secondary);
+  --text-muted: var(--day-text-muted);
+  --border-color: var(--day-border);
+  --border-light: var(--day-border-light);
+  --shadow-color: var(--day-shadow);
+  --shadow-medium: var(--day-shadow-medium);
+  --shadow-strong: var(--day-shadow-strong);
+  --accent: var(--day-accent);
+  --accent-hover: var(--day-accent-hover);
+  --button-bg: var(--day-button-bg);
+  --button-text: var(--day-button-text);
+  --button-hover: var(--day-button-hover);
+  --input-bg: var(--day-input-bg);
+  --input-border: var(--day-input-border);
+  --card-bg: var(--day-card-bg);
+  --overlay-bg: var(--day-overlay);
+
+  /* Alpha/Transparency helpers for day mode backgrounds */
+  --bg-secondary-alpha-80: rgba(250, 250, 250, 0.9);
+  --bg-secondary-alpha-0: rgba(250, 250, 250, 0);
 }
 
 /* Breakpoints Mixins */
