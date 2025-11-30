@@ -126,7 +126,7 @@ public class DataInitializer implements CommandLineRunner {
                 }
 
                 // Create default admin user3 if not exists
-                if (!userRepository.existsByEmail("praveen_kumar@gmail.com")) {
+                if (!userRepository.existsByEmail("pkumar.mail@gmail.com")) {
                         User adminP = User.builder()
                                         .name("Praveen Kumar")
                                         .email("pkumar.mail@gmail.com")
