@@ -4,5 +4,5 @@ export const environment = {
   // Railway example: https://your-app-production.up.railway.app/api
   // Render example: https://your-app.onrender.com/api
   // Koyeb example: https://your-app.koyeb.app/api
-  apiUrl: 'https://YOUR-BACKEND-URL/api'  // ← CHANGE THIS!
+  apiUrl: 'https://talkingcanvas-backend.up.railway.app/api'  // ← CHANGE THIS!
 };
