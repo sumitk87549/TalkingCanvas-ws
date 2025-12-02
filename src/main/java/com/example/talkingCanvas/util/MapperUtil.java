@@ -8,6 +8,8 @@ import com.example.talkingCanvas.dto.order.OrderResponse;
 import com.example.talkingCanvas.dto.painting.*;
 import com.example.talkingCanvas.dto.user.AddressDTO;
 import com.example.talkingCanvas.dto.user.UserProfileResponse;
+import com.example.talkingCanvas.dto.wishlist.WishlistItemResponse;
+import com.example.talkingCanvas.dto.wishlist.WishlistResponse;
 import com.example.talkingCanvas.model.*;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -29,7 +31,10 @@ public class MapperUtil {
                                 .name(user.getName())
                                 .email(user.getEmail())
                                 .contactNumber(user.getContactNumber())
+<<<<<<< Updated upstream
                                 .profileEmoji(user.getProfileEmoji())
+=======
+>>>>>>> Stashed changes
                                 .role(user.getRole().name())
                                 .isActive(user.getIsActive())
                                 .addresses(user.getAddresses().stream()
@@ -202,11 +207,15 @@ public class MapperUtil {
                                 .createdAt(order.getCreatedAt())
                                 .updatedAt(order.getUpdatedAt())
                                 .adminContact(adminContact)
+<<<<<<< Updated upstream
                                 .user(toUserProfileResponse(order.getUser()))
+=======
+>>>>>>> Stashed changes
                                 .build();
         }
 
         public OrderItemDTO toOrderItemDTO(OrderItem item) {
+<<<<<<< Updated upstream
                 BigDecimal subtotal = item.getPriceAtPurchase().multiply(BigDecimal.valueOf(item.getQuantity()));
 
                 return OrderItemDTO.builder()
@@ -217,6 +226,44 @@ public class MapperUtil {
                                 .quantity(item.getQuantity())
                                 .priceAtPurchase(item.getPriceAtPurchase())
                                 .subtotal(subtotal)
+=======
+                return OrderItemDTO.builder()
+                                .id(item.getId())
+                                .paintingId(item.getPainting().getId())
+                                .paintingTitle(item.getPainting().getTitle())
+                                .quantity(item.getQuantity())
+                                .pricePerUnit(item.getPricePerUnit())
+                                .subtotal(item.getSubtotal())
+                                .build();
+        }
+
+        // Wishlist Mapping
+        public WishlistResponse toWishlistResponse(Wishlist wishlist) {
+                if (wishlist == null) {
+                        return WishlistResponse.builder()
+                                        .items(List.of())
+                                        .totalItems(0)
+                                        .build();
+                }
+
+                List<WishlistItemResponse> items = wishlist.getItems().stream()
+                                .map(this::toWishlistItemResponse)
+                                .collect(Collectors.toList());
+
+                return WishlistResponse.builder()
+                                .id(wishlist.getId())
+                                .items(items)
+                                .totalItems(items.size())
+                                .build();
+        }
+
+        public WishlistItemResponse toWishlistItemResponse(WishlistItem item) {
+                return WishlistItemResponse.builder()
+                                .id(item.getId())
+                                .paintingId(item.getPainting().getId())
+                                .painting(toPaintingResponse(item.getPainting()))
+                                .addedAt(item.getAddedAt())
+>>>>>>> Stashed changes
                                 .build();
         }
 }
