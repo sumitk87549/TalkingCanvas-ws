@@ -24,6 +24,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -91,6 +92,7 @@ public class Painting {
     private Boolean isAvailable = true;
 
     @Column(name = "stock_quantity", nullable = false)
+    @Min(value = 1, message = "Stock quantity must be at least 1")
     @Builder.Default
     private Integer stockQuantity = 1;
 

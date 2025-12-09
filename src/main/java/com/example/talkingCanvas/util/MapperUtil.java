@@ -8,6 +8,8 @@ import com.example.talkingCanvas.dto.order.OrderResponse;
 import com.example.talkingCanvas.dto.painting.*;
 import com.example.talkingCanvas.dto.user.AddressDTO;
 import com.example.talkingCanvas.dto.user.UserProfileResponse;
+import com.example.talkingCanvas.dto.wishlist.WishlistItemResponse;
+import com.example.talkingCanvas.dto.wishlist.WishlistResponse;
 import com.example.talkingCanvas.model.*;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -217,6 +219,35 @@ public class MapperUtil {
                                 .quantity(item.getQuantity())
                                 .priceAtPurchase(item.getPriceAtPurchase())
                                 .subtotal(subtotal)
+                                .build();
+        }
+
+        // Wishlist Mapping
+        public WishlistResponse toWishlistResponse(Wishlist wishlist) {
+                if (wishlist == null) {
+                        return WishlistResponse.builder()
+                                        .items(List.of())
+                                        .totalItems(0)
+                                        .build();
+                }
+
+                List<WishlistItemResponse> items = wishlist.getItems().stream()
+                                .map(this::toWishlistItemResponse)
+                                .collect(Collectors.toList());
+
+                return WishlistResponse.builder()
+                                .id(wishlist.getId())
+                                .items(items)
+                                .totalItems(items.size())
+                                .build();
+        }
+
+        public WishlistItemResponse toWishlistItemResponse(WishlistItem item) {
+                return WishlistItemResponse.builder()
+                                .id(item.getId())
+                                .paintingId(item.getPainting().getId())
+                                .painting(toPaintingResponse(item.getPainting()))
+                                .addedAt(item.getAddedAt())
                                 .build();
         }
 }

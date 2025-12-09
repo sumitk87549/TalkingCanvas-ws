@@ -6,6 +6,8 @@ import { Painting } from '../../../models/painting.model';
 import { ApiResponse } from '../../../models/api-response.model';
 import { CartService } from '../../../core/services/cart.service';
 import { AddToCartRequest } from '../../../models/cart.model';
+import { WishlistService } from '../../../core/services/wishlist.service';
+import { AddToWishlistRequest } from '../../../models/wishlist.model';
 import { ChangeDetectorRef } from '@angular/core';
 
 @Component({
@@ -20,11 +22,14 @@ export class PaintingDetailComponent implements OnInit {
   loading = false;
   cartItemId: number | null = null;
   private currentCart: any = null;
+  isInWishlist = false;
+  wishlistItemId: number | null = null;
 
   constructor(
     private route: ActivatedRoute,
     private paintingService: PaintingService,
     private cartService: CartService,
+    private wishlistService: WishlistService,
     private cdr: ChangeDetectorRef
   ) { }
 
@@ -38,6 +43,11 @@ export class PaintingDetailComponent implements OnInit {
       this.currentCart = cart;
       this.updateCartStatus();
     });
+
+    // Subscribe to wishlist changes
+    this.wishlistService.wishlist$.subscribe(() => {
+      this.checkIfInWishlist();
+    });
   }
 
   loadPainting(id: string) {
@@ -49,6 +59,7 @@ export class PaintingDetailComponent implements OnInit {
         this.painting = resp.data || null;
         this.loading = false;
         this.updateCartStatus();
+        this.checkIfInWishlist();
         this.cdr.detectChanges();
       },
       error: (err) => {
@@ -106,5 +117,77 @@ export class PaintingDetailComponent implements OnInit {
   getCategoryNames(): string {
     if (!this.painting?.categories?.length) return '';
     return this.painting.categories.map(cat => cat.name).join(', ');
+  }
+
+  toggleWishlist() {
+    if (!this.painting) return;
+
+    if (this.isInWishlist && this.wishlistItemId) {
+      // Remove from wishlist
+      this.wishlistService.removeFromWishlist(this.wishlistItemId).subscribe({
+        next: () => {
+          this.checkIfInWishlist();
+        },
+        error: (error) => {
+          console.error('Failed to remove from wishlist:', error);
+        }
+      });
+    } else {
+      // Add to wishlist
+      const req: AddToWishlistRequest = { paintingId: this.painting.id };
+      this.wishlistService.addToWishlist(req).subscribe({
+        next: () => {
+          this.checkIfInWishlist();
+        },
+        error: (error) => {
+          console.error('Failed to add to wishlist:', error);
+        }
+      });
+    }
+  }
+
+  private checkIfInWishlist() {
+    if (!this.painting?.id) {
+      this.isInWishlist = false;
+      this.wishlistItemId = null;
+      this.cdr.detectChanges();
+      return;
+    }
+
+    // Check if painting is in wishlist
+    this.wishlistService.isInWishlist(this.painting.id).subscribe({
+      next: (response) => {
+        if (response.success && response.data !== undefined) {
+          this.isInWishlist = response.data;
+          // If in wishlist, find the item ID
+          if (this.isInWishlist) {
+            this.wishlistService.getWishlist().subscribe({
+              next: (wishlistResponse) => {
+                if (wishlistResponse.success && wishlistResponse.data) {
+                  const item = wishlistResponse.data.items.find(
+                    i => i.paintingId === this.painting!.id
+                  );
+                  this.wishlistItemId = item ? item.id : null;
+                }
+                this.cdr.detectChanges();
+              }
+            });
+          } else {
+            this.wishlistItemId = null;
+            this.cdr.detectChanges();
+          }
+        } else {
+          this.isInWishlist = false;
+          this.wishlistItemId = null;
+          this.cdr.detectChanges();
+        }
+      },
+      error: (err) => {
+        console.error('Error checking if item is in wishlist:', err);
+        this.isInWishlist = false;
+        this.wishlistItemId = null;
+        this.cdr.detectChanges();
+      }
+    });
   }
 }

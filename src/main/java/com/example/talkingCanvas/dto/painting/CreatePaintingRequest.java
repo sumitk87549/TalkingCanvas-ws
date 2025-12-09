@@ -50,6 +50,7 @@ public class CreatePaintingRequest {
     @Builder.Default
     private Boolean isAvailable = true;
 
+    @jakarta.validation.constraints.Min(value = 1, message = "Stock quantity must be at least 1")
     @Builder.Default
     private Integer stockQuantity = 1;
 

@@ -1,0 +1,13 @@
+# https://www.robotstxt.org/robotstxt.html
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+Disallow: /checkout/
+Disallow: /cart/
+
+# Sitemap
+Sitemap: https://talkingcanvas.in/sitemap.xml
+
+# Crawl-delay for respectful crawling
+Crawl-delay: 1

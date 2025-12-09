@@ -72,6 +72,10 @@ public class User {
     @EqualsAndHashCode.Exclude
     private Cart cart;
 
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @EqualsAndHashCode.Exclude
+    private Wishlist wishlist;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     @Builder.Default
     @EqualsAndHashCode.Exclude

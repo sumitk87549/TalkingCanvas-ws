@@ -4,6 +4,7 @@ import { RouterLink, Router, NavigationEnd } from "@angular/router";
 import { AuthService } from '../../../core/services/auth.service';
 import { CartService } from '../../../core/services/cart.service';
 import { ThemeService } from '../../../core/services/theme.service';
+import { WishlistService } from '../../../core/services/wishlist.service';
 import { AuthResponse } from '../../../models/user.model';
 import { filter } from 'rxjs/operators';
 
@@ -15,11 +16,12 @@ import { filter } from 'rxjs/operators';
   styleUrls: ['./navbar.scss']
 })
 export class Navbar implements AfterViewInit, OnInit {
-  isHeaderInView = true; // Start as true (transparent) on page load
+  isHeaderInView = true;
   private headerSection: HTMLElement | null = null;
   currentUser: AuthResponse | null = null;
   isAdmin = false;
   cartItemCount = 0;
+  wishlistItemCount = 0;
   isMobileMenuOpen = false;
   isDayMode = false; // Default to dark theme initially
   isAutoMode = false; // Track current theme mode (auto/manual)
@@ -27,6 +29,7 @@ export class Navbar implements AfterViewInit, OnInit {
   constructor(
     public authService: AuthService,
     private cartService: CartService,
+    private wishlistService: WishlistService,
     private cdr: ChangeDetectorRef,
     private router: Router,
     public themeService: ThemeService
@@ -45,15 +48,23 @@ export class Navbar implements AfterViewInit, OnInit {
       this.isAdmin = this.authService.isAdmin();
       if (user) {
         this.loadCartItemCount();
+        this.loadWishlistItemCount();
       } else {
         this.cartItemCount = 0;
+        this.wishlistItemCount = 0;
       }
     });
 
-    // Subscribe to cart changes and manually trigger change detection
+    // Subscribe to cart changes
     this.cartService.cart$.subscribe(cart => {
       this.cartItemCount = cart?.totalItems || 0;
-      this.cdr.markForCheck(); // Force change detection
+      this.cdr.markForCheck();
+    });
+
+    // Subscribe to wishlist changes
+    this.wishlistService.wishlist$.subscribe((wishlist: any) => {
+      this.wishlistItemCount = wishlist?.totalItems || 0;
+      this.cdr.markForCheck();
     });
 
     // Subscribe to theme changes
@@ -63,20 +74,31 @@ export class Navbar implements AfterViewInit, OnInit {
     });
 
     // Subscribe to theme mode changes
-    this.themeService.currentThemeMode$.subscribe(mode => {
+    this.themeService.currentThemeMode$.subscribe((mode: string) => {
       this.isAutoMode = mode === 'auto';
       this.cdr.markForCheck();
     });
   }
 
   private loadCartItemCount() {
-    this.cartService.getTotalItemsCount().subscribe(response => {
+    this.cartService.getTotalItemsCount().subscribe((response: any) => {
       if (response.success && response.data !== undefined) {
         this.cartItemCount = response.data;
       }
-    }, error => {
+    }, (error: any) => {
       console.error('Error loading cart count:', error);
       this.cartItemCount = 0;
+    });
+  }
+
+  private loadWishlistItemCount() {
+    this.wishlistService.getWishlistItemCount().subscribe((response: any) => {
+      if (response.success && response.data !== undefined) {
+        this.wishlistItemCount = response.data;
+      }
+    }, (error: any) => {
+      console.error('Error loading wishlist count:', error);
+      this.wishlistItemCount = 0;
     });
   }
 

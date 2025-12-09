@@ -22,6 +22,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
@@ -49,6 +51,7 @@ public class PaintingService {
     private String defaultArtistName;
 
     @Transactional(readOnly = true)
+    @Cacheable(value = "paintings", key = "'list-' + #page + '-' + #size + '-' + #sortBy + '-' + #sortDirection")
     public PageResponse<PaintingResponse> getAllPaintings(int page, int size, String sortBy, String sortDirection) {
         logger.info("Fetching all available paintings - page: {}, size: {}", page, size);
         Sort sort = sortDirection.equalsIgnoreCase("desc")
@@ -85,6 +88,7 @@ public class PaintingService {
     }
 
     @Transactional(readOnly = true)
+    @Cacheable(value = "paintings", key = "'featured-' + #page + '-' + #size")
     public PageResponse<PaintingResponse> getFeaturedPaintings(int page, int size) {
         logger.info("Fetching featured paintings");
         Pageable pageable = PageRequest.of(page, size);
@@ -93,6 +97,7 @@ public class PaintingService {
     }
 
     @Transactional(readOnly = true)
+    @Cacheable(value = "paintings", key = "'search-' + #query + '-' + #page + '-' + #size")
     public PageResponse<PaintingResponse> searchPaintings(String query, int page, int size) {
         logger.info("Searching paintings with query: {}", query);
         Pageable pageable = PageRequest.of(page, size);
@@ -101,6 +106,7 @@ public class PaintingService {
     }
 
     @Transactional(readOnly = true)
+    @Cacheable(value = "paintings", key = "'price-' + #minPrice + '-' + #maxPrice + '-' + #page + '-' + #size")
     public PageResponse<PaintingResponse> filterByPriceRange(BigDecimal minPrice, BigDecimal maxPrice, int page,
             int size) {
         logger.info("Filtering paintings by price range: {} - {}", minPrice, maxPrice);
@@ -110,6 +116,7 @@ public class PaintingService {
     }
 
     @Transactional
+    @CacheEvict(value = { "paintings", "dashboard-stats" }, allEntries = true)
     public PaintingResponse createPainting(CreatePaintingRequest request) {
         logger.info("Creating new painting: {}", request.getTitle());
 
@@ -164,6 +171,7 @@ public class PaintingService {
     }
 
     @Transactional
+    @CacheEvict(value = { "paintings", "painting-details", "dashboard-stats" }, allEntries = true)
     public PaintingResponse updatePainting(Long id, CreatePaintingRequest request) {
         logger.info("Updating painting: {}", id);
         Painting painting = paintingRepository.findById(id)
@@ -203,6 +211,7 @@ public class PaintingService {
     }
 
     @Transactional
+    @CacheEvict(value = { "paintings", "painting-details", "dashboard-stats" }, allEntries = true)
     public void deletePainting(Long id) {
         logger.info("Soft deleting painting: {}", id);
         Painting painting = paintingRepository.findById(id)
@@ -213,6 +222,7 @@ public class PaintingService {
     }
 
     @Transactional
+    @CacheEvict(value = { "paintings", "painting-details" }, allEntries = true)
     public void uploadImages(Long paintingId, MultipartFile[] files) {
         logger.info("Uploading {} images for painting: {}", files.length, paintingId);
         Painting painting = paintingRepository.findById(paintingId)
@@ -245,6 +255,7 @@ public class PaintingService {
     }
 
     @Transactional
+    @CacheEvict(value = { "paintings", "painting-details" }, allEntries = true)
     public void deleteImage(Long paintingId, Long imageId) {
         logger.info("Deleting image {} from painting {}", imageId, paintingId);
         Painting painting = paintingRepository.findById(paintingId)
@@ -291,6 +302,7 @@ public class PaintingService {
     }
 
     @Transactional(readOnly = true)
+    @Cacheable(value = "categories")
     public List<CategoryDTO> getAllCategories() {
         logger.info("Fetching all categories");
         return categoryRepository.findAll().stream()
@@ -299,6 +311,7 @@ public class PaintingService {
     }
 
     @Transactional
+    @CacheEvict(value = "categories", allEntries = true)
     public CategoryDTO createCategory(String name, String description) {
         logger.info("Creating new category: {}", name);
         PaintingCategory category = PaintingCategory.builder()
