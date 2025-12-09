@@ -1,0 +1,45 @@
+<div class="wishlist-container">
+    <h1>My Wishlist</h1>
+
+    <div *ngIf="!wishlist || wishlist.items.length === 0" class="empty-wishlist">
+        <div class="empty-icon">❤️</div>
+        <h2>Your Wishlist is Empty</h2>
+        <p>Browse our collection and add some paintings to your wishlist!</p>
+        <a routerLink="/paintings" class="btn btn-primary">Browse Paintings</a>
+    </div>
+
+    <div *ngIf="wishlist && wishlist.items.length > 0" class="wishlist-content">
+        <div class="wishlist-items">
+            <div *ngFor="let item of wishlist.items" class="wishlist-item">
+                <div class="item-image" (click)="viewPainting(item.paintingId)">
+                    <img [src]="item.painting.images[0]?.imageUrl || 'assets/images/placeholder-painting.jpg'"
+                        [alt]="item.painting.title" />
+                </div>
+                <div class="item-details">
+                    <h3 (click)="viewPainting(item.paintingId)">{{ item.painting.title }}</h3>
+                    <p class="artist">by {{ item.painting.artistName }}</p>
+                    <p class="medium">{{ item.painting.medium }}</p>
+                    <p class="price">₹{{ item.painting.price }}</p>
+                    <p class="added-date">Added {{ item.addedAt | date: 'mediumDate' }}</p>
+                </div>
+                <div class="item-actions">
+                    <button (click)="viewPainting(item.paintingId)" class="btn btn-primary">View Details</button>
+                    <button (click)="removeItem(item.id)" class="btn btn-danger">Remove</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="wishlist-summary">
+            <div class="summary-card">
+                <h2>Wishlist Summary</h2>
+                <div class="summary-details">
+                    <div class="summary-row">
+                        <span>Total Items:</span>
+                        <span class="value">{{ wishlist.totalItems }}</span>
+                    </div>
+                </div>
+                <a routerLink="/paintings" class="btn btn-outline">Continue Shopping</a>
+            </div>
+        </div>
+    </div>
+</div>

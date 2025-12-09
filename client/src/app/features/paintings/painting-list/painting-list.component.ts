@@ -22,13 +22,11 @@ import { DominantColorDirective } from '../../../shared/directives/dominant-colo
 export class PaintingListComponent implements OnInit, OnDestroy {
   paintings: Painting[] = [];
   loading = false;
-<<<<<<< Updated upstream
   cartItemsMap: Map<number, number> = new Map(); // paintingId -> cartItemId
-=======
-  paintingsInCart: Map<number, boolean> = new Map();
   paintingsInWishlist: Map<number, boolean> = new Map();
   wishlistItemIds: Map<number, number> = new Map(); // painting ID -> wishlist item ID
->>>>>>> Stashed changes
+  currentImageIndexMap: Map<number, number> = new Map(); // paintingId -> current image index
+
   private subscription: Subscription = new Subscription();
 
   constructor(
@@ -72,13 +70,13 @@ export class PaintingListComponent implements OnInit, OnDestroy {
       next: (resp: ApiResponse<PageResponse<Painting>>) => {
         this.zone.run(() => {
           this.paintings = resp?.data?.content ?? [];
+          // Initialize image index map for all paintings
+          this.paintings.forEach(painting => {
+            this.currentImageIndexMap.set(painting.id, 0);
+          });
           this.loading = false;
           this.cdr.detectChanges();
-<<<<<<< Updated upstream
-=======
-          this.checkIfPaintingsInCart();
           this.checkIfPaintingsInWishlist();
->>>>>>> Stashed changes
         });
       },
       error: (err) => {
@@ -98,18 +96,69 @@ export class PaintingListComponent implements OnInit, OnDestroy {
     return primary?.imageUrl;
   }
 
+  getCurrentImageUrl(painting: Painting): string | undefined {
+    if (!painting?.images?.length) return undefined;
+    const currentIndex = this.currentImageIndexMap.get(painting.id) || 0;
+    return painting.images[currentIndex]?.imageUrl;
+  }
+
+  nextImage(paintingId: number, imageCount: number, event?: Event): void {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    const currentIndex = this.currentImageIndexMap.get(paintingId) || 0;
+    const nextIndex = (currentIndex + 1) % imageCount;
+    this.currentImageIndexMap.set(paintingId, nextIndex);
+  }
+
+  prevImage(paintingId: number, imageCount: number, event?: Event): void {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    const currentIndex = this.currentImageIndexMap.get(paintingId) || 0;
+    const prevIndex = currentIndex === 0 ? imageCount - 1 : currentIndex - 1;
+    this.currentImageIndexMap.set(paintingId, prevIndex);
+  }
+
+  setImage(paintingId: number, index: number, event?: Event): void {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    this.currentImageIndexMap.set(paintingId, index);
+  }
+
   trackByPaintingId(index: number, item: Painting) { return item.id; }
 
   toggleCart(painting: Painting) {
     const cartItemId = this.cartItemsMap.get(painting.id);
 
-<<<<<<< Updated upstream
     if (cartItemId) {
       // Remove from cart
       this.cartService.removeCartItem(cartItemId).subscribe({
         next: () => {
           // Cart subscription will update the map
-=======
+        },
+        error: (error) => {
+          console.error('Failed to remove item from cart:', error);
+        }
+      });
+    } else {
+      // Add to cart
+      const req: AddToCartRequest = { paintingId: painting.id, quantity: 1 };
+      this.cartService.addToCart(req).subscribe({
+        next: () => {
+          // Cart subscription will update the map
+        },
+        error: (error) => {
+          console.error('Failed to add item to cart:', error);
+        }
+      });
+    }
+  }
+
   toggleWishlist(painting: Painting) {
     const isInWishlist = this.paintingsInWishlist.get(painting.id) || false;
     const wishlistItemId = this.wishlistItemIds.get(painting.id);
@@ -133,40 +182,6 @@ export class PaintingListComponent implements OnInit, OnDestroy {
         },
         error: (error) => {
           console.error('Failed to add to wishlist:', error);
-        }
-      });
-    }
-  }
-
-  private checkIfPaintingsInCart() {
-    // Clear existing cart status
-    this.paintingsInCart.clear();
-
-    // Check each painting in the cart
-    this.paintings.forEach(painting => {
-      this.cartService.getItemCount(painting.id).subscribe({
-        next: (response) => {
-          if (response.success && response.data !== undefined) {
-            this.paintingsInCart.set(painting.id, response.data > 0);
-          } else {
-            this.paintingsInCart.set(painting.id, false);
-          }
-          this.cdr.detectChanges();
->>>>>>> Stashed changes
-        },
-        error: (error) => {
-          console.error('Failed to remove item from cart:', error);
-        }
-      });
-    } else {
-      // Add to cart
-      const req: AddToCartRequest = { paintingId: painting.id, quantity: 1 };
-      this.cartService.addToCart(req).subscribe({
-        next: () => {
-          // Cart subscription will update the map
-        },
-        error: (error) => {
-          console.error('Failed to add item to cart:', error);
         }
       });
     }

@@ -20,14 +20,10 @@ import { ChangeDetectorRef } from '@angular/core';
 export class PaintingDetailComponent implements OnInit {
   painting: Painting | null = null;
   loading = false;
-<<<<<<< Updated upstream
   cartItemId: number | null = null;
   private currentCart: any = null;
-=======
-  isInCart = false;
   isInWishlist = false;
   wishlistItemId: number | null = null;
->>>>>>> Stashed changes
 
   constructor(
     private route: ActivatedRoute,
@@ -63,13 +59,8 @@ export class PaintingDetailComponent implements OnInit {
         this.painting = resp.data || null;
         this.loading = false;
         this.updateCartStatus();
-        this.cdr.detectChanges();
-<<<<<<< Updated upstream
-=======
-        this.checkIfInCart();
         this.checkIfInWishlist();
-        console.log('Painting loaded:', this.painting);
->>>>>>> Stashed changes
+        this.cdr.detectChanges();
       },
       error: (err) => {
         console.error('Error loading painting:', err);
@@ -127,8 +118,6 @@ export class PaintingDetailComponent implements OnInit {
     if (!this.painting?.categories?.length) return '';
     return this.painting.categories.map(cat => cat.name).join(', ');
   }
-<<<<<<< Updated upstream
-=======
 
   toggleWishlist() {
     if (!this.painting) return;
@@ -155,30 +144,6 @@ export class PaintingDetailComponent implements OnInit {
         }
       });
     }
-  }
-
-  private checkIfInCart() {
-    if (!this.painting?.id) {
-      this.isInCart = false;
-      this.cdr.detectChanges();
-      return;
-    }
-
-    this.cartService.getItemCount(this.painting.id).subscribe({
-      next: (response) => {
-        if (response.success && response.data !== undefined) {
-          this.isInCart = response.data > 0;
-        } else {
-          this.isInCart = false;
-        }
-        this.cdr.detectChanges();
-      },
-      error: (err) => {
-        console.error('Error checking if item is in cart:', err);
-        this.isInCart = false;
-        this.cdr.detectChanges();
-      }
-    });
   }
 
   private checkIfInWishlist() {
@@ -225,5 +190,4 @@ export class PaintingDetailComponent implements OnInit {
       }
     });
   }
->>>>>>> Stashed changes
 }

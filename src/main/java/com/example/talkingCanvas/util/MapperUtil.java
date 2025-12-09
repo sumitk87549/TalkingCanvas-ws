@@ -31,10 +31,7 @@ public class MapperUtil {
                                 .name(user.getName())
                                 .email(user.getEmail())
                                 .contactNumber(user.getContactNumber())
-<<<<<<< Updated upstream
                                 .profileEmoji(user.getProfileEmoji())
-=======
->>>>>>> Stashed changes
                                 .role(user.getRole().name())
                                 .isActive(user.getIsActive())
                                 .addresses(user.getAddresses().stream()
@@ -207,15 +204,11 @@ public class MapperUtil {
                                 .createdAt(order.getCreatedAt())
                                 .updatedAt(order.getUpdatedAt())
                                 .adminContact(adminContact)
-<<<<<<< Updated upstream
                                 .user(toUserProfileResponse(order.getUser()))
-=======
->>>>>>> Stashed changes
                                 .build();
         }
 
         public OrderItemDTO toOrderItemDTO(OrderItem item) {
-<<<<<<< Updated upstream
                 BigDecimal subtotal = item.getPriceAtPurchase().multiply(BigDecimal.valueOf(item.getQuantity()));
 
                 return OrderItemDTO.builder()
@@ -226,14 +219,6 @@ public class MapperUtil {
                                 .quantity(item.getQuantity())
                                 .priceAtPurchase(item.getPriceAtPurchase())
                                 .subtotal(subtotal)
-=======
-                return OrderItemDTO.builder()
-                                .id(item.getId())
-                                .paintingId(item.getPainting().getId())
-                                .paintingTitle(item.getPainting().getTitle())
-                                .quantity(item.getQuantity())
-                                .pricePerUnit(item.getPricePerUnit())
-                                .subtotal(item.getSubtotal())
                                 .build();
         }
 
@@ -263,7 +248,6 @@ public class MapperUtil {
                                 .paintingId(item.getPainting().getId())
                                 .painting(toPaintingResponse(item.getPainting()))
                                 .addedAt(item.getAddedAt())
->>>>>>> Stashed changes
                                 .build();
         }
 }

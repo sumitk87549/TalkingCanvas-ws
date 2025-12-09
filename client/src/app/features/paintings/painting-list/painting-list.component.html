@@ -11,9 +11,46 @@
       </div>
       <div *ngFor="let painting of paintings; trackBy: trackByPaintingId" class="painting-card">
         <a [routerLink]="['/paintings', painting.id]" class="painting-link">
-          <div class="painting-image">
-            <img [src]="getPrimaryImageUrl(painting) || 'assets/images/placeholder-painting.jpg'"
+          <div class="painting-image carousel-container">
+            <img [src]="getCurrentImageUrl(painting) || 'assets/images/placeholder-painting.jpg'"
               [alt]="painting.title" />
+
+            <!-- Wishlist Button -->
+            <button class="btn-wishlist-card" [class.in-wishlist]="paintingsInWishlist.get(painting.id)"
+              (click)="toggleWishlist(painting); $event.preventDefault(); $event.stopPropagation()"
+              [attr.aria-label]="paintingsInWishlist.get(painting.id) ? 'Remove from wishlist' : 'Add to wishlist'">
+              <svg class="heart-icon" [class.filled]="paintingsInWishlist.get(painting.id)" viewBox="0 0 24 24">
+                <path
+                  d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+              </svg>
+            </button>
+
+            <!-- Carousel Controls - Only show if multiple images -->
+            <ng-container *ngIf="painting.images && painting.images.length > 1">
+              <!-- Previous Arrow -->
+              <button class="carousel-arrow carousel-arrow-left"
+                (click)="prevImage(painting.id, painting.images.length, $event)" aria-label="Previous image">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+              </button>
+
+              <!-- Next Arrow -->
+              <button class="carousel-arrow carousel-arrow-right"
+                (click)="nextImage(painting.id, painting.images.length, $event)" aria-label="Next image">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+              </button>
+
+              <!-- Indicator Dots -->
+              <div class="carousel-indicators">
+                <button *ngFor="let image of painting.images; let i = index" class="carousel-dot"
+                  [class.active]="(currentImageIndexMap.get(painting.id) || 0) === i"
+                  (click)="setImage(painting.id, i, $event)" [attr.aria-label]="'Go to image ' + (i + 1)">
+                </button>
+              </div>
+            </ng-container>
           </div>
           <div class="painting-info">
             <h3>{{ painting.title }}</h3>
@@ -22,10 +59,11 @@
           </div>
         </a>
         <div class="painting-actions">
-          <button (click)="addToCart(painting)" class="btn btn-primary"
-            [disabled]="!painting.isAvailable || (paintingsInCart.get(painting.id) || false)">
-            {{ (paintingsInCart.get(painting.id) || false) ? 'Already in Cart' : (painting.isAvailable ? 'Add to Cart' :
-            'Sold Out') }}
+          <button (click)="toggleCart(painting)" class="btn" [class.btn-primary]="!cartItemsMap.has(painting.id)"
+            [class.btn-danger]="cartItemsMap.has(painting.id)"
+            [disabled]="!painting.isAvailable && !cartItemsMap.has(painting.id)">
+            {{ cartItemsMap.has(painting.id) ? 'Remove from Cart' : (painting.isAvailable ? 'Add to Cart' : 'Sold Out')
+            }}
           </button>
         </div>
       </div>

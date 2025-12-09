@@ -3,11 +3,8 @@ import { CommonModule } from '@angular/common';
 import { RouterLink, Router, NavigationEnd } from "@angular/router";
 import { AuthService } from '../../../core/services/auth.service';
 import { CartService } from '../../../core/services/cart.service';
-<<<<<<< Updated upstream
 import { ThemeService } from '../../../core/services/theme.service';
-=======
 import { WishlistService } from '../../../core/services/wishlist.service';
->>>>>>> Stashed changes
 import { AuthResponse } from '../../../models/user.model';
 import { filter } from 'rxjs/operators';
 
@@ -65,7 +62,7 @@ export class Navbar implements AfterViewInit, OnInit {
     });
 
     // Subscribe to wishlist changes
-    this.wishlistService.wishlist$.subscribe(wishlist => {
+    this.wishlistService.wishlist$.subscribe((wishlist: any) => {
       this.wishlistItemCount = wishlist?.totalItems || 0;
       this.cdr.markForCheck();
     });
@@ -77,29 +74,29 @@ export class Navbar implements AfterViewInit, OnInit {
     });
 
     // Subscribe to theme mode changes
-    this.themeService.currentThemeMode$.subscribe(mode => {
+    this.themeService.currentThemeMode$.subscribe((mode: string) => {
       this.isAutoMode = mode === 'auto';
       this.cdr.markForCheck();
     });
   }
 
   private loadCartItemCount() {
-    this.cartService.getTotalItemsCount().subscribe(response => {
+    this.cartService.getTotalItemsCount().subscribe((response: any) => {
       if (response.success && response.data !== undefined) {
         this.cartItemCount = response.data;
       }
-    }, error => {
+    }, (error: any) => {
       console.error('Error loading cart count:', error);
       this.cartItemCount = 0;
     });
   }
 
   private loadWishlistItemCount() {
-    this.wishlistService.getWishlistItemCount().subscribe(response => {
+    this.wishlistService.getWishlistItemCount().subscribe((response: any) => {
       if (response.success && response.data !== undefined) {
         this.wishlistItemCount = response.data;
       }
-    }, error => {
+    }, (error: any) => {
       console.error('Error loading wishlist count:', error);
       this.wishlistItemCount = 0;
     });

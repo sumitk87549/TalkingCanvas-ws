@@ -34,6 +34,7 @@ export class HomeComponent implements OnInit {
   featuredArtists: Artist[] = [];
   testimonials: Testimonial[] = [];
   isLoading = true;
+  currentImageIndexMap: Map<number, number> = new Map(); // paintingId -> current image index
 
   constructor(
     public authService: AuthService,
@@ -63,6 +64,10 @@ export class HomeComponent implements OnInit {
     this.paintingService.getFeaturedPaintings(0, 6).subscribe({
       next: (resp: ApiResponse<PageResponse<Painting>>) => {
         this.featuredPaintings = resp.data?.content || [];
+        // Initialize image index map for all featured paintings
+        this.featuredPaintings.forEach(painting => {
+          this.currentImageIndexMap.set(painting.id, 0);
+        });
         this.isLoading = false;
       },
       error: (err) => {
@@ -76,6 +81,40 @@ export class HomeComponent implements OnInit {
     if (!painting?.images?.length) return undefined;
     const primary = painting.images.find(i => i.isPrimary) || painting.images[0];
     return primary?.imageUrl;
+  }
+
+  getCurrentImageUrl(painting: Painting): string | undefined {
+    if (!painting?.images?.length) return undefined;
+    const currentIndex = this.currentImageIndexMap.get(painting.id) || 0;
+    return painting.images[currentIndex]?.imageUrl;
+  }
+
+  nextImage(paintingId: number, imageCount: number, event?: Event): void {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    const currentIndex = this.currentImageIndexMap.get(paintingId) || 0;
+    const nextIndex = (currentIndex + 1) % imageCount;
+    this.currentImageIndexMap.set(paintingId, nextIndex);
+  }
+
+  prevImage(paintingId: number, imageCount: number, event?: Event): void {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    const currentIndex = this.currentImageIndexMap.get(paintingId) || 0;
+    const prevIndex = currentIndex === 0 ? imageCount - 1 : currentIndex - 1;
+    this.currentImageIndexMap.set(paintingId, prevIndex);
+  }
+
+  setImage(paintingId: number, index: number, event?: Event): void {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    this.currentImageIndexMap.set(paintingId, index);
   }
 
   // Handle image loading errors

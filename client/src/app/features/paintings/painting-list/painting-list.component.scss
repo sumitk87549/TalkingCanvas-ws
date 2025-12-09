@@ -320,6 +320,122 @@ h1 {
   }
 }
 
+// Carousel Container
+.carousel-container {
+  position: relative;
+}
+
+// Carousel Arrow Buttons
+.carousel-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.5);
+  border: none;
+  color: white;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 10;
+  backdrop-filter: blur(4px);
+  opacity: 0;
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.7);
+    transform: translateY(-50%) scale(1.1);
+  }
+
+  &:active {
+    transform: translateY(-50%) scale(0.95);
+  }
+
+  @media (max-width: 768px) {
+    opacity: 1; // Always visible on mobile
+    background: rgba(0, 0, 0, 0.4);
+  }
+}
+
+.carousel-arrow-left {
+  left: 8px;
+}
+
+.carousel-arrow-right {
+  right: 8px;
+}
+
+// Show arrows on hover for desktop
+.carousel-container:hover .carousel-arrow {
+  opacity: 1;
+}
+
+// Carousel Indicator Dots
+.carousel-indicators {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+  z-index: 10;
+  padding: 6px 12px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 20px;
+  backdrop-filter: blur(4px);
+}
+
+.carousel-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 2px solid white;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  padding: 0;
+  min-width: 44px; // Touch-friendly target
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+
+  &::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    border: 2px solid white;
+    background: transparent;
+    transition: all 0.3s ease;
+    position: absolute;
+  }
+
+  &.active::before {
+    background: white;
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+  }
+
+  &:hover::before {
+    transform: scale(1.3);
+    border-color: rgba(255, 255, 255, 0.9);
+  }
+
+  @media (max-width: 768px) {
+    min-width: 36px;
+    min-height: 36px;
+  }
+}
+
 .painting-card:hover .painting-image img {
   transform: scale(1.1);
 }
@@ -333,6 +449,7 @@ h1 {
 .painting-info {
   padding: 20px;
   flex: 1;
+  color: white;
 
   @media (max-width: 480px) {
     padding: 15px;
@@ -341,13 +458,13 @@ h1 {
 
 h3 {
   margin: 0 0 10px 0;
-  color: #333;
+  color: #d1d0d0;
   font-size: 1.1rem;
   line-height: 1.4;
 }
 
 .artist {
-  color: #666;
+  color: #888;
   font-size: 0.9rem;
   margin: 5px 0;
 }

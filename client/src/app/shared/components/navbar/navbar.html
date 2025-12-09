@@ -53,23 +53,15 @@
 
         <!-- Desktop Dropdown (Hidden on Mobile) -->
         <li class="dropdown desktop-only-dropdown">
-<<<<<<< Updated upstream
           <span class="dropbtn">
             <span class="user-emoji-circle">{{ currentUser?.profileEmoji || '😊' }}</span>
             {{ isAdmin ? 'ADMIN' : 'Welcome' }} <br> {{currentUser?.name | uppercase}} <i class="arrow-down"></i>
           </span>
           <div class="dropdown-content">
             <a routerLink="/profile"><i class="fas fa-user"></i> My Profile</a>
+            <a routerLink="/wishlist"><i class="fas fa-heart"></i> Wishlist ({{wishlistItemCount}})</a>
             <div class="dropdown-divider"></div>
             <a routerLink="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
-=======
-          <!-- <span class="dropbtn">{{ isAdmin ? 'ADMIN' : 'Welcome' }} <br> {{currentUser?.name | uppercase}} <i class="arrow-down"></i></span> -->
-          <span class="dropbtn">{{ isAdmin ? 'ADMIN' : 'Welcome' }} <br> {{currentUser?.name | uppercase}} <i
-              class="arrow-down"></i></span>
-          <div class="dropdown-content">
-            <a routerLink="/wishlist">Wishlist ({{wishlistItemCount}})</a>
-            <a routerLink="/logout">Logout</a>
->>>>>>> Stashed changes
           </div>
         </li>
 

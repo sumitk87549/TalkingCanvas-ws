@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.cache.annotation.CacheEvict;
 
 import com.example.talkingCanvas.dto.order.AdminContactDTO;
 import com.example.talkingCanvas.dto.order.CreateOrderRequest;
@@ -65,6 +66,7 @@ public class OrderService {
     private String adminPhone;
 
     @Transactional
+    @CacheEvict(value = { "paintings", "dashboard-stats" }, allEntries = true)
     public OrderResponse createOrder(Long userId, CreateOrderRequest request) {
         logger.info("Creating order for user: {}", userId);
 
@@ -85,7 +87,8 @@ public class OrderService {
                 throw new BadRequestException("Painting '" + painting.getTitle() + "' is no longer available");
             }
             if (painting.getStockQuantity() < item.getQuantity()) {
-                throw new BadRequestException("Insufficient stock for '" + painting.getTitle() + "'. Available: " + painting.getStockQuantity());
+                throw new BadRequestException("Insufficient stock for '" + painting.getTitle() + "'. Available: "
+                        + painting.getStockQuantity());
             }
         }
 
@@ -156,8 +159,7 @@ public class OrderService {
                 user.getEmail(),
                 user.getName(),
                 orderNumber,
-                totalAmount.toString() + " INR"
-        );
+                totalAmount.toString() + " INR");
 
         logger.info("Order created successfully: {}", orderNumber);
 
@@ -191,7 +193,7 @@ public class OrderService {
     public List<OrderResponse> getUserOrders(Long userId, int page, int size) {
         logger.info("Fetching orders for user: {}", userId);
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-        
+
         AdminContactDTO adminContact = AdminContactDTO.builder()
                 .name(adminName)
                 .email(adminEmail)
@@ -205,6 +207,7 @@ public class OrderService {
     }
 
     @Transactional
+    @CacheEvict(value = { "paintings", "dashboard-stats" }, allEntries = true)
     public OrderResponse cancelOrder(Long userId, Long orderId) {
         logger.info("Cancelling order: {} for user: {}", orderId, userId);
         Order order = orderRepository.findById(orderId)
@@ -215,7 +218,7 @@ public class OrderService {
         }
 
         if (order.getOrderStatus() == Order.OrderStatus.DELIVERED ||
-            order.getOrderStatus() == Order.OrderStatus.CANCELLED) {
+                order.getOrderStatus() == Order.OrderStatus.CANCELLED) {
             throw new BadRequestException("Order cannot be cancelled");
         }
 
