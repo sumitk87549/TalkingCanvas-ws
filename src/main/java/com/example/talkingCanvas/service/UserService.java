@@ -15,6 +15,8 @@ import com.example.talkingCanvas.util.MapperUtil;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -92,6 +94,7 @@ public class UserService {
     }
 
     // Address Management Methods
+    @Cacheable(value = "user-addresses", key = "#userId")
     public List<AddressDTO> getUserAddresses(Long userId) {
         logger.info("Fetching addresses for user: {}", userId);
         User user = userRepository.findById(userId)
@@ -102,6 +105,7 @@ public class UserService {
     }
 
     @Transactional
+    @CacheEvict(value = "user-addresses", key = "#userId")
     public AddressDTO addAddress(Long userId, AddressDTO addressDTO) {
         logger.info("Adding new address for user: {}", userId);
         User user = userRepository.findById(userId)
@@ -129,6 +133,7 @@ public class UserService {
     }
 
     @Transactional
+    @CacheEvict(value = "user-addresses", key = "#userId")
     public AddressDTO updateAddress(Long userId, Long addressId, AddressDTO addressDTO) {
         logger.info("Updating address: {} for user: {}", addressId, userId);
         User user = userRepository.findById(userId)
@@ -157,6 +162,7 @@ public class UserService {
     }
 
     @Transactional
+    @CacheEvict(value = "user-addresses", key = "#userId")
     public void deleteAddress(Long userId, Long addressId) {
         logger.info("Deleting address: {} for user: {}", addressId, userId);
         User user = userRepository.findById(userId)
@@ -173,6 +179,7 @@ public class UserService {
     }
 
     @Transactional
+    @CacheEvict(value = "user-addresses", key = "#userId")
     public AddressDTO setDefaultAddress(Long userId, Long addressId) {
         logger.info("Setting default address: {} for user: {}", addressId, userId);
         User user = userRepository.findById(userId)
