@@ -98,46 +98,58 @@
           <table class="data-table">
             <thead>
               <tr>
-                <th>Order ID</th>
-                <th>User</th>
-                <th>Contact</th>
-                <th>Paintings</th>
-                <th>Total</th>
+                <th>Order Details</th>
+                <th>User Info</th>
+                <th>Delivery Address & Notes</th>
+                <th>Ordered Items</th>
+                <th>Payment & Total</th>
                 <th>Status</th>
-                <th>Date</th>
               </tr>
             </thead>
             <tbody>
               <tr *ngFor="let order of orders">
-                <td>{{ order.orderNumber }}</td>
+                <td>
+                  <span class="order-number">{{ order.orderNumber }}</span>
+                  <div class="date-sub">{{ order.createdAt | date:'short' }}</div>
+                </td>
                 <td>
                   <div class="user-info">
                     <span class="name">{{ order.user.name || 'Unknown' }}</span>
                     <span class="email">{{ order.user.email || 'No Email' }}</span>
-                    <span class="phone" *ngIf="order.user?.contactNumber">{{ order.user.contactNumber }}</span>
+                    <span class="phone" *ngIf="order.user?.contactNumber">📞 {{ order.user.contactNumber }}</span>
                   </div>
                 </td>
                 <td>
                   <div class="contact-info">
-                    <p>{{ order.deliveryAddress.street }}</p>
-                    <p>{{ order.deliveryAddress.city }}, {{ order.deliveryAddress.state }}</p>
-                    <p>{{ order.deliveryAddress.pincode }}</p>
+                    <p class="address-line">{{ order.deliveryAddress.street }}</p>
+                    <p class="address-line">{{ order.deliveryAddress.city }}, {{ order.deliveryAddress.state }}</p>
+                    <p class="address-line">{{ order.deliveryAddress.country }} - {{ order.deliveryAddress.pincode }}
+                    </p>
+                    <p class="notes" *ngIf="order.notes">📝 {{ order.notes }}</p>
                   </div>
                 </td>
                 <td>
                   <ul class="painting-list">
                     <li *ngFor="let item of order.items">
-                      {{ item.paintingTitle }} (x{{ item.quantity }})
+                      <span class="item-title">{{ item.paintingTitle }}</span>
+                      <span class="item-qty">x{{ item.quantity }}</span>
+                      <span class="item-price">({{ item.priceAtPurchase | currency:'INR' }})</span>
                     </li>
                   </ul>
                 </td>
-                <td>{{ order.currency }} {{ order.totalAmount }}</td>
+                <td>
+                  <div class="amount-info">
+                    <span class="total">{{ order.currency }} {{ order.totalAmount }}</span>
+                    <span class="payment-method-badge" [class.cod]="order.paymentMethod === 'COD'">
+                      {{ order.paymentMethod }}
+                    </span>
+                  </div>
+                </td>
                 <td>
                   <span class="status-badge" [ngClass]="order.orderStatus.toLowerCase()">
                     {{ order.orderStatus }}
                   </span>
                 </td>
-                <td>{{ order.createdAt | date:'medium' }}</td>
               </tr>
             </tbody>
           </table>

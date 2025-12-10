@@ -94,6 +94,7 @@ public class UserService {
     }
 
     // Address Management Methods
+    @Transactional(readOnly = true)
     @Cacheable(value = "user-addresses", key = "#userId")
     public List<AddressDTO> getUserAddresses(Long userId) {
         logger.info("Fetching addresses for user: {}", userId);

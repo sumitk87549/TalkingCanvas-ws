@@ -210,27 +210,42 @@
               }
             }
 
-            .user-info {
+            .user-info,
+            .contact-info {
               display: flex;
               flex-direction: column;
+              gap: 0.25rem;
+              font-size: 0.9rem;
 
               .name {
-                font-weight: 500;
+                font-weight: 600;
+                color: var(--text-primary);
               }
 
               .email {
-                font-size: 0.85rem;
                 color: var(--text-secondary);
+                font-size: 0.85rem;
               }
-            }
 
-            .contact-info {
-              font-size: 0.9rem;
-              color: var(--text-secondary);
+              .phone {
+                color: var(--text-secondary);
+                font-size: 0.85rem;
+              }
 
-              p {
+              .address-line {
                 margin: 0;
                 line-height: 1.4;
+                color: var(--text-secondary);
+              }
+
+              .notes {
+                margin-top: 0.5rem;
+                font-style: italic;
+                color: var(--primary);
+                background: rgba(var(--primary-rgb), 0.1);
+                padding: 0.25rem 0.5rem;
+                border-radius: 4px;
+                display: inline-block;
               }
             }
 
@@ -238,203 +253,262 @@
               list-style: none;
               padding: 0;
               margin: 0;
-              font-size: 0.9rem;
 
               li {
-                margin-bottom: 0.25rem;
+                padding: 0.25rem 0;
+                border-bottom: 1px dashed var(--border-light);
 
                 &:last-child {
-                  margin-bottom: 0;
+                  border-bottom: none;
+                }
+
+                display: flex;
+                gap: 0.5rem;
+                align-items: center;
+                font-size: 0.9rem;
+
+                .item-title {
+                  font-weight: 500;
+                }
+
+                .item-qty {
+                  color: var(--text-secondary);
+                  font-size: 0.85rem;
+                }
+
+                .item-price {
+                  color: var(--text-tertiary);
+                  font-size: 0.8rem;
+                  margin-left: auto;
                 }
               }
             }
 
-            &.actions-cell {
-              white-space: nowrap;
+            .amount-info {
+              display: flex;
+              flex-direction: column;
+              gap: 0.5rem;
+              align-items: flex-start;
 
-              .action-btn {
-                background: none;
-                border: none;
-                cursor: pointer;
-                padding: 0.5rem;
+              .total {
+                font-weight: 700;
+                color: var(--text-primary);
+              }
+
+              .payment-method-badge {
+                font-size: 0.75rem;
+                padding: 0.2rem 0.5rem;
                 border-radius: 4px;
-                transition: background-color 0.2s;
-                font-size: 1.1rem;
-                margin-right: 0.25rem;
+                background: var(--surface-ground);
+                border: 1px solid var(--border-medium);
 
-                &.edit {
-                  color: var(--accent);
-
-                  &:hover {
-                    background-color: var(--bg-tertiary);
-                  }
-                }
-
-                &.delete {
-                  color: #dc3545;
-
-                  &:hover {
-                    background-color: rgba(220, 53, 69, 0.1);
-                  }
+                &.cod {
+                  background: #dcfce7;
+                  color: #166534;
+                  border-color: #bbf7d0;
                 }
               }
+            }
+
+            .order-number {
+              font-family: monospace;
+              font-weight: 600;
+              font-size: 1rem;
+              color: var(--primary);
+            }
+
+            .date-sub {
+              font-size: 0.75rem;
+              color: var(--text-tertiary);
+              margin-top: 0.25rem;
             }
           }
 
-          tbody tr {
-            transition: background-color 0.2s;
+          &.actions-cell {
+            white-space: nowrap;
 
-            &:hover {
-              background-color: var(--bg-tertiary);
+            .action-btn {
+              background: none;
+              border: none;
+              cursor: pointer;
+              padding: 0.5rem;
+              border-radius: 4px;
+              transition: background-color 0.2s;
+              font-size: 1.1rem;
+              margin-right: 0.25rem;
+
+              &.edit {
+                color: var(--accent);
+
+                &:hover {
+                  background-color: var(--bg-tertiary);
+                }
+              }
+
+              &.delete {
+                color: #dc3545;
+
+                &:hover {
+                  background-color: rgba(220, 53, 69, 0.1);
+                }
+              }
             }
           }
         }
+
+        tbody tr {
+          transition: background-color 0.2s;
+
+          &:hover {
+            background-color: var(--bg-tertiary);
+          }
+        }
       }
+    }
 
-      .metrics-container {
-        display: grid;
-        gap: 1.5rem;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    .metrics-container {
+      display: grid;
+      gap: 1.5rem;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
 
-        .metric-card {
-          height: 100%;
+      .metric-card {
+        height: 100%;
 
-          mat-card-header {
-            margin-bottom: 1rem;
+        mat-card-header {
+          margin-bottom: 1rem;
 
-            mat-card-title {
-              font-size: 1.1rem;
-              font-weight: 600;
+          mat-card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+          }
+
+          mat-card-subtitle {
+            font-size: 0.9rem;
+          }
+        }
+
+        .health-status {
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+          padding: 1rem;
+          border-radius: 8px;
+          margin-bottom: 1.5rem;
+
+          .status-indicator {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+          }
+
+          &.up {
+            background-color: rgba(76, 175, 80, 0.1);
+
+            .status-indicator {
+              background-color: #4caf50;
             }
 
-            mat-card-subtitle {
-              font-size: 0.9rem;
+            h3 {
+              color: #2e7d32;
             }
           }
 
-          .health-status {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            padding: 1rem;
-            border-radius: 8px;
-            margin-bottom: 1.5rem;
+          &.down,
+          &.out_of_service {
+            background-color: rgba(244, 67, 54, 0.1);
 
             .status-indicator {
-              width: 16px;
-              height: 16px;
-              border-radius: 50%;
+              background-color: #f44336;
             }
 
-            &.up {
-              background-color: rgba(76, 175, 80, 0.1);
+            h3 {
+              color: #c62828;
+            }
+          }
 
-              .status-indicator {
-                background-color: #4caf50;
-              }
+          &.unknown {
+            background-color: rgba(158, 158, 158, 0.1);
 
-              h3 {
+            .status-indicator {
+              background-color: #9e9e9e;
+            }
+
+            h3 {
+              color: #616161;
+            }
+          }
+
+          .status-text {
+            h3 {
+              margin: 0 0 0.25rem;
+              font-size: 1.1rem;
+            }
+
+            p {
+              margin: 0;
+              font-size: 0.9rem;
+              color: var(--text-secondary);
+            }
+          }
+        }
+
+        .health-details {
+          h4 {
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+          }
+
+          .component {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--border-light);
+            font-size: 0.9rem;
+
+            &:last-child {
+              border-bottom: none;
+            }
+
+            .component-status {
+              font-weight: 500;
+
+              &.up {
                 color: #2e7d32;
               }
-            }
 
-            &.down,
-            &.out_of_service {
-              background-color: rgba(244, 67, 54, 0.1);
-
-              .status-indicator {
-                background-color: #f44336;
-              }
-
-              h3 {
+              &.down {
                 color: #c62828;
               }
             }
-
-            &.unknown {
-              background-color: rgba(158, 158, 158, 0.1);
-
-              .status-indicator {
-                background-color: #9e9e9e;
-              }
-
-              h3 {
-                color: #616161;
-              }
-            }
-
-            .status-text {
-              h3 {
-                margin: 0 0 0.25rem;
-                font-size: 1.1rem;
-              }
-
-              p {
-                margin: 0;
-                font-size: 0.9rem;
-                color: var(--text-secondary);
-              }
-            }
           }
+        }
 
-          .health-details {
-            h4 {
-              font-size: 1rem;
-              margin-bottom: 1rem;
-              color: var(--text-primary);
+        .metrics-grid {
+          display: grid;
+          gap: 1rem;
+
+          .metric-item {
+            padding: 0.75rem;
+            background: var(--bg-secondary);
+            border-radius: 6px;
+
+            .metric-name {
+              font-size: 0.85rem;
+              color: var(--text-secondary);
+              margin-bottom: 0.25rem;
             }
 
-            .component {
-              display: flex;
-              justify-content: space-between;
-              padding: 0.5rem 0;
-              border-bottom: 1px solid var(--border-light);
-              font-size: 0.9rem;
-
-              &:last-child {
-                border-bottom: none;
-              }
-
-              .component-status {
-                font-weight: 500;
-
-                &.up {
-                  color: #2e7d32;
-                }
-
-                &.down {
-                  color: #c62828;
-                }
-              }
+            .metric-value {
+              font-size: 1.1rem;
+              font-weight: 600;
+              color: var(--accent);
             }
-          }
 
-          .metrics-grid {
-            display: grid;
-            gap: 1rem;
-
-            .metric-item {
-              padding: 0.75rem;
-              background: var(--bg-secondary);
-              border-radius: 6px;
-
-              .metric-name {
-                font-size: 0.85rem;
-                color: var(--text-secondary);
-                margin-bottom: 0.25rem;
-              }
-
-              .metric-value {
-                font-size: 1.1rem;
-                font-weight: 600;
-                color: var(--accent);
-              }
-
-              .metric-desc {
-                font-size: 0.8rem;
-                color: var(--text-tertiary);
-                margin-top: 0.25rem;
-              }
+            .metric-desc {
+              font-size: 0.8rem;
+              color: var(--text-tertiary);
+              margin-top: 0.25rem;
             }
           }
         }

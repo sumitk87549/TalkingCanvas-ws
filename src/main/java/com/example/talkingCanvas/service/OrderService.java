@@ -105,10 +105,11 @@ public class OrderService {
                 .build();
         deliveryAddress = addressRepository.save(deliveryAddress);
 
-        // Calculate total amount
+        // Calculate total amount with scale 2
         BigDecimal totalAmount = cart.getItems().stream()
                 .map(item -> item.getPainting().getPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+                .reduce(BigDecimal.ZERO, BigDecimal::add)
+                .setScale(2, java.math.RoundingMode.HALF_UP);
 
         // Generate order number
         String orderNumber = generateOrderNumber();
@@ -149,17 +150,24 @@ public class OrderService {
         }
 
         Order savedOrder = orderRepository.save(order);
+        // Force flush to catch constraints violations immediately
+        orderRepository.flush();
 
         // Clear cart
         cart.clear();
         cartRepository.save(cart);
 
-        // Send order confirmation email
-        emailService.sendOrderConfirmationEmail(
-                user.getEmail(),
-                user.getName(),
-                orderNumber,
-                totalAmount.toString() + " INR");
+        // Send order confirmation email - safely
+        try {
+            emailService.sendOrderConfirmationEmail(
+                    user.getEmail(),
+                    user.getName(),
+                    orderNumber,
+                    totalAmount.toString() + " INR");
+        } catch (Exception e) {
+            logger.error("Failed to send order confirmation email for order: {}", orderNumber, e);
+            // Don't rollback the order if email fails
+        }
 
         logger.info("Order created successfully: {}", orderNumber);
 
@@ -245,7 +253,9 @@ public class OrderService {
     }
 
     private String generateOrderNumber() {
-        String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
-        return "TC" + timestamp;
+        // Use millis and random number to ensure uniqueness
+        String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS"));
+        int random = (int) (Math.random() * 1000);
+        return "TC" + timestamp + String.format("%03d", random);
     }
 }

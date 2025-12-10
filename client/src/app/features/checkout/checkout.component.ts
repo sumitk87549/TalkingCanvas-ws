@@ -195,12 +195,15 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   }
 
   proceedToPayment() {
-    if (!this.selectedAddressId() && !this.showNewAddressForm()) {
+    // If no addresses exist, we must be in new address mode effectively
+    const isNewAddressMode = this.showNewAddressForm() || this.addresses().length === 0;
+
+    if (!this.selectedAddressId() && !isNewAddressMode) {
       this.error.set('Please select an address or add a new one.');
       return;
     }
 
-    if (this.showNewAddressForm()) {
+    if (isNewAddressMode) {
       const addressControls = ['street', 'city', 'state', 'country', 'pincode'];
       let hasErrors = false;
       addressControls.forEach(control => {
@@ -231,8 +234,9 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
   onSubmit() {
     this.submitted.set(true);
+    const isNewAddressMode = this.showNewAddressForm() || this.addresses().length === 0;
 
-    if (!this.selectedAddressId() && !this.showNewAddressForm()) {
+    if (!this.selectedAddressId() && !isNewAddressMode) {
       this.error.set('Please select an address or add a new one.');
       return;
     }
@@ -242,7 +246,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     const formValue = this.checkoutForm.value;
 
     const orderRequest: CreateOrderRequest = {
-      deliveryAddress: this.showNewAddressForm() ? {
+      deliveryAddress: isNewAddressMode ? {
         street: formValue.street,
         city: formValue.city,
         state: formValue.state,
@@ -276,7 +280,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   }
 
   getSelectedAddress(): Address | null {
-    if (this.showNewAddressForm()) {
+    if (this.showNewAddressForm() || this.addresses().length === 0) {
       const formValue = this.checkoutForm.value;
       return {
         street: formValue.street,
