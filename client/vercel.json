@@ -3,6 +3,10 @@
     "outputDirectory": "dist/client/browser",
     "rewrites": [
         {
+            "source": "/api/:path*",
+            "destination": "https://talkingcanvas-ws.onrender.com/api/:path*"
+        },
+        {
             "source": "/(.*)",
             "destination": "/index.html"
         }
