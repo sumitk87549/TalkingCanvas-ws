@@ -213,15 +213,15 @@
                 </td>
                 <td>
                   <div class="user-info">
-                    <span class="name">{{ order.user?.name || 'Unknown' }}</span>
-                    <span class="email">{{ order.user?.email || 'No Email' }}</span>
+                    <span class="name">{{ order.user.name || 'Unknown' }}</span>
+                    <span class="email">{{ order.user.email || 'No Email' }}</span>
                   </div>
                 </td>
                 <td>
                   <div class="contact-info">
-                    <p class="address-line">{{ order.deliveryAddress?.street }}</p>
-                    <p class="address-line">{{ order.deliveryAddress?.city }}, {{ order.deliveryAddress?.state }}</p>
-                    <p class="address-line">{{ order.deliveryAddress?.country }} - {{ order.deliveryAddress?.pincode }}
+                    <p class="address-line">{{ order.deliveryAddress.street }}</p>
+                    <p class="address-line">{{ order.deliveryAddress.city }}, {{ order.deliveryAddress.state }}</p>
+                    <p class="address-line">{{ order.deliveryAddress.country }} - {{ order.deliveryAddress.pincode }}
                     </p>
                     <p class="notes" *ngIf="order.notes">📝 {{ order.notes }}</p>
                   </div>
@@ -243,7 +243,7 @@
                   </div>
                 </td>
                 <td>
-                  <span class="status-badge" [ngClass]="order.orderStatus?.toLowerCase()">
+                  <span class="status-badge" [ngClass]="order.orderStatus.toLowerCase()">
                     {{ order.orderStatus }}
                   </span>
                 </td>
