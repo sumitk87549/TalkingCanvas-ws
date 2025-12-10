@@ -1,29 +1,122 @@
 <div class="dashboard-container">
   <div class="header">
-    <h1>Admin Dashboard</h1>
-    <button routerLink="add" class="add-btn" *ngIf="activeTabIndex === 0">
+    <h1>🎨 Admin Dashboard</h1>
+    <button routerLink="add" class="add-btn" *ngIf="activeTabIndex === 1">
       <span class="icon">+</span> Add New Painting
     </button>
   </div>
 
-  <div class="stats-grid">
-    <div class="stat-card">
-      <div class="stat-value">{{ totalPaintings }}</div>
-      <div class="stat-label">Total Paintings</div>
+  <!-- Dashboard Stats Overview -->
+  <div class="stats-overview" *ngIf="dashboardStats">
+    <div class="stat-card revenue">
+      <div class="stat-icon">💰</div>
+      <div class="stat-content">
+        <div class="stat-value">{{ formatCurrency(dashboardStats.totalRevenue) }}</div>
+        <div class="stat-label">Total Revenue</div>
+        <div class="stat-sub">This Month: {{ formatCurrency(dashboardStats.revenueThisMonth) }}</div>
+      </div>
     </div>
-    <div class="stat-card">
-      <div class="stat-value">{{ totalViews }}</div>
-      <div class="stat-label">Total Views</div>
+    <div class="stat-card orders">
+      <div class="stat-icon">📦</div>
+      <div class="stat-content">
+        <div class="stat-value">{{ dashboardStats.totalOrders }}</div>
+        <div class="stat-label">Total Orders</div>
+        <div class="stat-sub">Pending: {{ dashboardStats.pendingOrders }}</div>
+      </div>
     </div>
-    <div class="stat-card">
-      <div class="stat-value">{{ totalPurchases }}</div>
-      <div class="stat-label">Total Purchases</div>
+    <div class="stat-card users">
+      <div class="stat-icon">👥</div>
+      <div class="stat-content">
+        <div class="stat-value">{{ dashboardStats.totalUsers }}</div>
+        <div class="stat-label">Total Users</div>
+        <div class="stat-sub">Active: {{ dashboardStats.activeUsers }}</div>
+      </div>
+    </div>
+    <div class="stat-card paintings">
+      <div class="stat-icon">🖼️</div>
+      <div class="stat-content">
+        <div class="stat-value">{{ dashboardStats.totalPaintings }}</div>
+        <div class="stat-label">Total Paintings</div>
+        <div class="stat-sub">Available: {{ dashboardStats.availablePaintings }}</div>
+      </div>
     </div>
   </div>
 
   <mat-tab-group [(selectedIndex)]="activeTabIndex" class="dashboard-tabs">
+    <!-- Overview Tab -->
+    <mat-tab label="📊 Overview">
+      <div class="content-section">
+        <h2>Quick Statistics</h2>
+
+        <div *ngIf="loadingStats" class="loading-spinner">
+          <mat-spinner diameter="40"></mat-spinner>
+          <p>Loading statistics...</p>
+        </div>
+
+        <div *ngIf="!loadingStats && dashboardStats" class="overview-grid">
+          <div class="overview-card">
+            <h3>📦 Order Status Distribution</h3>
+            <div class="status-grid">
+              <div class="status-item pending">
+                <span class="count">{{ dashboardStats.pendingOrders }}</span>
+                <span class="label">Pending</span>
+              </div>
+              <div class="status-item confirmed">
+                <span class="count">{{ dashboardStats.confirmedOrders }}</span>
+                <span class="label">Confirmed</span>
+              </div>
+              <div class="status-item shipped">
+                <span class="count">{{ dashboardStats.shippedOrders }}</span>
+                <span class="label">Shipped</span>
+              </div>
+              <div class="status-item delivered">
+                <span class="count">{{ dashboardStats.deliveredOrders }}</span>
+                <span class="label">Delivered</span>
+              </div>
+              <div class="status-item cancelled">
+                <span class="count">{{ dashboardStats.cancelledOrders }}</span>
+                <span class="label">Cancelled</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="overview-card">
+            <h3>💰 Revenue Summary</h3>
+            <div class="revenue-stats">
+              <div class="revenue-item">
+                <span class="label">This Month</span>
+                <span class="amount">{{ formatCurrency(dashboardStats.revenueThisMonth) }}</span>
+              </div>
+              <div class="revenue-item">
+                <span class="label">This Year</span>
+                <span class="amount">{{ formatCurrency(dashboardStats.revenueThisYear) }}</span>
+              </div>
+              <div class="revenue-item total">
+                <span class="label">All Time</span>
+                <span class="amount">{{ formatCurrency(dashboardStats.totalRevenue) }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="overview-card">
+            <h3>🖼️ Inventory Status</h3>
+            <div class="inventory-stats">
+              <div class="inventory-item">
+                <span class="count available">{{ dashboardStats.availablePaintings }}</span>
+                <span class="label">Available</span>
+              </div>
+              <div class="inventory-item">
+                <span class="count out-of-stock">{{ dashboardStats.outOfStockPaintings }}</span>
+                <span class="label">Out of Stock</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </mat-tab>
+
     <!-- Paintings Tab -->
-    <mat-tab label="Paintings">
+    <mat-tab label="🖼️ Paintings">
       <div class="content-section">
         <h2>Painting Inventory</h2>
 
@@ -45,6 +138,8 @@
                 <th>Artist</th>
                 <th>Price</th>
                 <th>Stock</th>
+                <th>Views</th>
+                <th>Sales</th>
                 <th>Status</th>
                 <th>Actions</th>
               </tr>
@@ -59,6 +154,8 @@
                 <td>{{ painting.artistName }}</td>
                 <td>{{ painting.currency }} {{ painting.price }}</td>
                 <td>{{ painting.stockQuantity }}</td>
+                <td>{{ painting.viewCount || 0 }}</td>
+                <td>{{ painting.purchaseCount || 0 }}</td>
                 <td>
                   <span class="status-badge" [class.available]="painting.isAvailable"
                     [class.sold-out]="!painting.isAvailable">
@@ -67,10 +164,11 @@
                 </td>
                 <td class="actions-cell">
                   <button (click)="editPainting(painting.id)" class="action-btn edit" title="Edit">
-                    ✎
+                    ✏️
                   </button>
-                  <button (click)="deletePainting(painting.id)" class="action-btn delete" title="Delete">
-                    🗑
+                  <button (click)="deletePainting(painting.id, painting.title)" class="action-btn delete"
+                    title="Delete">
+                    🗑️
                   </button>
                 </td>
               </tr>
@@ -81,7 +179,7 @@
     </mat-tab>
 
     <!-- Orders Tab -->
-    <mat-tab label="Orders">
+    <mat-tab label="📦 Orders">
       <div class="content-section">
         <h2>Order Management</h2>
 
@@ -91,39 +189,39 @@
         </div>
 
         <div *ngIf="!loadingOrders && orders.length === 0" class="empty-state">
-          <p>No orders found.</p>
+          <p>No orders found. Orders will appear here when customers place them.</p>
         </div>
 
         <div *ngIf="!loadingOrders && orders.length > 0" class="table-container">
-          <table class="data-table">
+          <table class="data-table orders-table">
             <thead>
               <tr>
                 <th>Order Details</th>
-                <th>User Info</th>
-                <th>Delivery Address & Notes</th>
-                <th>Ordered Items</th>
-                <th>Payment & Total</th>
+                <th>Customer</th>
+                <th>Delivery Address</th>
+                <th>Items</th>
+                <th>Total</th>
                 <th>Status</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
               <tr *ngFor="let order of orders">
                 <td>
                   <span class="order-number">{{ order.orderNumber }}</span>
-                  <div class="date-sub">{{ order.createdAt | date:'short' }}</div>
+                  <div class="date-sub">{{ order.createdAt | date:'medium' }}</div>
                 </td>
                 <td>
                   <div class="user-info">
-                    <span class="name">{{ order.user.name || 'Unknown' }}</span>
-                    <span class="email">{{ order.user.email || 'No Email' }}</span>
-                    <span class="phone" *ngIf="order.user?.contactNumber">📞 {{ order.user.contactNumber }}</span>
+                    <span class="name">{{ order.user?.name || 'Unknown' }}</span>
+                    <span class="email">{{ order.user?.email || 'No Email' }}</span>
                   </div>
                 </td>
                 <td>
                   <div class="contact-info">
-                    <p class="address-line">{{ order.deliveryAddress.street }}</p>
-                    <p class="address-line">{{ order.deliveryAddress.city }}, {{ order.deliveryAddress.state }}</p>
-                    <p class="address-line">{{ order.deliveryAddress.country }} - {{ order.deliveryAddress.pincode }}
+                    <p class="address-line">{{ order.deliveryAddress?.street }}</p>
+                    <p class="address-line">{{ order.deliveryAddress?.city }}, {{ order.deliveryAddress?.state }}</p>
+                    <p class="address-line">{{ order.deliveryAddress?.country }} - {{ order.deliveryAddress?.pincode }}
                     </p>
                     <p class="notes" *ngIf="order.notes">📝 {{ order.notes }}</p>
                   </div>
@@ -133,7 +231,6 @@
                     <li *ngFor="let item of order.items">
                       <span class="item-title">{{ item.paintingTitle }}</span>
                       <span class="item-qty">x{{ item.quantity }}</span>
-                      <span class="item-price">({{ item.priceAtPurchase | currency:'INR' }})</span>
                     </li>
                   </ul>
                 </td>
@@ -146,9 +243,82 @@
                   </div>
                 </td>
                 <td>
-                  <span class="status-badge" [ngClass]="order.orderStatus.toLowerCase()">
+                  <span class="status-badge" [ngClass]="order.orderStatus?.toLowerCase()">
                     {{ order.orderStatus }}
                   </span>
+                </td>
+                <td class="actions-cell">
+                  <select class="status-select" [value]="order.orderStatus"
+                    (change)="updateOrderStatus(order.id, $any($event.target).value)">
+                    <option *ngFor="let status of orderStatuses" [value]="status">{{ status }}</option>
+                  </select>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </mat-tab>
+
+    <!-- Users Tab -->
+    <mat-tab label="👥 Users">
+      <div class="content-section">
+        <h2>User Management</h2>
+
+        <div *ngIf="loadingUsers" class="loading-spinner">
+          <mat-spinner diameter="40"></mat-spinner>
+          <p>Loading users...</p>
+        </div>
+
+        <div *ngIf="!loadingUsers && users.length === 0" class="empty-state">
+          <p>No users found.</p>
+        </div>
+
+        <div *ngIf="!loadingUsers && users.length > 0" class="table-container">
+          <table class="data-table users-table">
+            <thead>
+              <tr>
+                <th>User</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Status</th>
+                <th>Joined</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let user of users" [class.inactive]="!user.isActive">
+                <td>
+                  <div class="user-cell">
+                    <span class="emoji">{{ user.profileEmoji || '👤' }}</span>
+                    <span class="name">{{ user.name }}</span>
+                  </div>
+                </td>
+                <td>{{ user.email }}</td>
+                <td>
+                  <span class="role-badge" [class.admin]="user.role === 'ADMIN'" [class.user]="user.role === 'USER'">
+                    {{ user.role }}
+                  </span>
+                </td>
+                <td>
+                  <span class="status-badge" [class.active]="user.isActive" [class.inactive-badge]="!user.isActive">
+                    {{ user.isActive ? 'Active' : 'Inactive' }}
+                  </span>
+                </td>
+                <td>{{ user.createdAt | date:'shortDate' }}</td>
+                <td class="actions-cell">
+                  <button (click)="toggleUserStatus(user.id, user.name, user.isActive)" class="action-btn toggle"
+                    [class.disable]="user.isActive" [class.enable]="!user.isActive"
+                    [title]="user.isActive ? 'Disable User' : 'Enable User'">
+                    {{ user.isActive ? '🔒' : '🔓' }}
+                  </button>
+                  <button *ngIf="user.role !== 'ADMIN'" (click)="promoteToAdmin(user.id, user.name)"
+                    class="action-btn promote" title="Promote to Admin">
+                    👑
+                  </button>
+                  <button (click)="deleteUser(user.id, user.name)" class="action-btn delete" title="Delete User">
+                    🗑️
+                  </button>
                 </td>
               </tr>
             </tbody>
@@ -158,7 +328,7 @@
     </mat-tab>
 
     <!-- System Metrics Tab -->
-    <mat-tab label="System Metrics">
+    <mat-tab label="⚙️ System">
       <div class="content-section">
         <h2>System Health & Metrics</h2>
 
@@ -175,12 +345,13 @@
               <mat-card-subtitle>Current system health status</mat-card-subtitle>
             </mat-card-header>
             <mat-card-content>
-              <div class="health-status" [ngClass]="healthStatus?.status?.toLowerCase()">
+              <div class="health-status" [ngClass]="getEffectiveHealthStatus().toLowerCase()">
                 <div class="status-indicator"></div>
                 <div class="status-text">
-                  <h3>{{ healthStatus?.status || 'UNKNOWN' }}</h3>
-                  <p *ngIf="healthStatus?.status === 'UP'">All systems operational</p>
-                  <p *ngIf="healthStatus?.status !== 'UP'">Some services may be experiencing issues</p>
+                  <h3>{{ getEffectiveHealthStatus() }}</h3>
+                  <p *ngIf="getEffectiveHealthStatus() === 'UP'">All critical systems operational</p>
+                  <p *ngIf="getEffectiveHealthStatus() === 'DOWN'">Some services may be experiencing issues</p>
+                  <p *ngIf="getEffectiveHealthStatus() === 'UNKNOWN'">Unable to determine health status</p>
                 </div>
               </div>
 
@@ -190,6 +361,8 @@
                   <span class="component-name">{{ component.name }}:</span>
                   <span class="component-status" [ngClass]="component.status.toLowerCase()">
                     {{ component.status }}
+                    <span *ngIf="component.name === 'mail' && component.status === 'DOWN'"
+                      class="non-critical">(non-critical)</span>
                   </span>
                 </div>
               </div>
@@ -249,4 +422,18 @@
       </div>
     </mat-tab>
   </mat-tab-group>
+</div>
+
+<!-- Confirmation Modal -->
+<div class="modal-overlay" *ngIf="showConfirmModal" (click)="closeConfirmModal()">
+  <div class="confirm-modal" [class.danger]="confirmModalDanger" (click)="$event.stopPropagation()">
+    <h3>{{ confirmModalTitle }}</h3>
+    <p>{{ confirmModalMessage }}</p>
+    <div class="modal-actions">
+      <button class="btn-cancel" (click)="closeConfirmModal()">Cancel</button>
+      <button class="btn-confirm" [class.danger]="confirmModalDanger" (click)="confirmAction()">
+        {{ confirmModalDanger ? 'Yes, Proceed' : 'Confirm' }}
+      </button>
+    </div>
+  </div>
 </div>
