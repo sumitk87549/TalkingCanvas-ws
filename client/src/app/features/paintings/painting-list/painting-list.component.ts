@@ -10,12 +10,11 @@ import { AddToWishlistRequest } from '../../../models/wishlist.model';
 import { ApiResponse, PageResponse } from '../../../models/api-response.model';
 import { ChangeDetectorRef, NgZone } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { DominantColorDirective } from '../../../shared/directives/dominant-color.directive';
 
 @Component({
   selector: 'app-painting-list',
   standalone: true,
-  imports: [CommonModule, RouterModule, DominantColorDirective],
+  imports: [CommonModule, RouterModule],
   templateUrl: './painting-list.component.html',
   styleUrls: ['./painting-list.component.scss']
 })

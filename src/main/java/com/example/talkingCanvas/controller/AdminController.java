@@ -90,4 +90,11 @@ public class AdminController {
         OrderResponse order = adminService.updateOrderStatus(orderId, status, trackingInfo);
         return ResponseEntity.ok(ApiResponse.success("Order status updated successfully", order));
     }
+
+    @PutMapping("/users/{userId}/promote")
+    @Operation(summary = "Promote user to admin", description = "Grant admin privileges to a user")
+    public ResponseEntity<ApiResponse<Void>> promoteToAdmin(@PathVariable Long userId) {
+        adminService.promoteToAdmin(userId);
+        return ResponseEntity.ok(ApiResponse.success("User promoted to admin successfully", null));
+    }
 }

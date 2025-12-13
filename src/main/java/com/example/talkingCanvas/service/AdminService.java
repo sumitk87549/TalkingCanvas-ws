@@ -56,6 +56,7 @@ public class AdminService {
         private String adminPhone;
 
         @Cacheable(value = "dashboard-stats")
+        @Transactional(readOnly = true)
         public DashboardStatsResponse getDashboardStats() {
                 logger.info("Fetching dashboard statistics");
 
@@ -149,6 +150,7 @@ public class AdminService {
                                 .build();
         }
 
+        @Transactional(readOnly = true)
         public PageResponse<UserProfileResponse> getAllUsers(int page, int size) {
                 logger.info("Fetching all users - page: {}, size: {}", page, size);
                 Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
@@ -169,6 +171,7 @@ public class AdminService {
                                 .build();
         }
 
+        @Transactional(readOnly = true)
         public UserProfileResponse getUserById(Long userId) {
                 logger.info("Fetching user: {}", userId);
                 User user = userRepository.findById(userId)
@@ -196,6 +199,7 @@ public class AdminService {
                 logger.info("User soft deleted: {}", userId);
         }
 
+        @Transactional(readOnly = true)
         public PageResponse<OrderResponse> getAllOrders(int page, int size, String status) {
                 logger.info("Fetching all orders - page: {}, size: {}, status: {}", page, size, status);
                 Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
@@ -276,5 +280,15 @@ public class AdminService {
                                 .viewCount(painting.getViewCount())
                                 .purchaseCount(painting.getPurchaseCount())
                                 .build();
+        }
+
+        @Transactional
+        public void promoteToAdmin(Long userId) {
+                logger.info("Promoting user to admin: {}", userId);
+                User user = userRepository.findById(userId)
+                                .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
+                user.setRole(User.Role.ADMIN);
+                userRepository.save(user);
+                logger.info("User promoted to admin: {}", userId);
         }
 }

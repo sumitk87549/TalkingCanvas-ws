@@ -16,12 +16,13 @@ const cache = new Map<string, CacheEntry>();
 const CACHE_TTL: Record<string, number> = {
     '/api/paintings': 5 * 60 * 1000,      // 5 minutes
     '/api/categories': 30 * 60 * 1000,    // 30 minutes
+    '/api/users/addresses': 5 * 60 * 1000, // 5 minutes (for checkout)
 };
 
 /**
  * URLs that should be cached (prefixes)
  */
-const CACHEABLE_URLS = ['/api/paintings', '/api/categories'];
+const CACHEABLE_URLS = ['/api/paintings', '/api/categories', '/api/users/addresses'];
 
 /**
  * Check if a URL should be cached

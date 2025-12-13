@@ -35,6 +35,10 @@ public class CacheConfig {
         caches.add(buildCache("categories", 50, 60, TimeUnit.MINUTES));
         // Admin dashboard stats - 5 minutes TTL, max 10 entries
         caches.add(buildCache("dashboard-stats", 10, 5, TimeUnit.MINUTES));
+        // User addresses cache - 10 minutes TTL, max 200 entries (for checkout)
+        caches.add(buildCache("user-addresses", 200, 10, TimeUnit.MINUTES));
+        // User cart cache - 5 minutes TTL, max 200 entries (for checkout)
+        caches.add(buildCache("user-cart", 200, 5, TimeUnit.MINUTES));
 
         cacheManager.setCaches(caches);
 
