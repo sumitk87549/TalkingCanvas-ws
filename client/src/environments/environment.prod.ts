@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: '/api' // Relative path for production
+  apiUrl: 'https://lens-regard-fundamentals-tournaments.trycloudflare.com' // Relative path for production
 };
