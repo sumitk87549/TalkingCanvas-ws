@@ -67,6 +67,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/").permitAll()
                         .requestMatchers("/api/contact/submit").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/paintings/featured").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/paintings/search").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/paintings/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/images/**").permitAll()
                         .requestMatchers("/api/docs/**", "/api/swagger-ui/**", "/v3/api-docs/**").permitAll()

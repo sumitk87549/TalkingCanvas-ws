@@ -1,5 +1,6 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://lens-regard-fundamentals-tournaments.trycloudflare.com/api'
+  apiUrl: 'https://ashley-mostly-employees-effectively.trycloudflare.com/'
+
   // Relative path for production
 };

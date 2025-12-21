@@ -10,13 +10,9 @@ public class WebConfig implements WebMvcConfigurer {
     @org.springframework.beans.factory.annotation.Value("${cors.allowed-origins}")
     private String allowedOrigins;
 
+    // CORS is handled by SecurityConfig and CorsConfig
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**")
-                .allowedOriginPatterns(allowedOrigins.split(","))
-                .allowedMethods("*")
-                .allowedHeaders("*")
-                .allowCredentials(true)
-                .maxAge(3600);
+        // logic removed to avoid conflicts
     }
 }
