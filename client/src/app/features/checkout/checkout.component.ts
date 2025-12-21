@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
@@ -8,28 +8,56 @@ import { OrderService } from '../../core/services/order.service';
 import { Cart, CartItem } from '../../models/cart.model';
 import { Address } from '../../models/user.model';
 import { CreateOrderRequest } from '../../models/order.model';
-import { Subscription } from 'rxjs';
+import { Subscription, forkJoin } from 'rxjs';
+
+interface CheckoutStep {
+  id: number;
+  label: string;
+  icon: string;
+}
 
 @Component({
   selector: 'app-checkout',
   standalone: true,
   imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule],
   templateUrl: './checkout.component.html',
-  styleUrls: ['./checkout.component.scss']
+  styleUrls: ['./checkout.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CheckoutComponent implements OnInit, OnDestroy {
-  checkoutForm: FormGroup;
-  submitted = false;
-  loading = false;
-  cart: Cart | null = null;
-  cartItems: CartItem[] = [];
-  total = 0;
-  isLoading = true;
-  error: string | null = null;
+  // Checkout steps
+  steps: CheckoutStep[] = [
+    { id: 1, label: 'Cart', icon: '🛒' },
+    { id: 2, label: 'Delivery', icon: '📍' },
+    { id: 3, label: 'Payment', icon: '💳' },
+    { id: 4, label: 'Confirm', icon: '✅' }
+  ];
+  currentStep = signal(2); // Start at Delivery (cart already reviewed)
 
-  addresses: Address[] = [];
-  selectedAddressId: number | null = null;
-  showNewAddressForm = false;
+  // Form
+  checkoutForm: FormGroup;
+  submitted = signal(false);
+
+  // Loading states with signals for better performance
+  isLoading = signal(true);
+  isSubmitting = signal(false);
+  error = signal<string | null>(null);
+
+  // Data
+  cart = signal<Cart | null>(null);
+  cartItems = computed(() => this.cart()?.items || []);
+  total = computed(() => this.cart()?.totalAmount || 0);
+  itemCount = computed(() => this.cart()?.totalItems || 0);
+
+  addresses = signal<Address[]>([]);
+  selectedAddressId = signal<number | null>(null);
+  showNewAddressForm = signal(false);
+
+  // New address as default checkbox
+  saveNewAddress = signal(true);
+
+  // Contact phone for delivery
+  deliveryPhone = signal('');
 
   private cartSubscription: Subscription | null = null;
 
@@ -46,64 +74,96 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       state: ['', Validators.required],
       country: ['', Validators.required],
       pincode: ['', Validators.required],
-      paymentMethod: ['COD', Validators.required]
+      phone: ['', [Validators.required, Validators.pattern('^[0-9]{10,15}$')]],
+      paymentMethod: ['COD', Validators.required],
+      saveAddress: [true]
     });
   }
 
   ngOnInit() {
-    this.loadCart();
-    this.loadAddresses();
+    this.loadCheckoutData();
   }
 
-  loadAddresses() {
-    this.userService.getAddresses().subscribe({
-      next: (response) => {
-        if (response.success && response.data) {
-          this.addresses = response.data;
-          // If user has addresses, select the default one or the first one
-          if (this.addresses.length > 0) {
-            const defaultAddress = this.addresses.find(a => a.isDefault);
-            this.selectAddress(defaultAddress ? defaultAddress.id! : this.addresses[0].id!);
+  /**
+   * Load cart and addresses in PARALLEL using forkJoin for faster checkout page load
+   */
+  loadCheckoutData() {
+    this.isLoading.set(true);
+    this.error.set(null);
+
+    forkJoin({
+      cart: this.cartService.getCart(),
+      addresses: this.userService.getAddresses()
+    }).subscribe({
+      next: (results) => {
+        // Process cart data
+        if (results.cart.success && results.cart.data) {
+          this.cart.set(results.cart.data);
+        } else {
+          this.error.set('Failed to load cart data.');
+        }
+
+        // Process addresses
+        if (results.addresses.success && results.addresses.data) {
+          this.addresses.set(results.addresses.data);
+          if (results.addresses.data.length > 0) {
+            const defaultAddress = results.addresses.data.find(a => a.isDefault);
+            this.selectAddress(defaultAddress?.id ?? results.addresses.data[0].id!);
           } else {
-            this.showNewAddressForm = true;
+            this.showNewAddressForm.set(true);
           }
         }
+
+        this.isLoading.set(false);
       },
       error: (error) => {
-        console.error('Failed to load addresses', error);
+        console.error('Failed to load checkout data', error);
+        this.error.set('Failed to load checkout data. Please try again.');
+        this.isLoading.set(false);
+      }
+    });
+
+    // Subscribe to cart updates
+    this.cartSubscription = this.cartService.cart$.subscribe({
+      next: (cartData) => {
+        if (cartData) {
+          this.cart.set(cartData);
+        }
       }
     });
   }
 
   selectAddress(addressId: number) {
-    this.selectedAddressId = addressId;
-    this.showNewAddressForm = false;
-
-    // Update form validators based on selection
+    this.selectedAddressId.set(addressId);
+    this.showNewAddressForm.set(false);
     this.updateFormValidators();
   }
 
   toggleNewAddress() {
-    this.showNewAddressForm = true;
-    this.selectedAddressId = null;
-    this.checkoutForm.reset({ paymentMethod: 'COD' });
+    this.showNewAddressForm.set(true);
+    this.selectedAddressId.set(null);
+    this.checkoutForm.reset({ paymentMethod: 'COD', saveAddress: true });
     this.updateFormValidators();
   }
 
   updateFormValidators() {
     const addressControls = ['street', 'city', 'state', 'country', 'pincode'];
 
-    if (this.showNewAddressForm) {
+    if (this.showNewAddressForm()) {
       addressControls.forEach(control => {
         this.checkoutForm.get(control)?.setValidators(Validators.required);
         this.checkoutForm.get(control)?.updateValueAndValidity();
       });
+      this.checkoutForm.get('phone')?.setValidators([Validators.required, Validators.pattern('^[0-9]{10,15}$')]);
     } else {
       addressControls.forEach(control => {
         this.checkoutForm.get(control)?.clearValidators();
         this.checkoutForm.get(control)?.updateValueAndValidity();
       });
+      // Phone is still required for selected address
+      this.checkoutForm.get('phone')?.setValidators([Validators.required, Validators.pattern('^[0-9]{10,15}$')]);
     }
+    this.checkoutForm.get('phone')?.updateValueAndValidity();
   }
 
   handleImageError(event: Event) {
@@ -113,87 +173,89 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     }
   }
 
-  loadCart() {
-    this.isLoading = true;
-    this.error = null;
-
-    if (this.cartSubscription) {
-      this.cartSubscription.unsubscribe();
-    }
-
-    this.cartService.getCart().subscribe({
-      next: (response) => {
-        if (response.success && response.data) {
-          this.cart = response.data;
-          this.cartItems = response.data.items || [];
-          this.total = response.data.totalAmount || 0;
-          this.isLoading = false;
-        } else {
-          this.error = 'Failed to load cart data.';
-          this.isLoading = false;
-        }
-      },
-      error: (error) => {
-        console.error('Failed to fetch cart', error);
-        this.error = 'Failed to load cart. Please try again.';
-        this.isLoading = false;
-      }
-    });
-
-    this.cartSubscription = this.cartService.cart$.subscribe({
-      next: (cart) => {
-        if (cart) {
-          this.cart = cart;
-          this.cartItems = cart.items || [];
-          this.total = cart.totalAmount || 0;
-        }
-        this.isLoading = false;
-      },
-      error: (error) => {
-        console.error('Error in cart subscription', error);
-        this.error = 'Error updating cart. Please refresh the page.';
-        this.isLoading = false;
-      }
-    });
-  }
-
   get f() {
     return this.checkoutForm.controls;
   }
 
   ngOnDestroy() {
-    this.submitted = false;
+    this.submitted.set(false);
     if (this.cartSubscription) {
       this.cartSubscription.unsubscribe();
     }
   }
 
+  goToStep(step: number) {
+    if (step === 1) {
+      this.router.navigate(['/cart']);
+      return;
+    }
+    if (step <= this.currentStep() + 1) {
+      this.currentStep.set(step);
+    }
+  }
+
+  proceedToPayment() {
+    // If no addresses exist, we must be in new address mode effectively
+    const isNewAddressMode = this.showNewAddressForm() || this.addresses().length === 0;
+
+    if (!this.selectedAddressId() && !isNewAddressMode) {
+      this.error.set('Please select an address or add a new one.');
+      return;
+    }
+
+    if (isNewAddressMode) {
+      const addressControls = ['street', 'city', 'state', 'country', 'pincode'];
+      let hasErrors = false;
+      addressControls.forEach(control => {
+        if (!this.checkoutForm.get(control)?.value) {
+          this.checkoutForm.get(control)?.markAsTouched();
+          hasErrors = true;
+        }
+      });
+      if (hasErrors) {
+        this.error.set('Please fill in all address fields.');
+        return;
+      }
+    }
+
+    this.error.set(null);
+    this.currentStep.set(3);
+  }
+
+  proceedToConfirm() {
+    if (!this.checkoutForm.get('phone')?.value) {
+      this.checkoutForm.get('phone')?.markAsTouched();
+      this.error.set('Please enter a contact phone number.');
+      return;
+    }
+    this.error.set(null);
+    this.currentStep.set(4);
+  }
+
   onSubmit() {
-    this.submitted = true;
+    this.submitted.set(true);
+    const isNewAddressMode = this.showNewAddressForm() || this.addresses().length === 0;
 
-    if (this.checkoutForm.invalid) {
+    if (!this.selectedAddressId() && !isNewAddressMode) {
+      this.error.set('Please select an address or add a new one.');
       return;
     }
 
-    if (!this.selectedAddressId && !this.showNewAddressForm) {
-      this.error = 'Please select an address or add a new one.';
-      return;
-    }
-
-    this.loading = true;
+    this.isSubmitting.set(true);
+    this.error.set(null);
     const formValue = this.checkoutForm.value;
 
     const orderRequest: CreateOrderRequest = {
-      deliveryAddress: this.showNewAddressForm ? {
+      deliveryAddress: isNewAddressMode ? {
         street: formValue.street,
         city: formValue.city,
         state: formValue.state,
         country: formValue.country,
         pincode: formValue.pincode,
-        isDefault: false
-      } : this.addresses.find(a => a.id === this.selectedAddressId)!,
+        isDefault: formValue.saveAddress
+      } : this.addresses().find(a => a.id === this.selectedAddressId())!,
       paymentMethod: formValue.paymentMethod,
-      notes: ''
+      notes: formValue.phone ? `Contact: ${formValue.phone}` : ''
     };
 
     this.orderService.createOrder(orderRequest).subscribe({
@@ -205,15 +267,29 @@ export class CheckoutComponent implements OnInit, OnDestroy {
             state: { order: response.data }
           });
         } else {
-          this.error = response.message || 'Failed to place order';
-          this.loading = false;
+          this.error.set(response.message || 'Failed to place order');
+          this.isSubmitting.set(false);
         }
       },
       error: (error) => {
         console.error('Order placement failed', error);
-        this.error = error.error?.message || 'Failed to place order. Please try again.';
-        this.loading = false;
+        this.error.set(error.error?.message || 'Failed to place order. Please try again.');
+        this.isSubmitting.set(false);
       }
     });
+  }
+
+  getSelectedAddress(): Address | null {
+    if (this.showNewAddressForm() || this.addresses().length === 0) {
+      const formValue = this.checkoutForm.value;
+      return {
+        street: formValue.street,
+        city: formValue.city,
+        state: formValue.state,
+        country: formValue.country,
+        pincode: formValue.pincode
+      };
+    }
+    return this.addresses().find(a => a.id === this.selectedAddressId()) || null;
   }
 }

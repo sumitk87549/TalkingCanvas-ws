@@ -92,7 +92,7 @@ public class Painting {
     private Boolean isAvailable = true;
 
     @Column(name = "stock_quantity", nullable = false)
-    @Min(value = 1, message = "Stock quantity must be at least 1")
+    @Min(value = 0, message = "Stock quantity must be at least 0")
     @Builder.Default
     private Integer stockQuantity = 1;
 

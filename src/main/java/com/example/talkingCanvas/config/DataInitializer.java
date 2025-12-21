@@ -54,7 +54,7 @@ public class DataInitializer implements CommandLineRunner {
         @Value("${admin.default.name}")
         private String adminName;
 
-        @Value("${admin.default.admin.name}")
+        @Value("${admin.default.name}") // Use the same property for default artist name
         private String defaultArtistName;
 
         @Override
@@ -62,99 +62,35 @@ public class DataInitializer implements CommandLineRunner {
                 logger.info("Starting data initialization...");
 
                 // Create default admin user if not exists
-                if (!userRepository.existsByEmail("user@user.com")) {
-                        User user = User.builder()
-                                        .name("user")
-                                        .email("user@user.com")
-                                        .password(passwordEncoder.encode("0000"))
-                                        .contactNumber("+919414061556")
-                                        .role(User.Role.USER)
-                                        .isActive(true)
-                                        .build();
-
-                        Address userAddress = Address.builder()
-                                        .user(user)
-                                        .street("User Office")
-                                        .city("Ajmer")
-                                        .state("Rajasthan")
-                                        .country("India")
-                                        .pincode("305001")
-                                        .isDefault(true)
-                                        .build();
-
-                        user.getAddresses().add(userAddress);
-
-                        Cart userCart = Cart.builder()
-                                        .user(user)
-                                        .build();
-                        user.setCart(userCart);
-
-                        userRepository.save(user);
-                        logger.info("Default user created: user@user.com");
-                }
-
-                // Create default admin2 user if not exists
-                if (!userRepository.existsByEmail("sumitk87549@gmail.com")) {
-                        User adminS = User.builder()
-                                        .name("Sumit")
-                                        .email("sumitk87549@gmail.com")
-                                        .password(passwordEncoder.encode("sumitk87549"))
-                                        .contactNumber("+917976611437")
+                if (!userRepository.existsByEmail(adminEmail)) {
+                        User admin = User.builder()
+                                        .name(adminName)
+                                        .email(adminEmail)
+                                        .password(passwordEncoder.encode(adminPassword))
+                                        .contactNumber("+919112946369") // Default contact number for admin
                                         .role(User.Role.ADMIN)
                                         .isActive(true)
                                         .build();
 
-                        Address adminSAddress = Address.builder()
-                                        .user(adminS)
-                                        .street("Pratap Nagar, Mayo Link Road")
-                                        .city("Ajmer")
-                                        .state("Rajasthan")
-                                        .country("India")
-                                        .pincode("305001")
+                        Address adminAddress = Address.builder()
+                                        .user(admin)
+                                        .street("Admin Street") // Default admin address
+                                        .city("Admin City")
+                                        .state("Admin State")
+                                        .country("Admin Country")
+                                        .pincode("000000")
                                         .isDefault(true)
                                         .build();
 
-                        adminS.getAddresses().add(adminSAddress);
+                        admin.getAddresses().add(adminAddress);
 
-                        Cart adminSCart = Cart.builder()
-                                        .user(adminS)
+                        Cart adminCart = Cart.builder()
+                                        .user(admin)
                                         .build();
-                        adminS.setCart(adminSCart);
+                        admin.setCart(adminCart);
 
-                        userRepository.save(adminS);
-                        logger.info("Default admin user created: {}", "sumitk87549@gmail.com");
-                }
-
-                // Create default admin user3 if not exists
-                if (!userRepository.existsByEmail("pkumar.mail@gmail.com")) {
-                        User adminP = User.builder()
-                                        .name("Praveen Kumar")
-                                        .email("pkumar.mail@gmail.com")
-                                        .password(passwordEncoder.encode("artist007"))
-                                        .contactNumber("+919112946369")
-                                        .role(User.Role.ADMIN)
-                                        .isActive(true)
-                                        .build();
-
-                        Address adminPAddress = Address.builder()
-                                        .user(adminP)
-                                        .street("C/O Parwati Devi, Gali no. 15, Tanajinagar, Bhajanganj")
-                                        .city("Ajmer")
-                                        .state("Rajasthan")
-                                        .country("India")
-                                        .pincode("305001")
-                                        .isDefault(true)
-                                        .build();
-
-                        adminP.getAddresses().add(adminPAddress);
-
-                        Cart adminPCart = Cart.builder()
-                                        .user(adminP)
-                                        .build();
-                        adminP.setCart(adminPCart);
-
-                        userRepository.save(adminP);
-                        logger.info("Default admin user created: {}", "praveen_kumar@gmail.com");
+                        userRepository.save(admin);
+                        logger.info("Default admin user created: {}", adminEmail);
                 }
 
                 // Create default categories

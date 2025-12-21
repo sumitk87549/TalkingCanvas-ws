@@ -1,142 +1,346 @@
 <div class="checkout-container">
   <div class="checkout-wrapper">
-    <h1>Checkout</h1>
-    <div class="checkout-content">
-      <form [formGroup]="checkoutForm" (ngSubmit)="onSubmit()" class="checkout-form">
-        <h2>Delivery Address</h2>
-
-        <!-- Saved Addresses List -->
-        <div *ngIf="addresses.length > 0" class="saved-addresses">
-          <div *ngFor="let address of addresses" class="address-card"
-            [class.selected]="selectedAddressId === address.id" (click)="selectAddress(address.id!)">
-            <div class="address-header">
-              <span class="address-type" *ngIf="address.isDefault">Default</span>
-              <span class="select-indicator" *ngIf="selectedAddressId === address.id">✓</span>
-            </div>
-            <p>{{ address.street }}</p>
-            <p>{{ address.city }}, {{ address.state }} {{ address.pincode }}</p>
-            <p>{{ address.country }}</p>
-          </div>
-
-          <button type="button" class="btn-new-address" (click)="toggleNewAddress()" *ngIf="!showNewAddressForm">
-            + Add New Address
-          </button>
+    <!-- Progress Steps -->
+    <div class="checkout-steps">
+      @for (step of steps; track step.id) {
+      <div class="step" [class.active]="currentStep() >= step.id" [class.completed]="currentStep() > step.id"
+        (click)="goToStep(step.id)">
+        <div class="step-icon">
+          @if (currentStep() > step.id) {
+          <span class="check-mark">✓</span>
+          } @else {
+          <span>{{ step.icon }}</span>
+          }
         </div>
+        <span class="step-label">{{ step.label }}</span>
+      </div>
+      @if (step.id < steps.length) { <div class="step-connector" [class.active]="currentStep() > step.id">
+    </div>
+    }
+    }
+  </div>
 
-        <!-- New Address Form -->
-        <div *ngIf="showNewAddressForm || addresses.length === 0" class="new-address-form">
-          <h3 *ngIf="addresses.length > 0">New Address</h3>
-          <div class="form-group">
-            <label>Street Address</label>
-            <input type="text" formControlName="street" class="form-control" />
-            <div *ngIf="submitted && f['street'].errors" class="error">Required</div>
-          </div>
-          <div class="form-group">
-            <label>City</label>
-            <input type="text" formControlName="city" class="form-control" />
-            <div *ngIf="submitted && f['city'].errors" class="error">Required</div>
-          </div>
-          <div class="form-group">
-            <label>State</label>
-            <input type="text" formControlName="state" class="form-control" />
-            <div *ngIf="submitted && f['state'].errors" class="error">Required</div>
-          </div>
-          <div class="form-group">
-            <label>Country</label>
-            <input type="text" formControlName="country" class="form-control" />
-            <div *ngIf="submitted && f['country'].errors" class="error">Required</div>
-          </div>
-          <div class="form-group">
-            <label>Pincode</label>
-            <input type="text" formControlName="pincode" class="form-control" />
-            <div *ngIf="submitted && f['pincode'].errors" class="error">Required</div>
-          </div>
-
-          <button type="button" class="btn-cancel" (click)="selectAddress(addresses[0].id!)"
-            *ngIf="addresses.length > 0">
-            Cancel
-          </button>
-        </div>
-
-        <h2>Payment Method</h2>
-        <div class="form-group">
-          <label class="payment-option">
-            <input type="radio" formControlName="paymentMethod" value="COD" />
-            <span>Cash on Delivery</span>
-          </label>
-        </div>
-
-        <button type="submit" class="btn btn-primary" [disabled]="loading">
-          {{ loading ? 'Processing...' : 'Place Order' }}
-        </button>
-      </form>
-      <div class="order-summary">
-        <h2>Order Summary</h2>
-
-        <!-- Loading State -->
-        <div *ngIf="isLoading" class="loading-state">
-          <div class="spinner"></div>
-          <p>Loading your order...</p>
-        </div>
-
-        <!-- Error State -->
-        <div *ngIf="error && !isLoading" class="error-state">
-          <p>{{ error }}</p>
-          <button (click)="loadCart()" class="btn-retry">Retry</button>
-        </div>
-
-        <!-- Empty Cart State -->
-        <div *ngIf="!isLoading && !error && (!cartItems || cartItems.length === 0)" class="empty-state">
-          <p>Your cart is empty</p>
-          <a routerLink="/paintings" class="btn-shop">Continue Shopping</a>
-        </div>
-
-        <!-- Cart Items -->
-        <div *ngIf="!isLoading && !error && cartItems && cartItems.length > 0" class="order-items">
-          <div *ngFor="let item of cartItems" class="order-item">
-            <div class="item-image">
-              <img [src]="item.primaryImage || 'assets/images/placeholder-painting.jpg'" [alt]="item.paintingTitle"
-                (error)="handleImageError($event)" class="item-img" />
-            </div>
-            <div class="item-details">
-              <h4 class="item-title" [title]="item.paintingTitle">
-                {{ item.paintingTitle || 'Untitled' }}
-              </h4>
-
-              <div *ngIf="item.artistName" class="item-artist">
-                By {{ item.artistName }}
-              </div>
-
-              <div *ngIf="item.medium" class="item-medium">
-                {{ item.medium }}
-              </div>
-
-              <div class="item-meta">
-                <div class="price-row">
-                  <span class="price">₹{{ (item.price || 0) | number:'1.0-0' }}</span>
-                  <span class="quantity">× {{ item.quantity || 0 }}</span>
-                  <span class="subtotal">₹{{ (item.subtotal || 0) | number:'1.0-0' }}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Order Totals -->
-        <div *ngIf="!isLoading && !error && cartItems && cartItems.length > 0" class="order-totals">
-          <div class="total-row">
-            <span>Subtotal</span>
-            <span>₹{{ total | number:'1.0-0' }}</span>
-          </div>
-          <div class="total-row">
-            <span>Shipping</span>
-            <span>Free</span>
-          </div>
-          <div class="total-row grand-total">
-            <span>Total</span>
-            <span>₹{{ total | number:'1.0-0' }}</span>
-          </div>
-        </div>
+  <!-- Loading State -->
+  @if (isLoading()) {
+  <div class="loading-container">
+    <div class="skeleton-grid">
+      <div class="skeleton-form">
+        <div class="skeleton-title"></div>
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+        <div class="skeleton-button"></div>
+      </div>
+      <div class="skeleton-summary">
+        <div class="skeleton-title"></div>
+        <div class="skeleton-item"></div>
+        <div class="skeleton-item"></div>
+        <div class="skeleton-total"></div>
       </div>
     </div>
   </div>
+  }
+
+  <!-- Error State -->
+  @if (error() && !isLoading()) {
+  <div class="error-banner">
+    <span class="error-icon">⚠️</span>
+    <span>{{ error() }}</span>
+    <button class="btn-dismiss" (click)="error.set(null)">×</button>
+  </div>
+  }
+
+  <!-- Main Content -->
+  @if (!isLoading()) {
+  <div class="checkout-content">
+    <!-- Left Column: Forms -->
+    <div class="checkout-form-section">
+      <!-- Step 2: Address Selection -->
+      @if (currentStep() === 2) {
+      <div class="section-card">
+        <div class="section-header">
+          <h2>📍 Delivery Address</h2>
+          <p class="section-subtitle">Where should we deliver your artwork?</p>
+        </div>
+
+        <!-- Saved Addresses -->
+        @if (addresses().length > 0) {
+        <div class="address-grid">
+          @for (address of addresses(); track address.id) {
+          <div class="address-card" [class.selected]="selectedAddressId() === address.id"
+            (click)="selectAddress(address.id!)">
+            <div class="address-card-header">
+              @if (address.isDefault) {
+              <span class="badge-default">Default</span>
+              }
+              @if (selectedAddressId() === address.id) {
+              <span class="check-indicator">✓</span>
+              }
+            </div>
+            <div class="address-icon">🏠</div>
+            <p class="address-street">{{ address.street }}</p>
+            <p class="address-city">{{ address.city }}, {{ address.state }} {{ address.pincode }}</p>
+            <p class="address-country">{{ address.country }}</p>
+          </div>
+          }
+
+          <!-- Add New Address Button -->
+          <div class="address-card add-new" [class.selected]="showNewAddressForm()" (click)="toggleNewAddress()">
+            <div class="add-icon">+</div>
+            <span>Add New Address</span>
+          </div>
+        </div>
+        }
+
+        <!-- New Address Form -->
+        @if (showNewAddressForm() || addresses().length === 0) {
+        <form [formGroup]="checkoutForm" class="new-address-form">
+          @if (addresses().length > 0) {
+          <h3>New Address</h3>
+          }
+
+          <div class="form-row">
+            <div class="form-group full-width">
+              <label>
+                <span class="label-icon">🛣️</span> Street Address
+              </label>
+              <input type="text" formControlName="street" placeholder="Enter your street address" />
+              @if (submitted() && f['street'].errors) {
+              <span class="error-text">Street address is required</span>
+              }
+            </div>
+          </div>
+
+          <div class="form-row two-col">
+            <div class="form-group">
+              <label>
+                <span class="label-icon">🏙️</span> City
+              </label>
+              <input type="text" formControlName="city" placeholder="City" />
+              @if (submitted() && f['city'].errors) {
+              <span class="error-text">Required</span>
+              }
+            </div>
+            <div class="form-group">
+              <label>
+                <span class="label-icon">🗺️</span> State
+              </label>
+              <input type="text" formControlName="state" placeholder="State/Province" />
+              @if (submitted() && f['state'].errors) {
+              <span class="error-text">Required</span>
+              }
+            </div>
+          </div>
+
+          <div class="form-row two-col">
+            <div class="form-group">
+              <label>
+                <span class="label-icon">🌍</span> Country
+              </label>
+              <input type="text" formControlName="country" placeholder="Country" />
+              @if (submitted() && f['country'].errors) {
+              <span class="error-text">Required</span>
+              }
+            </div>
+            <div class="form-group">
+              <label>
+                <span class="label-icon">📮</span> Pincode
+              </label>
+              <input type="text" formControlName="pincode" placeholder="Postal code" />
+              @if (submitted() && f['pincode'].errors) {
+              <span class="error-text">Required</span>
+              }
+            </div>
+          </div>
+
+          <label class="checkbox-label">
+            <input type="checkbox" formControlName="saveAddress" />
+            <span>Save this address for future orders</span>
+          </label>
+        </form>
+        }
+
+        <div class="section-actions">
+          <button class="btn-secondary" routerLink="/cart">← Back to Cart</button>
+          <button class="btn-primary" (click)="proceedToPayment()">Continue to Payment →</button>
+        </div>
+      </div>
+      }
+
+      <!-- Step 3: Payment -->
+      @if (currentStep() === 3) {
+      <div class="section-card">
+        <div class="section-header">
+          <h2>💳 Payment Method</h2>
+          <p class="section-subtitle">How would you like to pay?</p>
+        </div>
+
+        <form [formGroup]="checkoutForm">
+          <!-- Contact Phone -->
+          <div class="form-group">
+            <label>
+              <span class="label-icon">📞</span> Contact Phone for Delivery
+            </label>
+            <input type="tel" formControlName="phone" placeholder="Your 10-digit phone number" />
+            @if (f['phone'].touched && f['phone'].errors) {
+            <span class="error-text">Valid phone number is required (10-15 digits)</span>
+            }
+          </div>
+
+          <div class="payment-options">
+            <label class="payment-option selected">
+              <input type="radio" formControlName="paymentMethod" value="COD" checked />
+              <div class="payment-content">
+                <div class="payment-icon">💵</div>
+                <div class="payment-info">
+                  <span class="payment-title">Cash on Delivery</span>
+                  <span class="payment-desc">Pay when your artwork arrives</span>
+                </div>
+                <div class="payment-check">✓</div>
+              </div>
+            </label>
+          </div>
+
+          <div class="trust-badges">
+            <div class="badge">
+              <span>🔒</span>
+              <span>Secure Checkout</span>
+            </div>
+            <div class="badge">
+              <span>📦</span>
+              <span>Free Shipping</span>
+            </div>
+            <div class="badge">
+              <span>🔄</span>
+              <span>Easy Returns</span>
+            </div>
+          </div>
+        </form>
+
+        <div class="section-actions">
+          <button class="btn-secondary" (click)="currentStep.set(2)">← Back</button>
+          <button class="btn-primary" (click)="proceedToConfirm()">Review Order →</button>
+        </div>
+      </div>
+      }
+
+      <!-- Step 4: Confirm -->
+      @if (currentStep() === 4) {
+      <div class="section-card">
+        <div class="section-header">
+          <h2>✅ Review & Confirm</h2>
+          <p class="section-subtitle">Please review your order details</p>
+        </div>
+
+        <!-- Delivery Summary -->
+        <div class="review-section">
+          <h4>Delivery Address</h4>
+          @if (getSelectedAddress(); as addr) {
+          <div class="review-address">
+            <span class="addr-icon">📍</span>
+            <div>
+              <p>{{ addr.street }}</p>
+              <p>{{ addr.city }}, {{ addr.state }} {{ addr.pincode }}</p>
+              <p>{{ addr.country }}</p>
+              <p class="phone-display">📞 {{ checkoutForm.get('phone')?.value }}</p>
+            </div>
+          </div>
+          }
+        </div>
+
+        <!-- Payment Summary -->
+        <div class="review-section">
+          <h4>Payment Method</h4>
+          <div class="review-payment">
+            <span>💵</span>
+            <span>Cash on Delivery</span>
+          </div>
+        </div>
+
+        <!-- Estimated Delivery -->
+        <div class="delivery-estimate">
+          <span>🚚</span>
+          <div>
+            <strong>Estimated Delivery</strong>
+            <p>7-14 business days</p>
+          </div>
+        </div>
+
+        <div class="section-actions">
+          <button class="btn-secondary" (click)="currentStep.set(3)">← Back</button>
+          <button class="btn-primary btn-place-order" (click)="onSubmit()" [disabled]="isSubmitting()">
+            @if (isSubmitting()) {
+            <span class="spinner"></span>
+            Processing...
+            } @else {
+            🎨 Place Order - ₹{{ total() | number:'1.0-0' }}
+            }
+          </button>
+        </div>
+      </div>
+      }
+    </div>
+
+    <!-- Right Column: Order Summary -->
+    <div class="order-summary">
+      <div class="summary-card">
+        <h2>Order Summary</h2>
+        <div class="item-count">{{ itemCount() }} item{{ itemCount() !== 1 ? 's' : '' }}</div>
+
+        <!-- Empty Cart -->
+        @if (cartItems().length === 0) {
+        <div class="empty-cart">
+          <span class="empty-icon">🛒</span>
+          <p>Your cart is empty</p>
+          <a routerLink="/paintings" class="btn-shop">Browse Paintings</a>
+        </div>
+        }
+
+        <!-- Cart Items -->
+        @if (cartItems().length > 0) {
+        <div class="order-items">
+          @for (item of cartItems(); track item.id) {
+          <div class="order-item">
+            <div class="item-image">
+              <img [src]="item.primaryImage || 'assets/images/placeholder-painting.jpg'" [alt]="item.paintingTitle"
+                (error)="handleImageError($event)" />
+              <span class="item-qty">{{ item.quantity }}</span>
+            </div>
+            <div class="item-details">
+              <h4>{{ item.paintingTitle || 'Untitled' }}</h4>
+              @if (item.artistName) {
+              <p class="artist">by {{ item.artistName }}</p>
+              }
+              <p class="item-price">₹{{ item.subtotal | number:'1.0-0' }}</p>
+            </div>
+          </div>
+          }
+        </div>
+
+        <!-- Totals -->
+        <div class="order-totals">
+          <div class="total-row">
+            <span>Subtotal</span>
+            <span>₹{{ total() | number:'1.0-0' }}</span>
+          </div>
+          <div class="total-row">
+            <span>Shipping</span>
+            <span class="free-shipping">FREE</span>
+          </div>
+          <div class="total-row grand-total">
+            <span>Total</span>
+            <span>₹{{ total() | number:'1.0-0' }}</span>
+          </div>
+        </div>
+
+        <!-- Security Note -->
+        <div class="security-note">
+          <span>🔐</span>
+          <span>Your order information is secure</span>
+        </div>
+        }
+      </div>
+    </div>
+  </div>
+  }
+</div>
+</div>

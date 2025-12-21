@@ -16,6 +16,8 @@ import com.example.talkingCanvas.util.MapperUtil;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,7 +38,8 @@ public class CartService {
     private final UserRepository userRepository;
     private final MapperUtil mapperUtil;
 
-    @Transactional
+    @Transactional(readOnly = true)
+    @Cacheable(value = "user-cart", key = "#userId")
     public CartResponse getCart(Long userId) {
         logger.info("Fetching cart for user: {}", userId);
         Cart cart = getOrCreateCart(userId);
@@ -44,9 +47,10 @@ public class CartService {
     }
 
     @Transactional
+    @CacheEvict(value = "user-cart", key = "#userId")
     public CartResponse addToCart(Long userId, AddToCartRequest request) {
         logger.info("Adding item to cart for user: {}", userId);
-        
+
         Cart cart = getOrCreateCart(userId);
         Painting painting = paintingRepository.findById(request.getPaintingId())
                 .orElseThrow(() -> new ResourceNotFoundException("Painting", "id", request.getPaintingId()));
@@ -67,11 +71,11 @@ public class CartService {
             // Update quantity
             CartItem item = existingItem.get();
             int newQuantity = item.getQuantity() + request.getQuantity();
-            
+
             if (painting.getStockQuantity() < newQuantity) {
                 throw new BadRequestException("Insufficient stock. Available: " + painting.getStockQuantity());
             }
-            
+
             item.setQuantity(newQuantity);
             cartItemRepository.save(item);
         } else {
@@ -90,9 +94,10 @@ public class CartService {
     }
 
     @Transactional
+    @CacheEvict(value = "user-cart", key = "#userId")
     public CartResponse updateCartItem(Long userId, Long itemId, Integer quantity) {
         logger.info("Updating cart item: {} for user: {}", itemId, userId);
-        
+
         Cart cart = getOrCreateCart(userId);
         CartItem item = cartItemRepository.findById(itemId)
                 .orElseThrow(() -> new ResourceNotFoundException("CartItem", "id", itemId));
@@ -118,9 +123,10 @@ public class CartService {
     }
 
     @Transactional
+    @CacheEvict(value = "user-cart", key = "#userId")
     public CartResponse removeCartItem(Long userId, Long itemId) {
         logger.info("Removing cart item: {} for user: {}", itemId, userId);
-        
+
         Cart cart = getOrCreateCart(userId);
         CartItem item = cartItemRepository.findById(itemId)
                 .orElseThrow(() -> new ResourceNotFoundException("CartItem", "id", itemId));
@@ -138,6 +144,7 @@ public class CartService {
     }
 
     @Transactional
+    @CacheEvict(value = "user-cart", key = "#userId")
     public void clearCart(Long userId) {
         logger.info("Clearing cart for user: {}", userId);
         Cart cart = getOrCreateCart(userId);
