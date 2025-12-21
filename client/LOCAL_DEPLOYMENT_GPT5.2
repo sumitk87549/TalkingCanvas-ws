@@ -1,0 +1,269 @@
+
+
+I’ll first inspect your repo to find the Angular frontend, Spring backend, and how PostgreSQL is configured (ports, env vars, profiles). Then I’ll give you a step-by-step “copy/paste” local setup guide and make any minimal config/code tweaks needed (typically CORS + local DB config).
+
+I’ve found the repo already includes a Spring Boot backend (port `8088` by default), an Angular frontend in `client/`, and a `docker-compose.yml` that can spin up PostgreSQL + backend + frontend. Next I’ll quickly verify the API base URLs, CORS, and whether any config tweaks are needed for smooth local run (especially Docker healthchecks/ports).
+
+
+
+I’ll now check how CORS is configured and whether the included [docker-compose.yml](cci:7://file:///home/sumit/Desktop/TalkingCanvas-ws/docker-compose.yml:0:0-0:0) healthchecks/ports are correct for local usage. Then I’ll give you two easy “local deploy” paths: (A) Docker Compose (recommended) and (B) run everything directly on Ubuntu without Docker.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+I’m going to make a small fix so `docker-compose up` works cleanly on your laptop: the current Nginx proxy + backend healthcheck point to port `8080`, but your backend actually runs on `8088`. I’ll update [docker-compose.yml](cci:7://file:///home/sumit/Desktop/TalkingCanvas-ws/docker-compose.yml:0:0-0:0) and [client/nginx.conf](cci:7://file:///home/sumit/Desktop/TalkingCanvas-ws/client/nginx.conf:0:0-0:0), and set the frontend container to build using the Angular **development** config (so it uses the local API URL).
+
+
+
+I’ll first re-open [client/nginx.conf](cci:7://file:///home/sumit/Desktop/TalkingCanvas-ws/client/nginx.conf:0:0-0:0) to patch it correctly (the previous edit failed because the patch didn’t match the file exactly). Then I’ll finish your “no-devops” local deployment guide with two options: Docker Compose (easiest) and manual install/run.
+
+
+
+
+
+
+
+# Local deployment guide (Ubuntu laptop) — TalkingCanvas (Angular + Spring Boot + PostgreSQL)
+
+Your repo already contains everything needed to run locally. **Best/easiest option is Docker Compose** (no need to install Java/Node/Postgres manually).
+
+---
+
+## Option A (Recommended): Run everything with Docker Compose (1 command)
+
+### 0) Prerequisites (once)
+1. Install Docker + Compose:
+```bash
+sudo apt update
+sudo apt install -y docker.io docker-compose
+sudo systemctl enable --now docker
+```
+
+2. Allow your user to run Docker without `sudo`:
+```bash
+sudo usermod -aG docker $USER
+```
+Then **log out and log in again** (important).
+
+3. Verify:
+```bash
+docker --version
+docker-compose --version
+```
+
+---
+
+### 1) Start the full app (Postgres + Backend + Frontend)
+Open terminal in your project folder:
+```bash
+cd /home/sumit/Desktop/TalkingCanvas-ws
+docker-compose up --build
+```
+
+First run can take time (it downloads images and builds).
+
+---
+
+### 2) Open in browser
+- **Frontend**: `http://localhost:4200`
+- **Backend Swagger UI**: `http://localhost:8088/api/swagger-ui.html`
+- **Backend health**: `http://localhost:8088/api/actuator/health`
+
+---
+
+### 3) Stop / restart
+Stop (Ctrl+C) then:
+```bash
+docker-compose down
+```
+
+Start again later (background):
+```bash
+docker-compose up -d
+```
+
+See logs:
+```bash
+docker-compose logs -f backend
+docker-compose logs -f postgres
+```
+
+---
+
+### 4) Database info (Docker)
+With Docker Compose, PostgreSQL runs **on your laptop** inside a container.
+
+- **Host port**: `5433`
+- **DB name**: `talkingcanvas`
+- **User**: `postgres`
+- **Password**: `0000` (default)
+
+Open psql inside the container:
+```bash
+docker-compose exec postgres psql -U postgres -d talkingcanvas
+```
+
+List tables:
+```sql
+\dt
+```
+
+---
+
+### 5) Admin login (auto-created on first run)
+On first backend startup, the app auto-creates an admin user + sample data.
+
+Default from [application.properties](cci:7://file:///home/sumit/Desktop/TalkingCanvas-ws/target/classes/application.properties:0:0-0:0):
+- **Admin email**: `pkumar.mail@gmail.com`
+- **Admin password**: `Admin@1998`
+
+(You can change these via env vars later if you want.)
+
+---
+
+## Option B (Dev-friendly): Run without Docker (ng serve + local Postgres)
+
+Use this if you want **hot reload** for Angular.
+
+### 1) Install required tools
+**Java 21**
+```bash
+sudo apt update
+sudo apt install -y openjdk-21-jdk
+java -version
+```
+
+**Node 20** (recommended via nvm)
+```bash
+# install nvm (restart terminal after)
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+
+# then:
+nvm install 20
+nvm use 20
+node -v
+npm -v
+```
+
+**PostgreSQL**
+```bash
+sudo apt install -y postgresql postgresql-contrib
+sudo systemctl enable --now postgresql
+```
+
+---
+
+### 2) Create DB + set password
+Enter postgres shell:
+```bash
+sudo -u postgres psql
+```
+
+Run:
+```sql
+ALTER USER postgres PASSWORD '0000';
+CREATE DATABASE talkingcanvas;
+\q
+```
+
+---
+
+### 3) Run Spring Boot backend
+From repo root:
+```bash
+cd /home/sumit/Desktop/TalkingCanvas-ws
+./mvnw spring-boot:run
+```
+
+Backend URL:
+- `http://localhost:8088/api`
+
+---
+
+### 4) Run Angular frontend
+In a second terminal:
+```bash
+cd /home/sumit/Desktop/TalkingCanvas-ws/client
+npm install
+npm start
+```
+
+Frontend URL:
+- `http://localhost:4200`
+
+Your Angular dev environment is already set to:
+- `apiUrl: 'http://localhost:8088/api'`
+
+---
+
+## Troubleshooting (common on Ubuntu)
+
+- **Docker permission denied**
+  - Fix: log out/in after `sudo usermod -aG docker $USER`
+
+- **Port already in use**
+  - Frontend: `4200`
+  - Backend: `8088`
+  - Postgres (docker): `5433`
+  - Stop conflicting apps or change ports in [docker-compose.yml](cci:7://file:///home/sumit/Desktop/TalkingCanvas-ws/docker-compose.yml:0:0-0:0)
+
+- **Backend can’t connect to DB**
+  - Docker setup: ensure postgres container is healthy:
+    ```bash
+    docker-compose ps
+    docker-compose logs -f postgres
+    ```
+  - Manual setup: ensure local Postgres is running:
+    ```bash
+    sudo systemctl status postgresql
+    ```
+
+- **Angular build/dev server fails**
+  - Ensure Node is **20+**: `node -v`
+
+---
+
+## Small code/config fixes I already applied (so local Docker run works)
+- **[docker-compose.yml](cci:7://file:///home/sumit/Desktop/TalkingCanvas-ws/docker-compose.yml:0:0-0:0)**
+  - Fixed backend healthcheck to hit `http://localhost:8088/api/actuator/health`
+  - Frontend now maps to **`http://localhost:4200`** (instead of port 80)
+  - Frontend builds using Angular **development** configuration
+
+- **[client/Dockerfile](cci:7://file:///home/sumit/Desktop/TalkingCanvas-ws/client/Dockerfile:0:0-0:0)**
+  - Added `BUILD_CONFIGURATION` build-arg so compose can build `development` config cleanly
+
+---
+
+# Status
+Local deployment setup is ready. You can now run **Option A (Docker Compose)** for the easiest “works out of the box” local deployment, or **Option B** if you want Angular hot reload for development.
