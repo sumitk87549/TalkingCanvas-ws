@@ -102,7 +102,7 @@ First run can take time (it downloads images and builds).
 
 ---
 
-### 3) Stop / restart
+### 3) Stop / restart 
 Stop (Ctrl+C) then:
 ```bash
 docker-compose down
@@ -267,3 +267,120 @@ Your Angular dev environment is already set to:
 
 # Status
 Local deployment setup is ready. You can now run **Option A (Docker Compose)** for the easiest “works out of the box” local deployment, or **Option B** if you want Angular hot reload for development.
+
+
+-----------------------------------------------------------------------------------------------------------
+
+
+To make **`talkingcanvas.xyz.com` open your website running on your laptop**, the fastest “no‑DevOps” way is **Cloudflare Tunnel**. It avoids router port‑forwarding, works even with dynamic IP / CGNAT, and gives you **HTTPS automatically**.
+
+## First: one important clarification
+- **If you literally “purchased `talkingcanvas.xyz.com`”**: you usually *can’t buy a subdomain*. You must own the parent domain (`xyz.com`) to create `talkingcanvas.xyz.com`.
+- **Most likely you purchased one of these**:
+  - **`xyz.com`** (and you want subdomain `talkingcanvas.xyz.com`), or
+  - **`talkingcanvas.xyz`** (and you want that exact domain).
+
+The steps below work for either. Just substitute your real domain.
+
+---
+
+## The simple architecture (what will happen)
+- **Your app runs locally** via Docker Compose:
+  - Nginx (frontend) on `http://localhost:4200` (inside it proxies `/api` to backend)
+- **Cloudflare Tunnel** runs on your laptop and makes:
+  - `https://talkingcanvas.xyz.com` → `http://localhost:4200`
+
+So visitors only use your domain. No one sees ports.
+
+---
+
+## Step-by-step (copy/paste friendly)
+
+### 1) Make sure your app is running locally
+From your repo:
+```bash
+docker-compose up -d --build
+```
+
+Check locally:
+- Open **`http://localhost:4200`**
+- Check backend health: **`http://localhost:8088/api/actuator/health`**
+
+### 2) Put your domain on Cloudflare (one-time DNS setup)
+- **Create a Cloudflare account**
+- **Add your site** (your domain) in Cloudflare
+- Cloudflare will show you **2 nameservers**
+- Go to where you bought the domain (GoDaddy/Namecheap/etc) and **replace nameservers** with Cloudflare’s
+
+Wait 5–30 minutes (sometimes up to a few hours) for DNS to fully switch.
+
+### 3) Create a Tunnel in Cloudflare (UI)
+- Go to **Cloudflare Zero Trust** dashboard
+- Go to:
+  - **Networks** → **Tunnels** → **Create a tunnel**
+- Choose **Cloudflared**
+- Name it like `talkingcanvas-laptop`
+
+Cloudflare will show you an **install command** for Ubuntu/Debian (keep that page open).
+
+### 4) Install and run `cloudflared` on your laptop
+On your laptop terminal:
+```bash
+wget -q https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb
+sudo dpkg -i cloudflared-linux-amd64.deb
+```
+
+Now **copy/paste the exact command Cloudflare shows** (it’s usually like):
+- `sudo cloudflared service install <TOKEN_FROM_DASHBOARD>`
+
+This makes it auto-start as a service.
+
+Verify it’s running:
+```bash
+systemctl status cloudflared
+```
+
+### 5) Map your hostname to your local app (the key step)
+Back in Cloudflare Zero Trust → your tunnel → **Public Hostnames** → **Add a public hostname**
+
+Set:
+- **Hostname**: `talkingcanvas.xyz.com` (or your domain)
+- **Service**: `http://localhost:4200`
+
+Save.
+
+Now Cloudflare will route:
+- `https://talkingcanvas.xyz.com` → your laptop → `localhost:4200` → Nginx → backend via `/api`
+
+### 6) Test from outside
+- Turn off Wi‑Fi on your phone (use mobile data)
+- Open: **`https://talkingcanvas.xyz.com`**
+
+---
+
+## “Keep it always working” (no surprises)
+- **Your laptop must stay ON + connected**.
+- **Disable sleep when lid closed** (otherwise site goes offline).
+- If tunnel ever breaks:
+  - **Restart tunnel**: `sudo systemctl restart cloudflared`
+  - **Restart app**: `docker-compose restart`
+
+---
+
+## Why this is the fastest option
+- **No router port forwarding**
+- **No static IP needed**
+- **No SSL certificate setup**
+- **No public exposure of your laptop’s IP**
+- Works even behind **CGNAT** (common on mobile/5G internet)
+
+---
+
+## Quick note about your current repo config (important for domains)
+I set Docker Compose to build Angular in **production mode**, so the frontend uses `apiUrl: '/api'` and everything works cleanly behind **one domain** (your domain). That’s exactly what you want for public access.
+
+---
+
+# Status
+- **Done**: You now have the simplest, fastest path (Cloudflare Tunnel) to make your purchased domain point to your laptop-hosted TalkingCanvas.
+- **Optional next**: Tell me your *actual purchased domain* (`talkingcanvas.xyz` vs `xyz.com`) and I’ll tailor the exact hostname entries you should add (root + `www` redirects, etc.).
