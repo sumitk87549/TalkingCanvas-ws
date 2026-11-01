@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://talkingcanvas-ws.onrender.com' // Relative path for production
+  apiUrl: 'https://talkingcanvas-ws.onrender.com/api' // Relative path for production
 };
