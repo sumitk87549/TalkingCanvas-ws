@@ -226,7 +226,6 @@ body {
   padding: 0 !important;
   width: 100% !important;
   min-height: 100vh !important;
-  overflow-x: hidden !important;
   /* Critical for mobile */
   box-sizing: border-box !important;
   scroll-behavior: smooth;
@@ -242,7 +241,12 @@ body {
   box-sizing: inherit;
 }
 
+html {
+  overflow-x: hidden;
+}
+
 body {
+  overflow-x: clip; /* clips sideways overflow without creating a scroll container */
   font-family: 'Georgia', serif;
   line-height: 1.6;
   background-color: var(--bg-primary);
@@ -258,8 +262,6 @@ body {
   /* Enhanced mobile scroll behavior */
   -webkit-overflow-scrolling: touch;
   /* Smooth momentum scrolling on iOS */
-  overscroll-behavior-y: contain;
-  /* Prevent pull-to-refresh where not needed */
 
   @include mobile {
     font-size: 15px;
