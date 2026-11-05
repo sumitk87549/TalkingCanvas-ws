@@ -28,17 +28,17 @@ public class CacheConfig {
 
         List<Cache> caches = new ArrayList<>();
         // Painting list cache - 15 minutes TTL, max 500 entries
-        caches.add(buildCache("paintings", 500, 15, TimeUnit.MINUTES));
+        caches.add(buildCache("paintings", 500, 600, TimeUnit.MINUTES));
         // Individual painting details - 10 minutes TTL, max 200 entries
-        caches.add(buildCache("painting-details", 200, 10, TimeUnit.MINUTES));
+        caches.add(buildCache("painting-details", 200, 600, TimeUnit.MINUTES));
         // Categories cache - 1 hour TTL, max 50 entries (rarely changes)
-        caches.add(buildCache("categories", 50, 60, TimeUnit.MINUTES));
+        caches.add(buildCache("categories", 50, 180, TimeUnit.MINUTES));
         // Admin dashboard stats - 5 minutes TTL, max 10 entries
-        caches.add(buildCache("dashboard-stats", 10, 5, TimeUnit.MINUTES));
+        caches.add(buildCache("dashboard-stats", 10, 120, TimeUnit.MINUTES));
         // User addresses cache - 10 minutes TTL, max 200 entries (for checkout)
-        caches.add(buildCache("user-addresses", 200, 10, TimeUnit.MINUTES));
+        caches.add(buildCache("user-addresses", 200, 20, TimeUnit.MINUTES));
         // User cart cache - 5 minutes TTL, max 200 entries (for checkout)
-        caches.add(buildCache("user-cart", 200, 5, TimeUnit.MINUTES));
+        caches.add(buildCache("user-cart", 200, 10, TimeUnit.MINUTES));
 
         cacheManager.setCaches(caches);
 
