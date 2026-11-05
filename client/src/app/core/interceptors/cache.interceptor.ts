@@ -14,9 +14,9 @@ const cache = new Map<string, CacheEntry>();
 
 // Cache TTL in milliseconds
 const CACHE_TTL: Record<string, number> = {
-    '/api/paintings': 5 * 60 * 1000,      // 5 minutes
-    '/api/categories': 30 * 60 * 1000,    // 30 minutes
-    '/api/users/addresses': 5 * 60 * 1000, // 5 minutes (for checkout)
+    '/api/paintings': 300 * 60 * 1000,      // 60 minutes
+    '/api/categories': 60 * 60 * 1000,    // 30 minutes
+    '/api/users/addresses': 20 * 60 * 1000, // 20 minutes (for checkout)
 };
 
 /**
@@ -40,7 +40,7 @@ function getTTL(url: string): number {
             return ttl;
         }
     }
-    return 5 * 60 * 1000; // Default 5 minutes
+    return 20 * 60 * 1000; // Default 20 minutes
 }
 
 /**

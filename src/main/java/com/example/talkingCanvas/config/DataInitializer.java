@@ -27,6 +27,7 @@ import com.example.talkingCanvas.repository.PaintingCategoryRepository;
 import com.example.talkingCanvas.repository.PaintingImageRepository;
 import com.example.talkingCanvas.repository.PaintingRepository;
 import com.example.talkingCanvas.repository.UserRepository;
+import org.springframework.core.io.ClassPathResource;
 
 import lombok.RequiredArgsConstructor;
 
@@ -74,10 +75,10 @@ public class DataInitializer implements CommandLineRunner {
 
                         Address adminAddress = Address.builder()
                                         .user(admin)
-                                        .street("Admin Street") // Default admin address
-                                        .city("Admin City")
-                                        .state("Admin State")
-                                        .country("Admin Country")
+                                        .street("223/A Pratap Nagar, Mayo Link Road") // Default admin address
+                                        .city("Ajmer")
+                                        .state("Rajasthan")
+                                        .country("India")
                                         .pincode("000000")
                                         .isDefault(true)
                                         .build();
@@ -143,7 +144,7 @@ public class DataInitializer implements CommandLineRunner {
                 java.util.function.Function<String, byte[]> loadImage = filename -> {
                         try {
                                 // Try loading from classpath (src/main/resources/static/paintings)
-                                org.springframework.core.io.ClassPathResource resource = new org.springframework.core.io.ClassPathResource(
+                                ClassPathResource resource = new ClassPathResource(
                                                 "static/paintings/" + filename);
 
                                 if (resource.exists()) {

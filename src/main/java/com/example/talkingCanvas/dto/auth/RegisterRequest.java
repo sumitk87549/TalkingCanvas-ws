@@ -37,10 +37,8 @@ public class RegisterRequest {
     @Pattern(regexp = "^\\+?[1-9]\\d{1,14}$", message = "Invalid phone number format")
     private String contactNumber;
 
-    // @NotBlank(message = "City is required")
     private String city;
 
-    // @NotBlank(message = "Country is required")
     private String country;
 
     private String street;
