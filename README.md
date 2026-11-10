@@ -1,539 +1,503 @@
-# TALKING CANVAS - Oil Paintings E-commerce Platform
+# Talking Canvas
 
-A complete, production-ready e-commerce platform for selling oil paintings online, built with Spring Boot and Angular.
+An e-commerce platform for buying and selling original handmade paintings. Built for a real art business targeting Indian customers, it supports browsing, cart management, wishlist, Cash-on-Delivery ordering, and a full admin dashboard for inventory and order management.
 
-## 🎨 Features
+---
 
-### User Features
-- ✅ User registration and authentication (JWT-based)
-- ✅ Browse paintings with advanced filtering and sorting
-- ✅ Search functionality
-- ✅ Detailed painting views with image galleries and certificates
-- ✅ Shopping cart management
-- ✅ Order placement with COD payment
-- ✅ Order history and tracking
-- ✅ User profile management
-- ✅ Password change functionality
+## Key Features
 
-### Admin Features
-- ✅ Comprehensive dashboard with analytics
-- ✅ Painting management (CRUD operations)
-- ✅ Image and certificate uploads
-- ✅ Category management
-- ✅ User management
-- ✅ Order management and status updates
-- ✅ Revenue statistics and reports
+> All features listed here are verified in the source code.
 
-### Legal & Compliance
-- ✅ GDPR, CCPA, PDPA compliant
-- ✅ Privacy Policy
-- ✅ Terms and Conditions
-- ✅ Shipping and Delivery Policy
-- ✅ Return and Refund Policy
-- ✅ Cookie Policy
-- ✅ Cookie consent mechanism
+### Customer-Facing
+- User registration and login with JWT authentication
+- Browse all paintings with pagination, sorting, and price-range filtering
+- Full-text search across title, description, artist name, and medium
+- Featured paintings section (admin-curated)
+- Painting detail view with multiple images and authenticity certificates
+- Shopping cart management (add, update quantity, remove, clear)
+- Wishlist (add, remove, clear, check membership)
+- Checkout with delivery address selection (Cash on Delivery only)
+- Order placement, history, and cancellation
+- User profile management (name, contact, emoji avatar)
+- Address book management (add, edit, delete, set default)
+- Password change
 
-## 🏗️ Technology Stack
+### Admin Panel
+- Dashboard with aggregate statistics
+- Full painting CRUD (create, update, soft-delete)
+- Multi-image upload and deletion per painting
+- Authenticity certificate upload per painting
+- Category creation and listing
+- User listing, status toggle (enable/disable), soft-delete, and role promotion
+- Order listing with optional status filter, and status update with optional tracking info
 
-### Backend
-- **Spring Boot 3.5.7** (Latest LTS)
-- **Spring Security** with JWT authentication
-- **PostgreSQL 17.x** database
-- **Hibernate ORM**
-- **BCrypt** password hashing
-- **Spring Mail** for email notifications
-- **Swagger/OpenAPI 3.0** for API documentation
-- **Lombok** for reducing boilerplate
+### Static Pages
+- About, Contact (with form submission stored to DB), Privacy Policy, Terms & Conditions, Shipping Policy, Return & Refund Policy, Cookie Policy
 
-### Frontend
-- **Angular 20.3** (Latest)
-- **Angular Material 19.2** for UI components
-- **RxJS** for reactive programming
-- **TypeScript 5.9**
-- Responsive design (mobile-first)
+---
 
-## 📋 Prerequisites
+## Technology Stack
 
-- **Java 21** or higher
-- **Node.js 20** or higher
-- **PostgreSQL 17** or higher
-- **Maven 3.8** or higher
-- **npm 10** or higher
+| Layer | Technology | Version |
+|---|---|---|
+| **Backend framework** | Spring Boot | 3.5.7 |
+| **Language** | Java | 21 |
+| **Security** | Spring Security + JJWT | 0.12.5 |
+| **ORM** | Spring Data JPA / Hibernate | (via Spring Boot) |
+| **Database** | PostgreSQL | 17 (Docker) |
+| **Validation** | Spring Validation (Jakarta) | (via Spring Boot) |
+| **Email** | Spring Mail (SMTP/Gmail) | (via Spring Boot) |
+| **Caching** | Spring Cache + Caffeine | (via Spring Boot) |
+| **File upload** | Apache Commons IO | 2.18.0 |
+| **API documentation** | springdoc-openapi (Swagger UI) | 2.6.0 |
+| **Boilerplate reduction** | Lombok | (via Spring Boot) |
+| **Frontend framework** | Angular | 20.3 |
+| **UI components** | Angular Material + CDK | 19.2 |
 
-## 🚀 Quick Start
+---
 
-### 1. Database Setup
+## System Architecture
 
-Create PostgreSQL database:
+The application is a decoupled SPA + REST API architecture:
+
+- The **Angular SPA** (frontend) is a standalone static build served by Nginx (Docker) or Vercel's CDN. It communicates with the backend exclusively through REST API calls.
+- The **Spring Boot API** (backend) is a stateless JSON REST service. It manages all business logic, database access, file storage, email dispatch, and authentication.
+- **PostgreSQL** is the single relational database used by the backend.
+- **File uploads** (painting images, certificates) are stored on the local filesystem of the backend host at an `uploads/` directory. In the production profile, this resolves to `/tmp/uploads` — a non-persistent ephemeral path on Render's free tier.
+- **In-memory caching** via Caffeine reduces database load for frequently read resources (paintings, categories, dashboard stats, cart, addresses).
+- **JWT tokens** are issued on login and carried by the Angular HTTP interceptor on every authenticated request.
+
+### Request Flow
+
+```
+Browser
+  │
+  ▼
+Angular SPA (Vercel CDN / Nginx)
+  │  HTTP + JWT Bearer token
+  ▼
+Spring Boot REST API  (:8088 local / Render cloud)
+  │
+  ├── Spring Security filter chain (JWT validation)
+  │
+  ├── Caffeine in-memory cache  ◄──┐
+  │                                │ cache miss
+  └── PostgreSQL database ─────────┘
+        (Hibernate / JPA)
+```
+
+---
+
+## Project Structure
+
+```
+TalkingCanvas-ws/
+│
+├── src/                                  # Spring Boot backend
+│   └── main/
+│       ├── java/com/example/talkingCanvas/
+│       │   ├── TalkingCanvasApplication.java   # Entry point
+│       │   ├── config/                         # Spring configuration
+│       │   │   ├── SecurityConfig.java         # JWT filter chain, CORS, auth rules
+│       │   │   ├── CacheConfig.java            # Caffeine cache regions
+│       │   │   ├── CorsConfig.java             # CORS origin rules (env-driven)
+│       │   │   ├── DataInitializer.java        # Seed: admin user, categories, sample paintings
+│       │   │   ├── DatabaseConfig.java         # Render DATABASE_URL URL parser
+│       │   │   ├── FileUploadConfig.java       # Multipart + static resource mapping
+│       │   │   ├── OpenApiConfig.java          # Swagger / springdoc config
+│       │   │   └── WebConfig.java              # Static resource handler (uploads/)
+│       │   ├── controller/                     # REST Controllers
+│       │   │   ├── AuthController.java         # POST /api/auth/**
+│       │   │   ├── PaintingController.java     # GET /api/paintings/** (public)
+│       │   │   ├── AdminController.java        # /api/admin/ users & orders
+│       │   │   ├── AdminPaintingController.java# /api/admin/paintings (CRUD + uploads)
+│       │   │   ├── CartController.java         # /api/cart/**
+│       │   │   ├── WishlistController.java     # /api/wishlist/**
+│       │   │   ├── OrderController.java        # /api/orders/**
+│       │   │   ├── UserController.java         # /api/users/** (profile, addresses)
+│       │   │   ├── ContactController.java      # POST /api/contact/submit
+│       │   │   ├── ImageController.java        # GET /api/images/** (file serving)
+│       │   │   ├── HomeController.java         # GET /
+│       │   │   └── ActuatorController.java     # Health check wrapper
+│       │   ├── model/                          # JPA entities
+│       │   ├── dto/                            # Request/response DTOs
+│       │   ├── repository/                     # Spring Data JPA repositories
+│       │   ├── service/                        # Business logic
+│       │   ├── security/                       # JWT filter, UserPrincipal, UserDetailsService
+│       │   ├── exception/                      # Global exception handling
+│       │   └── util/                           # Utility classes
+│       └── resources/
+│           ├── application.properties          # Default / local config
+│           └── application-prod.properties     # Production config (Render)
+│
+├── client/                               # Angular frontend
+│   ├── src/
+│   │   ├── app/
+│   │   │   ├── app.routes.ts                   # All client-side routes
+│   │   │   ├── core/
+│   │   │   │   ├── guards/                     # auth.guard, admin.guard
+│   │   │   │   ├── interceptors/               # auth (JWT), error, cache interceptors
+│   │   │   │   └── services/                   # auth, painting, cart, order, wishlist, user, admin, theme
+│   │   │   ├── features/
+│   │   │   │   ├── auth/                       # login, register, logout
+│   │   │   │   ├── home/                       # Landing page
+│   │   │   │   ├── paintings/                  # List and detail views
+│   │   │   │   ├── cart/                       # Shopping cart
+│   │   │   │   ├── wishlist/                   # Wishlist
+│   │   │   │   ├── checkout/                   # Checkout flow
+│   │   │   │   ├── order-confirmation/         # Post-order confirmation
+│   │   │   │   ├── orders/                     # Order list and detail
+│   │   │   │   ├── profile/                    # User profile
+│   │   │   │   ├── admin/                      # Admin dashboard + painting management
+│   │   │   │   └── static-pages/               # About, Contact, Privacy, Terms, etc.
+│   │   │   ├── models/                         # TypeScript interfaces
+│   │   │   └── shared/                         # Shared components
+│   │   ├── environments/
+│   │   │   ├── environment.ts                  # Dev: http://localhost:8088/api
+│   │   │   └── environment.prod.ts             # Prod: https://talkingcanvas-ws.onrender.com/api
+│   │   ├── index.html                          # SEO meta tags, Open Graph, JSON-LD
+│   │   ├── styles.scss                         # Global styles
+│   │   ├── sitemap.xml
+│   │   └── robots.txt
+│   ├── nginx.conf                        # Nginx config for Docker/SPA routing
+│   ├── vercel.json                       # Vercel rewrites + API proxy
+│   ├── Dockerfile                        # Multi-stage: Node build → Nginx serve
+│   └── package.json
+│
+├── Dockerfile                            # Multi-stage: Maven build → JRE runtime
+├── docker-compose.yml                    # PostgreSQL + Backend + Frontend
+├── render.yaml                           # Render.com service + DB definition
+├── Procfile                              # Fallback process file (Heroku-style)
+├── system.properties                     # Java 21 / Maven 3.9.9 version pin
+├── keep_alive.py                         # Utility to prevent Render free-tier sleep
+├── .env.example                          # Environment variable template
+└── pom.xml                               # Maven dependencies
+```
+
+---
+
+## How It Works
+
+### Authentication Flow
+
+1. User submits credentials to `POST /api/auth/login`.
+2. Spring Security validates credentials against the BCrypt-hashed password in the DB.
+3. `JwtTokenProvider` issues a signed JWT (default expiry: 24 hours, configurable via `jwt.expiration`).
+4. The Angular `AuthInterceptor` attaches the token as `Authorization: Bearer <token>` on every subsequent request.
+5. `JwtAuthenticationFilter` validates the token on each request before it reaches any controller.
+
+### Order Placement Flow
+
+1. Customer adds paintings to cart (`POST /api/cart/add`).
+2. Customer selects or creates a delivery address at checkout.
+3. `POST /api/orders` creates the order, deducts stock from each painting, clears the cart, and records the order with status `PENDING`.
+4. Admin updates the order status (CONFIRMED → SHIPPED → DELIVERED) with optional tracking info via `PUT /api/admin/orders/{id}/status`.
+5. Customer can cancel an order while its status has not yet been set to SHIPPED or DELIVERED.
+
+### Data Initialization
+
+On first startup, `DataInitializer` (a `CommandLineRunner` bean) seeds the database with:
+- An admin user (credentials from `admin.default.email` / `admin.default.password` properties)
+- A set of painting categories (Abstract, Landscape, Portrait, etc.)
+- Sample paintings with embedded Base64 images stored to the `uploads/` directory
+
+This runs only if the admin user does not already exist.
+
+### Caching
+
+Caffeine in-memory caches (backend) reduce PostgreSQL queries for read-heavy resources:
+
+| Cache name | Max entries | TTL |
+|---|---|---|
+| `paintings` | 500 | 600 min |
+| `painting-details` | 200 | 600 min |
+| `categories` | 50 | 180 min |
+| `dashboard-stats` | 10 | 120 min |
+| `user-addresses` | 200 | 20 min |
+| `user-cart` | 200 | 10 min |
+
+---
+
+## API Documentation
+
+The backend exposes interactive API documentation via Swagger UI at:
+
+```
+http://localhost:8088/api/swagger-ui.html   (local)
+http://localhost:8088/api/docs              (OpenAPI JSON)
+```
+
+### Authentication
+
+| Method | Endpoint | Auth | Description |
+|---|---|---|---|
+| `POST` | `/api/auth/register` | Public | Register new user |
+| `POST` | `/api/auth/login` | Public | Login, returns JWT |
+
+### Paintings (Public)
+
+| Method | Endpoint | Auth | Description |
+|---|---|---|---|
+| `GET` | `/api/paintings` | Public | Paginated list (`page`, `size`, `sortBy`, `sortDirection`) |
+| `GET` | `/api/paintings/{id}` | Public | Painting detail |
+| `GET` | `/api/paintings/featured` | Public | Admin-curated featured paintings |
+| `GET` | `/api/paintings/search?query=` | Public | Full-text search |
+| `GET` | `/api/paintings/filter/price?minPrice=&maxPrice=` | Public | Price-range filter |
+| `GET` | `/api/paintings/categories` | Public | All categories |
+
+### Cart
+
+| Method | Endpoint | Auth | Description |
+|---|---|---|---|
+| `GET` | `/api/cart` | Optional | Returns empty cart for anonymous users |
+| `POST` | `/api/cart/add` | Required | Add painting to cart |
+| `PUT` | `/api/cart/items/{itemId}?quantity=` | Required | Update item quantity |
+| `DELETE` | `/api/cart/items/{itemId}` | Required | Remove item |
+| `DELETE` | `/api/cart` | Required | Clear cart |
+| `GET` | `/api/cart/count` | Required | Total items count |
+| `GET` | `/api/cart/count/{paintingId}` | Required | Quantity of a specific painting |
+
+### Wishlist
+
+| Method | Endpoint | Auth | Description |
+|---|---|---|---|
+| `GET` | `/api/wishlist` | Optional | Returns empty wishlist for anonymous users |
+| `POST` | `/api/wishlist/add` | Required | Add painting to wishlist |
+| `DELETE` | `/api/wishlist/items/{itemId}` | Required | Remove from wishlist |
+| `DELETE` | `/api/wishlist` | Required | Clear wishlist |
+| `GET` | `/api/wishlist/check/{paintingId}` | Optional | Check if in wishlist |
+| `GET` | `/api/wishlist/count` | Optional | Wishlist item count |
+
+### Orders
+
+| Method | Endpoint | Auth | Description |
+|---|---|---|---|
+| `POST` | `/api/orders` | Required | Create order from cart |
+| `GET` | `/api/orders` | Required | User's order list (`page`, `size`) |
+| `GET` | `/api/orders/{orderId}` | Required | Order detail |
+| `POST` | `/api/orders/{orderId}/cancel` | Required | Cancel order |
+
+### User Profile
+
+| Method | Endpoint | Auth | Description |
+|---|---|---|---|
+| `GET` | `/api/users/profile` | Required | Get profile |
+| `PUT` | `/api/users/profile` | Required | Update profile |
+| `POST` | `/api/users/change-password` | Required | Change password |
+| `GET` | `/api/users/orders` | Required | Order history |
+| `GET` | `/api/users/addresses` | Required | List addresses |
+| `POST` | `/api/users/addresses` | Required | Add address |
+| `PUT` | `/api/users/addresses/{id}` | Required | Update address |
+| `DELETE` | `/api/users/addresses/{id}` | Required | Delete address |
+| `PUT` | `/api/users/addresses/{id}/set-default` | Required | Set default address |
+
+### Admin — Users & Orders
+
+All `/api/admin/**` endpoints require `ADMIN` role.
+
+| Method | Endpoint | Description |
+|---|---|---|
+| `GET` | `/api/admin/dashboard/stats` | Aggregate dashboard statistics |
+| `GET` | `/api/admin/users` | Paginated user list |
+| `GET` | `/api/admin/users/{userId}` | User detail |
+| `PUT` | `/api/admin/users/{userId}/status` | Toggle user active/inactive |
+| `DELETE` | `/api/admin/users/{userId}` | Soft-delete user |
+| `PUT` | `/api/admin/users/{userId}/promote` | Grant ADMIN role to user |
+| `GET` | `/api/admin/orders` | Paginated orders (`status` filter optional) |
+| `PUT` | `/api/admin/orders/{orderId}/status?status=&trackingInfo=` | Update order status |
+
+### Admin — Painting Management
+
+| Method | Endpoint | Description |
+|---|---|---|
+| `GET` | `/api/admin/paintings` | All paintings incl. unavailable |
+| `POST` | `/api/admin/paintings` | Create painting (JSON body) |
+| `PUT` | `/api/admin/paintings/{id}` | Update painting |
+| `DELETE` | `/api/admin/paintings/{id}` | Soft-delete painting |
+| `POST` | `/api/admin/paintings/{id}/images` | Upload images (`multipart/form-data`, field: `files`) |
+| `DELETE` | `/api/admin/paintings/{id}/images/{imageId}` | Delete specific image |
+| `POST` | `/api/admin/paintings/{id}/certificates` | Upload certificate (`multipart/form-data`, fields: `file`, `title`, `issuer`, `issueDate`, `description`) |
+| `POST` | `/api/admin/categories?name=&description=` | Create category |
+
+### Other
+
+| Method | Endpoint | Auth | Description |
+|---|---|---|---|
+| `POST` | `/api/contact/submit` | Public | Submit contact form (stored to DB) |
+| `GET` | `/api/images/{filename}` | Public | Serve uploaded file |
+| `GET` | `/api/actuator/health` | Public | Health check |
+
+---
+
+## Database Design
+
+Schema is managed by Hibernate `ddl-auto=update`. The following tables are created automatically:
+
+| Table | Description |
+|---|---|
+| `users` | User accounts — id, name, email, password (BCrypt), contact_number, profile_emoji, role (USER/ADMIN), is_active |
+| `addresses` | User delivery addresses — street, city, state, country, pincode, is_default, FK → users |
+| `paintings` | Painting listings — title, description, artist_name, price (INR), currency, height/width/depth (cm), medium, year_created, is_available, stock_quantity, admin_recommendation, seo_title/description/keywords, view_count, purchase_count |
+| `painting_images` | Images per painting — file_path, display_order, FK → paintings |
+| `painting_certificates` | Authenticity certificates — file_path, title, issuer, issue_date, description, FK → paintings |
+| `painting_categories` | Category lookup — name, description |
+| `painting_category_mapping` | Many-to-many join — painting_id, category_id |
+| `carts` | One cart per user — FK → users |
+| `cart_items` | Line items in a cart — quantity, unit_price, FK → carts, paintings |
+| `orders` | Customer orders — order_number (unique), total_amount, currency (INR), payment_method (COD), order_status (PENDING/CONFIRMED/SHIPPED/DELIVERED/CANCELLED), tracking_info, FK → users, addresses |
+| `order_items` | Line items in an order — quantity, unit_price, FK → orders, paintings |
+| `wishlists` | One wishlist per user — FK → users |
+| `wishlist_items` | Items in a wishlist — FK → wishlists, paintings |
+| `contact_messages` | Contact form submissions |
+| `site_config` | Key/value site configuration store |
+
+**Key relationships:**
+- `User` 1-to-1 `Cart`, `User` 1-to-1 `Wishlist`
+- `User` 1-to-many `Address`, `User` 1-to-many `Order`
+- `Painting` many-to-many `PaintingCategory`
+- `Painting` 1-to-many `PaintingImage`, `Painting` 1-to-many `PaintingCertificate`
+- `Order` has a `delivery_address_id` FK to the address used at time of order
+
+---
+
+## Setup and Installation
+
+### Prerequisites
+
+| Tool | Required version |
+|---|---|
+| Java | 21+ |
+| Maven | 3.8+ (or use `./mvnw` wrapper) |
+| Node.js | 20+ |
+| npm | 10+ |
+| PostgreSQL | 17+ (or use Docker Compose) |
+
+---
+
+### Option A — Docker Compose (Recommended for local dev)
+
+Starts PostgreSQL, the Spring Boot backend, and the Angular frontend together.
 
 ```bash
-# Login to PostgreSQL
+# 1. Clone the repository
+git clone <repository-url>
+cd TalkingCanvas-ws
+
+# 2. Create your environment file
+cp .env.example .env
+# Edit .env to set DB_PASSWORD, JWT_SECRET, and optionally MAIL_* and CORS_ORIGINS
+
+# 3. Build and start all three services
+docker-compose up --build
+
+# Run in the background
+docker-compose up -d
+```
+
+Accessible at:
+
+| Service | URL |
+|---|---|
+| Angular frontend | http://localhost:4200 |
+| Spring Boot API | http://localhost:8088/api |
+| Swagger UI | http://localhost:8088/api/swagger-ui.html |
+
+> **Note:** The backend container maps port `8088` on the host (not `8080`). The PostgreSQL container maps to host port `5433`.
+
+---
+
+### Option B — Manual local setup
+
+#### 1. Database
+
+```bash
 psql -U postgres
-
-# Create database
 CREATE DATABASE talkingcanvas;
-
-# Exit psql
 \q
 ```
 
-The application will automatically create tables on first run using Hibernate's `ddl-auto=update`.
-
-### 2. Backend Setup
+#### 2. Backend
 
 ```bash
-# Navigate to project root
-cd talkingCanvas
-
-# Build the project
-mvn clean install
-
-# Run the application
-mvn spring-boot:run
+# From project root
+./mvnw spring-boot:run
 ```
 
-The backend will start on `http://localhost:8080`
+The application starts on port **8088** (see `server.port=${PORT:8088}` in `application.properties`).
 
-**Default Admin Credentials:**
-- Email: `admin@talkingcanvas.com`
-- Password: `Admin@123`
-
-### 3. Frontend Setup
+Alternatively, build a JAR first:
 
 ```bash
-# Navigate to client directory
-cd client
+./mvnw clean package -DskipTests
+java -jar target/talkingCanvas-0.0.1-SNAPSHOT.jar
+```
 
-# Install dependencies
+#### 3. Frontend
+
+```bash
+cd client
 npm install
-
-# Start development server
-npm start
+npm start          # Starts ng serve on http://localhost:4200
 ```
 
-The frontend will start on `http://localhost:4200`
-
-### 4. Access the Application
-
-- **Frontend:** http://localhost:4200
-- **Backend API:** http://localhost:8080/api
-- **Swagger UI:** http://localhost:8080/api/swagger-ui.html
-- **API Docs:** http://localhost:8080/api/docs
-
-## 📁 Project Structure
-
-```
-talkingCanvas/
-├── src/                        # Spring Boot Backend
-│   ├── main/
-│   │   ├── java/com/example/talkingCanvas/
-│   │   │   ├── config/        # Configuration classes
-│   │   │   ├── controller/    # REST Controllers
-│   │   │   ├── dto/           # Data Transfer Objects
-│   │   │   ├── exception/     # Exception handling
-│   │   │   ├── model/         # JPA Entities
-│   │   │   ├── repository/    # JPA Repositories
-│   │   │   ├── security/      # Security & JWT
-│   │   │   ├── service/       # Business logic
-│   │   │   └── util/          # Utility classes
-│   │   └── resources/
-│   │       └── application.properties
-│   └── test/
-├── client/                     # Angular Frontend
-│   ├── src/
-│   │   ├── app/
-│   │   │   ├── core/          # Core services, guards, interceptors
-│   │   │   ├── features/      # Feature modules
-│   │   │   ├── models/        # TypeScript interfaces
-│   │   │   └── shared/        # Shared components
-│   │   └── environments/
-│   └── package.json
-├── uploads/                    # File storage (created automatically)
-├── docker-compose.yml
-├── Dockerfile
-└── README.md
-```
-
-## 🔧 Configuration
-
-### Backend Configuration
-
-Edit `src/main/resources/application.properties`:
-
-```properties
-# Database
-spring.datasource.url=jdbc:postgresql://localhost:5432/talkingcanvas
-spring.datasource.username=postgres
-spring.datasource.password=0000
-
-# JWT
-jwt.secret=YourSecretKeyHere
-jwt.expiration=86400000
-
-# Mail (Configure for production)
-spring.mail.username=your-email@gmail.com
-spring.mail.password=your-app-password
-
-# Admin Default
-admin.default.email=admin@talkingcanvas.com
-admin.default.password=Admin@123
-admin.default.uncle.name=Rajesh Kumar
-
-# File Upload
-file.upload-dir=uploads
-```
-
-### Frontend Configuration
-
-Edit `client/src/environments/environment.ts`:
-
-```typescript
-export const environment = {
-  production: false,
-  apiUrl: 'http://localhost:8080/api'
-};
-```
-
-## 🐳 Docker Deployment
-
-### Build and Run with Docker Compose
-
-```bash
-# Build and start all services
-docker-compose up --build
-
-# Run in detached mode
-docker-compose up -d
-
-# Stop services
-docker-compose down
-```
-
-### Manual Docker Build
-
-```bash
-# Build backend
-docker build -t talkingcanvas-backend .
-
-# Build frontend
-cd client
-docker build -t talkingcanvas-frontend .
-
-# Run containers
-docker run -p 8080:8080 talkingcanvas-backend
-docker run -p 80:80 talkingcanvas-frontend
-```
-
-## 📝 API Documentation
-
-### Authentication Endpoints
-
-```
-POST /api/auth/register  - Register new user
-POST /api/auth/login     - User login
-```
-
-### Painting Endpoints (Public)
-
-```
-GET  /api/paintings                  - Get all paintings (paginated)
-GET  /api/paintings/{id}             - Get painting by ID
-GET  /api/paintings/featured         - Get featured paintings
-GET  /api/paintings/search?query=    - Search paintings
-GET  /api/paintings/filter/price     - Filter by price range
-GET  /api/paintings/categories       - Get all categories
-```
-
-### Cart Endpoints (Authenticated)
-
-```
-GET    /api/cart              - Get user's cart
-POST   /api/cart/add          - Add item to cart
-PUT    /api/cart/items/{id}   - Update cart item quantity
-DELETE /api/cart/items/{id}   - Remove cart item
-DELETE /api/cart              - Clear cart
-```
-
-### Order Endpoints (Authenticated)
-
-```
-POST   /api/orders           - Create order
-GET    /api/orders           - Get user's orders
-GET    /api/orders/{id}      - Get order details
-POST   /api/orders/{id}/cancel - Cancel order
-```
-
-### Admin Endpoints (Admin Only)
-
-```
-GET    /api/admin/dashboard/stats     - Dashboard statistics
-GET    /api/admin/users               - List all users
-GET    /api/admin/orders              - List all orders
-POST   /api/admin/paintings           - Create painting
-PUT    /api/admin/paintings/{id}      - Update painting
-DELETE /api/admin/paintings/{id}      - Delete painting
-POST   /api/admin/paintings/{id}/images - Upload images
-POST   /api/admin/paintings/{id}/certificates - Upload certificates
-PUT    /api/admin/orders/{id}/status  - Update order status
-```
-
-Complete API documentation available at: http://localhost:8080/api/swagger-ui.html
-
-## 🧪 Testing
-
-### Backend Testing
-
-```bash
-# Run tests
-mvn test
-
-# Run with coverage
-mvn clean test jacoco:report
-```
-
-### Frontend Testing
-
-```bash
-cd client
-
-# Run unit tests
-npm test
-
-# Run e2e tests
-npm run e2e
-```
-
-## 🌍 Environment Variables
-
-### Production Environment Variables
-
-```bash
-# Database
-DB_HOST=your-db-host
-DB_PORT=5432
-DB_NAME=talkingcanvas
-DB_USER=postgres
-DB_PASSWORD=your-password
-
-# JWT
-JWT_SECRET=your-very-long-and-secure-secret-key
-JWT_EXPIRATION=86400000
-
-# Mail
-MAIL_HOST=smtp.gmail.com
-MAIL_USERNAME=your-email@gmail.com
-MAIL_PASSWORD=your-app-password
-
-# Admin
-ADMIN_EMAIL=admin@talkingcanvas.com
-ADMIN_PASSWORD=secure-admin-password
-
-# File Storage
-FILE_UPLOAD_DIR=/var/talkingcanvas/uploads
-
-# CORS
-CORS_ALLOWED_ORIGINS=https://yourdomain.com,https://www.yourdomain.com
-```
-
-## 📊 Database Schema
-
-The application automatically creates the following tables:
-
-- `users` - User accounts
-- `addresses` - User delivery addresses
-- `paintings` - Painting listings
-- `painting_images` - Painting images
-- `painting_certificates` - Painting certificates
-- `painting_categories` - Categories/styles
-- `painting_category_mapping` - Many-to-many relationship
-- `carts` - Shopping carts
-- `cart_items` - Cart items
-- `orders` - Customer orders
-- `order_items` - Order line items
-- `contact_messages` - Contact form submissions
-- `site_config` - Site configuration
-
-## 🔒 Security Features
-
-- JWT-based authentication
-- BCrypt password hashing (strength: 10)
-- Role-based access control (USER, ADMIN)
-- CORS configuration
-- SQL injection prevention
-- XSS protection
-- CSRF protection
-- Secure file upload validation
-- Password strength validation
-- Email validation
-
-## 📧 Email Configuration
-
-For Gmail, create an App Password:
-
-1. Go to Google Account Settings
-2. Security → 2-Step Verification
-3. App passwords → Select app (Mail) and device
-4. Copy the generated password
-5. Update `application.properties`:
-
-```properties
-spring.mail.username=your-email@gmail.com
-spring.mail.password=generated-app-password
-```
-
-## 🎨 Sample Data
-
-The application seeds the following data on first run:
-
-- **Admin User:** admin@talkingcanvas.com
-- **Categories:** Abstract, Landscape, Portrait, Modern, Contemporary, etc.
-- **Sample Paintings:** 3 sample paintings with descriptions
-
-## 🚀 Production Deployment
-
-### Checklist
-
-- [ ] Update JWT secret to a strong random key
-- [ ] Configure production database
-- [ ] Set up email service (SMTP)
-- [ ] Configure file storage (AWS S3, Azure Blob, etc.)
-- [ ] Update CORS allowed origins
-- [ ] Set up SSL/TLS certificates
-- [ ] Configure CDN for static assets
-- [ ] Set up logging and monitoring
-- [ ] Configure backup strategy
-- [ ] Update admin credentials
-- [ ] Review and update all environment variables
-- [ ] Enable production mode in Angular
-- [ ] Minify and optimize assets
-- [ ] Set up CI/CD pipeline
-- [ ] Configure rate limiting
-- [ ] Set up error tracking (Sentry, etc.)
-
-### Build for Production
-
-```bash
-# Backend
-mvn clean package -DskipTests
-
-# Frontend
-cd client
-npm run build --configuration=production
-```
-
-## 📱 Responsive Design
-
-The application is fully responsive and tested on:
-
-- Desktop (1920x1080, 1366x768)
-- Tablet (iPad, Surface)
-- Mobile (iPhone, Android)
-- Various browsers (Chrome, Firefox, Safari, Edge)
-
-## ♿ Accessibility
-
-- WCAG 2.1 Level AA compliant
-- Keyboard navigation support
-- Screen reader friendly
-- Sufficient color contrast
-- Alt text for images
-- Semantic HTML
-
-## 🌐 SEO Features
-
-- Server-side rendering ready
-- Dynamic meta tags
-- Open Graph tags
-- Twitter Card tags
-- Structured data (JSON-LD)
-- XML sitemap (auto-generated)
-- robots.txt
-- Canonical URLs
-- SEO-friendly URLs
-
-## 🐛 Troubleshooting
-
-### Common Issues
-
-**1. Database Connection Error**
-```
-Solution: Ensure PostgreSQL is running and credentials are correct
-Check: application.properties database configuration
-```
-
-**2. JWT Token Expired**
-```
-Solution: Login again to get a new token
-The token expires after 24 hours by default
-```
-
-**3. File Upload Error**
-```
-Solution: Ensure 'uploads' directory exists and has write permissions
-Check: file.upload-dir in application.properties
-```
-
-**4. CORS Error**
-```
-Solution: Update allowed origins in application.properties
-Check: cors.allowed-origins configuration
-```
-
-**5. Angular Port Already in Use**
-```
-Solution: ng serve --port 4201
-Or kill the process using port 4200
-```
-
-## 📞 Support
-
-For issues, questions, or contributions:
-
-- Email: admin@talkingcanvas.com
-- GitHub Issues: [Create Issue]
-- Documentation: [API Docs](http://localhost:8080/api/swagger-ui.html)
-
-## 📄 License
-
-This project is proprietary and confidential.
-
-## 👥 Credits
-
-- **Backend:** Spring Boot, Spring Security, PostgreSQL
-- **Frontend:** Angular, Angular Material
-- **Authentication:** JWT (JSON Web Tokens)
-- **API Documentation:** Swagger/OpenAPI
+The dev environment is configured to call `http://localhost:8088/api`.
 
 ---
 
-## 🎯 Next Steps After Setup
+## Environment Variables
 
-1. **Login as Admin:**
-   - Email: admin@talkingcanvas.com
-   - Password: Admin@123
+Copy `.env.example` to `.env` and fill in the values below. The backend reads these at startup; the Docker Compose file passes them into the container.
 
-2. **Create Categories:**
-   - Navigate to Admin Dashboard
-   - Add painting categories
+| Variable | Description | Required |
+|---|---|---|
+| `DB_PASSWORD` | PostgreSQL password | Yes |
+| `JWT_SECRET` | JWT signing key — use a random string of at least 64 characters. Generate with: `openssl rand -base64 64` | Yes |
+| `MAIL_USERNAME` | Gmail address for outgoing email (e.g. password reset) | Optional |
+| `MAIL_PASSWORD` | Gmail [App Password](https://support.google.com/accounts/answer/185833) (not your account password) | Optional |
+| `CORS_ORIGINS` | Comma-separated list of allowed frontend origins | Optional |
+| `SPRING_DATASOURCE_URL` | Full JDBC URL — set automatically by Docker Compose; override for external DBs | Optional |
+| `SPRING_DATASOURCE_USERNAME` | DB user | Optional |
+| `ADMIN_EMAIL` | Email for the auto-created admin account | Optional |
+| `ADMIN_PASSWORD` | Password for the auto-created admin account | Optional |
+| `ADMIN_NAME` | Display name for the admin account | Optional |
 
-3. **Add Paintings:**
-   - Create new painting listings
-   - Upload images and certificates
-   - Set prices and descriptions
+> **Security:** Never commit `.env` to version control. `.env` is already listed in `.gitignore`.
 
-4. **Test User Flow:**
-   - Register as a new user
-   - Browse paintings
-   - Add to cart
-   - Place order
-
-5. **Customize Content:**
-   - Update About Us page
-   - Configure contact information
-   - Update legal pages for your jurisdiction
 
 ---
 
-**Built with ❤️ for Talking Canvas**
+## Deployment
 
-*Last Updated: 2025-11-10*
+### Production architecture
+
+| Component | Platform | Notes |
+|---|---|---|
+| Angular SPA | **Vercel** | Built from `client/`, output: `dist/client/browser/`, config: `client/vercel.json` |
+| Spring Boot API | **Render** (free tier, Java runtime) | Config: `render.yaml` |
+| PostgreSQL | **Render** managed database | Provisioned automatically via `render.yaml` |
+
+### Vercel (Frontend)
+
+The `client/vercel.json` configures:
+- All `/api/*` requests are proxied to `https://talkingcanvas-ws.onrender.com/api/*`
+- All other routes fall back to `index.html` for Angular's client-side routing
+
+Deploy by connecting the repository to Vercel and setting the **root directory** to `client/`.
+
+### Render (Backend)
+
+`render.yaml` defines:
+- A Java web service built with `./mvnw clean package -DskipTests` and started with `java -Xmx512m -Dserver.port=$PORT -Dspring.profiles.active=prod -jar target/talkingCanvas-0.0.1-SNAPSHOT.jar`
+- A managed PostgreSQL database (`talkingcanvas-db`) whose connection string is injected as `DATABASE_URL`
+- `JWT_SECRET` is auto-generated by Render on first deploy
+- `ADMIN_PASSWORD` and `MAIL_*` must be set manually in the Render dashboard
+
+Health check endpoint: `GET /api/actuator/health`
+
+### Production profile
+
+When `spring.profiles.active=prod`, `application-prod.properties` is active:
+- SQL logging is disabled
+- File uploads go to `/tmp/uploads` (ephemeral — files do not survive restarts)
+- CORS origins default to the Vercel deployment URL
+
